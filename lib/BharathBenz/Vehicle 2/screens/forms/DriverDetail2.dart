@@ -1,34 +1,74 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/retrieve/driverretrieve.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%202/screens/forms/retrieve/driverretrieve2.dart';
 import 'package:e_commerce/constants/colors.dart';
+import 'package:e_commerce/screens/forms/retrieve/driverretrieve.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:e_commerce/widgets/custombuttom%20outlined.dart';
 import 'package:e_commerce/widgets/custombutton.dart';
-import 'package:e_commerce/widgets/customtextformwithicon.dart';
-import 'package:e_commerce/widgets/customtextform.dart';
-import 'package:flutter/material.dart';
 
-class CustomerDetails extends StatefulWidget {
-  const CustomerDetails({super.key});
+import 'package:e_commerce/widgets/customtextform.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+
+class BDriverDetail2 extends StatefulWidget {
+  const BDriverDetail2({super.key});
 
   @override
-  State<CustomerDetails> createState() => _CustomerDetailsState();
+  State<BDriverDetail2> createState() => _driverDetailState();
 }
 
-class _CustomerDetailsState extends State<CustomerDetails> {
-  final _namecontroller = TextEditingController();
-  final _placecontroller = TextEditingController();
-  final _materialcontroller = TextEditingController();
-  final _paymentcontroller = TextEditingController();
-  final _paidcontroller = TextEditingController();
-  final _notpaidcontroller = TextEditingController();
+class _driverDetailState extends State<BDriverDetail2> {
+  var _namecontroller = TextEditingController();
+  var  _imgnamecontroller = TextEditingController();
+  var _placecontroller = TextEditingController();
+  var _bloddgroupcontroller = TextEditingController();
 
-  void _saveData() {
+  var _expirecontroller = TextEditingController();
+  var _insuranceamountcontroller = TextEditingController();
+  File imageFile = File('');
+  String? _imageName;
+
+
+  void _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      if (pickedFile != null) {
+        imageFile = File(pickedFile.path);
+          _imageName = imageFile.path.split('/').last;
+          _imgnamecontroller.text = imageFile.path.split('/').last;
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+Future<String> uploadImage(File imageFile) async {
+    firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
+        .ref()
+        .child('bharathbenz2_driver')
+        .child('${DateTime.now().millisecondsSinceEpoch}.jpg');
+
+    firebase_storage.UploadTask uploadTask = ref.putFile(imageFile);
+
+    firebase_storage.TaskSnapshot snapshot =
+        await uploadTask.whenComplete(() => null);
+    return await snapshot.ref.getDownloadURL();
+  }
+
+
+
+  void _saveData() async{
     if (_namecontroller.text.isEmpty ||
         _placecontroller.text.isEmpty ||
-        _materialcontroller.text.isEmpty ||
-        _paymentcontroller.text.isEmpty ||
-        _paidcontroller.text.isEmpty ||
-        _notpaidcontroller.text.isEmpty) {
+        _bloddgroupcontroller.text.isEmpty ||
+        //_lorrycontroller.text.isEmpty ||
+        imageFile == null||
+        _expirecontroller.text.isEmpty ||
+        _insuranceamountcontroller.text.isEmpty) {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -45,13 +85,15 @@ class _CustomerDetailsState extends State<CustomerDetails> {
       return;
     } else {
       try {
-        FirebaseFirestore.instance.collection('customerdetails').add({
+        String imageUrl =  await uploadImage(imageFile);
+        FirebaseFirestore.instance.collection('bharathbenzdriverdetail2').add({
           'Name': _namecontroller.text,
           'Place': _placecontroller.text,
-          'Material': _materialcontroller.text,
-          'Payment': _paymentcontroller.text,
-          'Paid': _paidcontroller.text,
-          'Not_Paid': _notpaidcontroller.text
+          'Blooad Group': _bloddgroupcontroller.text,
+          //'Lorry': _.text,
+          'Expires': _expirecontroller.text,
+          'Insurance Amount': _insuranceamountcontroller.text,
+          'Image URL': imageUrl,
         });
       } on FirebaseException catch (e) {
         print('Failed with error code: ${e.code}');
@@ -63,9 +105,8 @@ class _CustomerDetailsState extends State<CustomerDetails> {
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.sizeOf(context).width;
-
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Add Customer Details'),
+      appBar: const CustomAppBar(title: 'Driver Details'),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
@@ -92,6 +133,23 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                       CustomTextFormField(
                         width: 320,
                         controller: _namecontroller,
+                        hintText: 'Type',
+                        labeltext: '',
+                        keyboardType: TextInputType.name,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Place')),
+                      ),
+                      CustomTextFormField(
+                        width: 320,
+                        controller: _placecontroller,
                         hintText: '',
                         labeltext: '',
                         keyboardType: TextInputType.name,
@@ -104,15 +162,14 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('place')),
+                            child: Text('Blood Group')),
                       ),
-                      CustomTextFormFieldIcon(
+                      CustomTextFormField(
                         width: 320,
-                        controller: _placecontroller,
+                        controller: _bloddgroupcontroller,
                         hintText: 'Type',
                         labeltext: '',
                         keyboardType: TextInputType.name,
-                        prefixicon: const Icon(Icons.share_location_sharp),
                       ),
                       Padding(
                         padding: EdgeInsets.only(
@@ -122,14 +179,46 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Material')),
+                            child: Text('Photo')),
                       ),
-                      CustomTextFormField(
+                      Container(
                         width: 320,
-                        controller: _materialcontroller,
-                        hintText: 'Type',
-                        labeltext: 'Type',
-                        keyboardType: TextInputType.name,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4),
+                          boxShadow: const [
+                            BoxShadow(
+                              offset: Offset(-4, 4),
+                              blurRadius: 18,
+                              spreadRadius: 0,
+                              color: Color(0x17000000),
+                            )
+                          ],
+                        ),
+                        child: TextFormField(
+                          // initialValue: _imageName ?? '',
+                           controller: _imgnamecontroller,
+                         
+                          readOnly: true,
+                          decoration: InputDecoration(
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: orange),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: Colors.red),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              hintText: 'Pick An Image',
+                             suffixIcon: GestureDetector(
+                                  onTap: () {
+                     _pickImage();
+                     
+                    },
+                                  child: Icon(Icons.image))),
+                        ),
                       ),
                       Padding(
                         padding: EdgeInsets.only(
@@ -139,13 +228,13 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Payment')),
+                            child: Text('Expires')),
                       ),
                       CustomTextFormField(
                         width: 320,
-                        controller: _paymentcontroller,
+                        controller: _expirecontroller,
                         hintText: 'Type',
-                        labeltext: 'Type',
+                        labeltext: '',
                         keyboardType: TextInputType.number,
                       ),
                       Padding(
@@ -156,34 +245,16 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Paid')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _paidcontroller,
-                        hintText: 'Type',
-                        labeltext: 'Type',
-                        keyboardType: TextInputType.name,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Not Paid')),
+                            child: Text('Insurance Amount')),
                       ),
                       Padding(
                         padding: EdgeInsets.only(bottom: w * 0.044),
-                        child: CustomTextFormFieldIcon(
+                        child: CustomTextFormField(
                           width: 320,
-                          controller: _notpaidcontroller,
+                          controller: _insuranceamountcontroller,
                           hintText: 'Type',
                           labeltext: '',
-                          keyboardType: TextInputType.name,
-                          prefixicon: const Icon(Icons.share_location_sharp),
+                          keyboardType: TextInputType.number,
                         ),
                       ),
                     ],
@@ -206,17 +277,26 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                       fontSize: 20,
                       onTap: () {
                         _saveData();
+                        
+                      
                       }),
                 ),
                 Padding(
                   padding: EdgeInsets.only(left: w * 0.15),
                   child: CustomTextButtonOut(
-                    title: 'fetch',
+                    title: 'Fetch',
                     width: w * 0.3,
                     background: Colors.transparent,
                     textColor: black,
                     fontSize: 20,
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => BDriverretrieve2()),
+                      );
+
+                    },
                     color: black,
                   ),
                 )

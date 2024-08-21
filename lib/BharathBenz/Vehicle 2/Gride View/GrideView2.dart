@@ -1,25 +1,28 @@
+import 'package:e_commerce/BharathBenz/Vehicle%202/screens/forms/DriverDetail2.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%202/screens/forms/ExpenseDetail2.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%202/screens/forms/LoadDetails2.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%202/screens/forms/PUCdetail2.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%202/screens/forms/Permit2.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%202/screens/forms/VehicleDetails.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%202/screens/forms/insurancedetail2.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%202/screens/forms/refuel2.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%202/screens/forms/servics.dart';
 import 'package:e_commerce/constants/colors.dart';
-import 'package:e_commerce/widgets/customappbar.dart';
 
 import 'package:flutter/material.dart';
 
-import '../screens/forms/DriverDetail.dart';
-import '../screens/forms/ExpenseDetail.dart';
-import '../screens/forms/LoadDetails.dart';
-import '../screens/forms/PUCdetail.dart';
-import '../screens/forms/Permit.dart';
-import '../screens/forms/VehicleDetails.dart';
-import '../screens/forms/insurancedetail.dart';
-import '../screens/forms/refuel.dart';
-import '../screens/forms/servics.dart';
+class BGrideview2 extends StatefulWidget {
+  const BGrideview2({super.key});
 
-class BGrideview extends StatelessWidget {
-  const BGrideview({super.key});
+  @override
+  State<BGrideview2> createState() => _BGrideviewState();
+}
 
+class _BGrideviewState extends State<BGrideview2> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'Bharath Benz',),
+      appBar: AppBar(title: const Center(child: Text('Vehicle 2'))),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
@@ -34,7 +37,7 @@ class BGrideview extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => BFuel()),
+                      MaterialPageRoute(builder: (context) => const BFuel2()),
                     );
                   },
                   child: Container(
@@ -61,7 +64,8 @@ class BGrideview extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const BServices()),
+                      MaterialPageRoute(
+                          builder: (context) => const BServices2()),
                     );
                   },
                   child: Container(
@@ -96,7 +100,8 @@ class BGrideview extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const BExpensedetail()),
+                      MaterialPageRoute(
+                          builder: (context) => const BExpensedetail2()),
                     );
                   },
                   child: Container(
@@ -123,7 +128,8 @@ class BGrideview extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const BInsurancedetail()),
+                      MaterialPageRoute(
+                          builder: (context) => const BInsurancedetail2()),
                     );
                   },
                   child: Container(
@@ -158,34 +164,37 @@ class BGrideview extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) =>const  BPermit()),
+                      MaterialPageRoute(builder: (context) => const BPermit2()),
                     );
                   },
                   child: Container(
-                      height: 100,
-                      width: 155,
-                      decoration: const BoxDecoration(
-                        color: black,
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
-                        image: DecorationImage(
-                          image: AssetImage("assets/images/permit.jpg"),
-                          fit: BoxFit.cover,
-                        ),
+                    height: 100,
+                    width: 155,
+                    decoration: const BoxDecoration(
+                      color: black,
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                      image: DecorationImage(
+                        image: AssetImage("assets/images/permit.jpg"),
+                        fit: BoxFit.cover,
                       ),
-                      child: const Center(
-                          child: Text(
+                    ),
+                    child: const Center(
+                      child: Text(
                         'Permit',
                         style: TextStyle(
                             color: white,
                             fontSize: 24,
                             fontWeight: FontWeight.bold),
-                      ),),),
+                      ),
+                    ),
+                  ),
                 ),
                 InkWell(
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) =>const BPUCDetail()),
+                      MaterialPageRoute(
+                          builder: (context) => const BPUCDetail2()),
                     );
                   },
                   child: Container(
@@ -222,7 +231,8 @@ class BGrideview extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const BLoadDetails()),
+                      MaterialPageRoute(
+                          builder: (context) => const BLoadDetails2()),
                     );
                   },
                   child: Container(
@@ -249,7 +259,8 @@ class BGrideview extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const  BVehicleDetails()),
+                      MaterialPageRoute(
+                          builder: (context) => const BVehicleDetails2()),
                     );
                   },
                   child: Container(
@@ -283,7 +294,8 @@ class BGrideview extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const BDriverDetail()),
+                      MaterialPageRoute(
+                          builder: (context) => const BDriverDetail2()),
                     );
                   },
                   child: Padding(

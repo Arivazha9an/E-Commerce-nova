@@ -1,72 +1,39 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:e_commerce/BharathBenz/screens/forms/retrieve/driverretrieve.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/retrieve/serviceretrieve.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%202/screens/forms/retrieve/serviceretrieve2.dart';
 import 'package:e_commerce/constants/colors.dart';
+import 'package:e_commerce/screens/forms/retrieve/serviceretrieve.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:e_commerce/widgets/custombuttom%20outlined.dart';
 import 'package:e_commerce/widgets/custombutton.dart';
-
+import 'package:e_commerce/widgets/customtextformwithicon.dart';
 import 'package:e_commerce/widgets/customtextform.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
-class BDriverDetail extends StatefulWidget {
-  const BDriverDetail({super.key});
+class BServices2 extends StatefulWidget {
+  const BServices2({super.key});
 
   @override
-  State<BDriverDetail> createState() => _driverDetailState();
+  State<BServices2> createState() => _ServicesState();
 }
 
-class _driverDetailState extends State<BDriverDetail> {
-  var _namecontroller = TextEditingController();
-  var  _imgnamecontroller = TextEditingController();
-  var _placecontroller = TextEditingController();
-  var _bloddgroupcontroller = TextEditingController();
-
-  var _expirecontroller = TextEditingController();
-  var _insuranceamountcontroller = TextEditingController();
-  File imageFile = File('');
-  String? _imageName;
+class _ServicesState extends State<BServices2> {
+  final TextEditingController _datepickController = TextEditingController();
+  var _servicecontroller = TextEditingController();
+  var _serviceplacetroller = TextEditingController();
+  var _contactcontroller = TextEditingController();
+  var _amountcontroller = TextEditingController();
+  var _KMridingcontroller = TextEditingController();
 
 
-  void _pickImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    setState(() {
-      if (pickedFile != null) {
-        imageFile = File(pickedFile.path);
-          _imageName = imageFile.path.split('/').last;
-          _imgnamecontroller.text = imageFile.path.split('/').last;
-      } else {
-        print('No image selected.');
-      }
-    });
-  }
-Future<String> uploadImage(File imageFile) async {
-    firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
-        .ref()
-        .child('bharathbenz_driver')
-        .child('${DateTime.now().millisecondsSinceEpoch}.jpg');
-
-    firebase_storage.UploadTask uploadTask = ref.putFile(imageFile);
-
-    firebase_storage.TaskSnapshot snapshot =
-        await uploadTask.whenComplete(() => null);
-    return await snapshot.ref.getDownloadURL();
-  }
-
-
-
-  void _saveData() async{
-    if (_namecontroller.text.isEmpty ||
-        _placecontroller.text.isEmpty ||
-        _bloddgroupcontroller.text.isEmpty ||
-        //_lorrycontroller.text.isEmpty ||
-        imageFile == null||
-        _expirecontroller.text.isEmpty ||
-        _insuranceamountcontroller.text.isEmpty) {
+  void _saveData() {
+    if (_datepickController.text.isEmpty ||
+        _servicecontroller.text.isEmpty ||
+        _serviceplacetroller.text.isEmpty ||
+        _contactcontroller.text.isEmpty ||
+        _amountcontroller.text.isEmpty ||
+        _KMridingcontroller.text.isEmpty) {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -83,15 +50,13 @@ Future<String> uploadImage(File imageFile) async {
       return;
     } else {
       try {
-        String imageUrl =  await uploadImage(imageFile);
-        FirebaseFirestore.instance.collection('bharathbenzdriverdetail').add({
-          'Name': _namecontroller.text,
-          'Place': _placecontroller.text,
-          'Blooad Group': _bloddgroupcontroller.text,
-          //'Lorry': _.text,
-          'Expires': _expirecontroller.text,
-          'Insurance Amount': _insuranceamountcontroller.text,
-          'Image URL': imageUrl,
+        FirebaseFirestore.instance.collection('bharathbenzservices2').add({
+          'date': _datepickController.text,
+          'Service': _servicecontroller.text,
+          'Service Place': _serviceplacetroller.text,
+          'Contact': _contactcontroller.text,
+          'Amount': _amountcontroller.text,
+          'KM Riding': _KMridingcontroller.text
         });
       } on FirebaseException catch (e) {
         print('Failed with error code: ${e.code}');
@@ -102,9 +67,22 @@ Future<String> uploadImage(File imageFile) async {
 
   @override
   Widget build(BuildContext context) {
+    Future<void> _selectDate() async {
+      DateTime? picked = await showDatePicker(
+          context: context,
+          initialDate: DateTime.now(),
+          firstDate: DateTime(2000),
+          lastDate: DateTime(2099));
+      if (picked != null) {
+        setState(() {
+          _datepickController.text = DateFormat('yyyy-MM-dd').format(picked);
+        });
+      }
+    }
+
     var w = MediaQuery.sizeOf(context).width;
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Driver Details'),
+      appBar: const CustomAppBar(title: 'Service Detail'),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
@@ -126,58 +104,7 @@ Future<String> uploadImage(File imageFile) async {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Name')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _namecontroller,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.name,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Place')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _placecontroller,
-                        hintText: '',
-                        labeltext: '',
-                        keyboardType: TextInputType.name,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Blood Group')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _bloddgroupcontroller,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.name,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Photo')),
+                            child: Text('Date')),
                       ),
                       Container(
                         width: 320,
@@ -193,9 +120,7 @@ Future<String> uploadImage(File imageFile) async {
                           ],
                         ),
                         child: TextFormField(
-                          // initialValue: _imageName ?? '',
-                           controller: _imgnamecontroller,
-                         
+                          controller: _datepickController,
                           readOnly: true,
                           decoration: InputDecoration(
                               focusedBorder: OutlineInputBorder(
@@ -209,13 +134,10 @@ Future<String> uploadImage(File imageFile) async {
                                 borderSide: const BorderSide(color: Colors.red),
                                 borderRadius: BorderRadius.circular(4),
                               ),
-                              hintText: 'Pick An Image',
-                             suffixIcon: GestureDetector(
-                                  onTap: () {
-                     _pickImage();
-                     
-                    },
-                                  child: Icon(Icons.image))),
+                              hintText: 'Choose Date',
+                              prefixIcon: GestureDetector(
+                                  onTap: _selectDate,
+                                  child: Icon(Icons.calendar_month))),
                         ),
                       ),
                       Padding(
@@ -226,11 +148,45 @@ Future<String> uploadImage(File imageFile) async {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Expires')),
+                            child: Text('Service Type')),
                       ),
                       CustomTextFormField(
                         width: 320,
-                        controller: _expirecontroller,
+                        controller: _servicecontroller,
+                        hintText: 'Type',
+                        labeltext: '',
+                        keyboardType: TextInputType.name,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Service Place')),
+                      ),
+                      CustomTextFormField(
+                        width: 320,
+                        controller: _serviceplacetroller,
+                        hintText: 'Type',
+                        labeltext: '',
+                        keyboardType: TextInputType.name,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Contact No')),
+                      ),
+                      CustomTextFormField(
+                        width: 320,
+                        controller: _contactcontroller,
                         hintText: 'Type',
                         labeltext: '',
                         keyboardType: TextInputType.number,
@@ -243,16 +199,34 @@ Future<String> uploadImage(File imageFile) async {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Insurance Amount')),
+                            child: Text('Amount')),
+                      ),
+                      CustomTextFormField(
+                        width: 320,
+                        controller: _amountcontroller,
+                        hintText: 'Type',
+                        labeltext: '',
+                        keyboardType: TextInputType.number,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Km Riding')),
                       ),
                       Padding(
                         padding: EdgeInsets.only(bottom: w * 0.044),
-                        child: CustomTextFormField(
+                        child: CustomTextFormFieldIcon(
                           width: 320,
-                          controller: _insuranceamountcontroller,
+                          controller: _KMridingcontroller,
                           hintText: 'Type',
                           labeltext: '',
                           keyboardType: TextInputType.number,
+                          prefixicon: Icon(Icons.map),
                         ),
                       ),
                     ],
@@ -275,8 +249,6 @@ Future<String> uploadImage(File imageFile) async {
                       fontSize: 20,
                       onTap: () {
                         _saveData();
-                        
-                      
                       }),
                 ),
                 Padding(
@@ -290,8 +262,7 @@ Future<String> uploadImage(File imageFile) async {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => Driverretrieve()),
+                        MaterialPageRoute(builder: (context) => const BServiceretrieve2()),
                       );
 
                     },

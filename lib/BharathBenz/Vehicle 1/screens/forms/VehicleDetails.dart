@@ -1,34 +1,35 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/retrieve/vehicleretrieve.dart';
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:e_commerce/widgets/custombuttom%20outlined.dart';
 import 'package:e_commerce/widgets/custombutton.dart';
-import 'package:e_commerce/widgets/customtextformwithicon.dart';
+
 import 'package:e_commerce/widgets/customtextform.dart';
 import 'package:flutter/material.dart';
 
-class BCustomerDetails extends StatefulWidget {
-  const BCustomerDetails({super.key});
+class BVehicleDetails extends StatefulWidget {
+  const BVehicleDetails({super.key});
 
   @override
-  State<BCustomerDetails> createState() => _CustomerDetailsState();
+  State<BVehicleDetails> createState() => _VehicleDetailsState();
 }
 
-class _CustomerDetailsState extends State<BCustomerDetails> {
-  var _namecontroller = TextEditingController();
-  var _placecontroller = TextEditingController();
-  var _materialcontroller = TextEditingController();
-  var _paymentcontroller = TextEditingController();
-  var _paidcontroller = TextEditingController();
-  var _notpaidcontroller = TextEditingController();
+class _VehicleDetailsState extends State<BVehicleDetails> {
+  var _vehiclecondition = TextEditingController();
+  var _regnocontroller = TextEditingController();
+  var _brandcontroller = TextEditingController();
+  var _lorrycontroller = TextEditingController();
+  var _modelcontroller = TextEditingController();
+  var _buildyearcontroller = TextEditingController();
 
   void _saveData() {
-    if (_namecontroller.text.isEmpty ||
-        _placecontroller.text.isEmpty ||
-        _materialcontroller.text.isEmpty ||
-        _paymentcontroller.text.isEmpty ||
-        _paidcontroller.text.isEmpty ||
-        _notpaidcontroller.text.isEmpty) {
+    if (_vehiclecondition.text.isEmpty ||
+        _regnocontroller.text.isEmpty ||
+        _brandcontroller.text.isEmpty ||
+        _lorrycontroller.text.isEmpty ||
+        _modelcontroller.text.isEmpty ||
+        _buildyearcontroller.text.isEmpty) {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -45,13 +46,13 @@ class _CustomerDetailsState extends State<BCustomerDetails> {
       return;
     } else {
       try {
-        FirebaseFirestore.instance.collection('customerdetails').add({
-          'Name': _namecontroller.text,
-          'Place': _placecontroller.text,
-          'Material': _materialcontroller.text,
-          'Payment': _paymentcontroller.text,
-          'Paid': _paidcontroller.text,
-          'Not Paid': _notpaidcontroller.text
+        FirebaseFirestore.instance.collection('bharathbenzvehicledetail').add({
+          'Vehicle Condition': _vehiclecondition.text,
+          'Registration Number': _regnocontroller.text,
+          'Brand': _brandcontroller.text,
+          'Lorry': _lorrycontroller.text,
+          'Model': _modelcontroller.text,
+          'Build Year': _buildyearcontroller.text
         });
       } on FirebaseException catch (e) {
         print('Failed with error code: ${e.code}');
@@ -63,9 +64,8 @@ class _CustomerDetailsState extends State<BCustomerDetails> {
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.sizeOf(context).width;
-   
     return Scaffold(
-      appBar: CustomAppBar(title: 'Add Customer Details'),
+      appBar: const CustomAppBar(title: 'Vehicle Details'),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
@@ -74,7 +74,7 @@ class _CustomerDetailsState extends State<BCustomerDetails> {
               padding: EdgeInsets.only(left: w * 0.03, right: w * 0.03),
               child: Container(
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
                     border: Border.all(color: orange, width: w * 0.005)),
                 child: Center(
                   child: Column(
@@ -87,15 +87,14 @@ class _CustomerDetailsState extends State<BCustomerDetails> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Name')),
+                            child: Text('Vehicle Condition')),
                       ),
                       CustomTextFormField(
                         width: 320,
-                        controller: _namecontroller,
+                        controller: _vehiclecondition,
                         hintText: '',
                         labeltext: '',
                         keyboardType: TextInputType.name,
-                        
                       ),
                       Padding(
                         padding: EdgeInsets.only(
@@ -105,15 +104,14 @@ class _CustomerDetailsState extends State<BCustomerDetails> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('place')),
+                            child: Text('Registration No')),
                       ),
-                      CustomTextFormFieldIcon(
+                      CustomTextFormField(
                         width: 320,
-                        controller: _placecontroller,
+                        controller: _regnocontroller,
                         hintText: 'Type',
                         labeltext: '',
                         keyboardType: TextInputType.name,
-                        prefixicon: Icon(Icons.share_location_sharp),
                       ),
                       Padding(
                         padding: EdgeInsets.only(
@@ -123,13 +121,13 @@ class _CustomerDetailsState extends State<BCustomerDetails> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Material')),
+                            child: Text('Brand')),
                       ),
                       CustomTextFormField(
                         width: 320,
-                        controller: _materialcontroller,
+                        controller: _brandcontroller,
                         hintText: 'Type',
-                        labeltext: 'Type',
+                        labeltext: '',
                         keyboardType: TextInputType.name,
                       ),
                       Padding(
@@ -140,14 +138,14 @@ class _CustomerDetailsState extends State<BCustomerDetails> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Payment')),
+                            child: Text('lorry')),
                       ),
                       CustomTextFormField(
                         width: 320,
-                        controller: _paymentcontroller,
+                        controller: _lorrycontroller,
                         hintText: 'Type',
-                        labeltext: 'Type',
-                        keyboardType: TextInputType.number,
+                        labeltext: '',
+                        keyboardType: TextInputType.name,
                       ),
                       Padding(
                         padding: EdgeInsets.only(
@@ -157,13 +155,13 @@ class _CustomerDetailsState extends State<BCustomerDetails> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Paid')),
+                            child: Text('Model')),
                       ),
                       CustomTextFormField(
                         width: 320,
-                        controller: _paidcontroller,
+                        controller: _modelcontroller,
                         hintText: 'Type',
-                        labeltext: 'Type',
+                        labeltext: '',
                         keyboardType: TextInputType.name,
                       ),
                       Padding(
@@ -172,19 +170,18 @@ class _CustomerDetailsState extends State<BCustomerDetails> {
                             right: w * 0.03,
                             left: w * 0.025,
                             bottom: w * 0.02),
-                        child: Align(
+                        child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Not Paid')),
+                            child: Text('Build Year')),
                       ),
                       Padding(
                         padding: EdgeInsets.only(bottom: w * 0.044),
-                        child: CustomTextFormFieldIcon(
+                        child: CustomTextFormField(
                           width: 320,
-                          controller: _notpaidcontroller,
+                          controller: _buildyearcontroller,
                           hintText: 'Type',
                           labeltext: '',
-                          keyboardType: TextInputType.name,
-                          prefixicon: Icon(Icons.share_location_sharp),
+                          keyboardType: TextInputType.number,
                         ),
                       ),
                     ],
@@ -212,12 +209,17 @@ class _CustomerDetailsState extends State<BCustomerDetails> {
                 Padding(
                   padding: EdgeInsets.only(left: w * 0.15),
                   child: CustomTextButtonOut(
-                    title: 'Clear',
+                    title: 'Fetch',
                     width: w * 0.3,
                     background: Colors.transparent,
                     textColor: black,
                     fontSize: 20,
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Vehicleretrieve()),
+                      );
+                    },
                     color: black,
                   ),
                 )

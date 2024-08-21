@@ -1,32 +1,37 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:e_commerce/BharathBenz/screens/forms/retrieve/PermitRetrieve.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/retrieve/vehicleretrieve.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%202/screens/forms/retrieve/vehicleretrieve2.dart';
 import 'package:e_commerce/constants/colors.dart';
+import 'package:e_commerce/screens/forms/retrieve/vehicleretrieve.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:e_commerce/widgets/custombuttom%20outlined.dart';
 import 'package:e_commerce/widgets/custombutton.dart';
+
 import 'package:e_commerce/widgets/customtextform.dart';
 import 'package:flutter/material.dart';
 
-class BPermit extends StatefulWidget {
-  const BPermit({super.key});
+class BVehicleDetails2 extends StatefulWidget {
+  const BVehicleDetails2({super.key});
 
   @override
-  State<BPermit> createState() => _PermitState();
+  State<BVehicleDetails2> createState() => _VehicleDetailsState();
 }
 
-class _PermitState extends State<BPermit> {
-  var _permittypecontroller = TextEditingController();
-  var _permitnocontroller = TextEditingController();
-  var _expirycontroller = TextEditingController();
-  var _issuecontroller = TextEditingController();
-  var _permitcardcontroller = TextEditingController();
+class _VehicleDetailsState extends State<BVehicleDetails2> {
+  var _vehiclecondition = TextEditingController();
+  var _regnocontroller = TextEditingController();
+  var _brandcontroller = TextEditingController();
+  var _lorrycontroller = TextEditingController();
+  var _modelcontroller = TextEditingController();
+  var _buildyearcontroller = TextEditingController();
 
   void _saveData() {
-    if (_permittypecontroller.text.isEmpty ||
-        _permitnocontroller.text.isEmpty ||
-        _expirycontroller.text.isEmpty ||
-        _issuecontroller.text.isEmpty ||
-        _permitcardcontroller.text.isEmpty) {
+    if (_vehiclecondition.text.isEmpty ||
+        _regnocontroller.text.isEmpty ||
+        _brandcontroller.text.isEmpty ||
+        _lorrycontroller.text.isEmpty ||
+        _modelcontroller.text.isEmpty ||
+        _buildyearcontroller.text.isEmpty) {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -43,12 +48,13 @@ class _PermitState extends State<BPermit> {
       return;
     } else {
       try {
-        FirebaseFirestore.instance.collection('bharathbenzpermit').add({
-          'Permit Type': _permittypecontroller.text,
-          'Permit Number': _permitnocontroller.text,
-          'Expiry': _expirycontroller.text,
-          'Issue': _issuecontroller.text,
-          'Permit Card': _permitcardcontroller.text
+        FirebaseFirestore.instance.collection('bharathbenzvehicledetail2').add({
+          'Vehicle Condition': _vehiclecondition.text,
+          'Registration Number': _regnocontroller.text,
+          'Brand': _brandcontroller.text,
+          'Lorry': _lorrycontroller.text,
+          'Model': _modelcontroller.text,
+          'Build Year': _buildyearcontroller.text
         });
       } on FirebaseException catch (e) {
         print('Failed with error code: ${e.code}');
@@ -61,7 +67,7 @@ class _PermitState extends State<BPermit> {
   Widget build(BuildContext context) {
     var w = MediaQuery.sizeOf(context).width;
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Permit Detail'),
+      appBar: const CustomAppBar(title: 'Vehicle Details'),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
@@ -83,12 +89,12 @@ class _PermitState extends State<BPermit> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Permit Type')),
+                            child: Text('Vehicle Condition')),
                       ),
                       CustomTextFormField(
                         width: 320,
-                        controller: _permittypecontroller,
-                        hintText: 'type',
+                        controller: _vehiclecondition,
+                        hintText: '',
                         labeltext: '',
                         keyboardType: TextInputType.name,
                       ),
@@ -100,45 +106,11 @@ class _PermitState extends State<BPermit> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Permit No')),
+                            child: Text('Registration No')),
                       ),
                       CustomTextFormField(
                         width: 320,
-                        controller: _permitnocontroller,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.number,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Expiry')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _expirycontroller,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.number,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Issue')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _issuecontroller,
+                        controller: _regnocontroller,
                         hintText: 'Type',
                         labeltext: '',
                         keyboardType: TextInputType.name,
@@ -151,16 +123,67 @@ class _PermitState extends State<BPermit> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Permit Card')),
+                            child: Text('Brand')),
+                      ),
+                      CustomTextFormField(
+                        width: 320,
+                        controller: _brandcontroller,
+                        hintText: 'Type',
+                        labeltext: '',
+                        keyboardType: TextInputType.name,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('lorry')),
+                      ),
+                      CustomTextFormField(
+                        width: 320,
+                        controller: _lorrycontroller,
+                        hintText: 'Type',
+                        labeltext: '',
+                        keyboardType: TextInputType.name,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Model')),
+                      ),
+                      CustomTextFormField(
+                        width: 320,
+                        controller: _modelcontroller,
+                        hintText: 'Type',
+                        labeltext: '',
+                        keyboardType: TextInputType.name,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Build Year')),
                       ),
                       Padding(
                         padding: EdgeInsets.only(bottom: w * 0.044),
                         child: CustomTextFormField(
                           width: 320,
-                          controller: _permitcardcontroller,
+                          controller: _buildyearcontroller,
                           hintText: 'Type',
                           labeltext: '',
-                          keyboardType: TextInputType.name,
+                          keyboardType: TextInputType.number,
                         ),
                       ),
                     ],
@@ -196,8 +219,7 @@ class _PermitState extends State<BPermit> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => const Permitretrieve()),
+                        MaterialPageRoute(builder: (context) => BVehicleretrieve2()),
                       );
                     },
                     color: black,

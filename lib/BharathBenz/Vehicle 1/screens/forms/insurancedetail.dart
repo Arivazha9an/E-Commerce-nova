@@ -1,34 +1,34 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/retrieve/insuranceretrive.dart';
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:e_commerce/widgets/custombuttom%20outlined.dart';
 import 'package:e_commerce/widgets/custombutton.dart';
-import 'package:e_commerce/widgets/customtextformwithicon.dart';
 import 'package:e_commerce/widgets/customtextform.dart';
 import 'package:flutter/material.dart';
 
-class CustomerDetails extends StatefulWidget {
-  const CustomerDetails({super.key});
+class BInsurancedetail extends StatefulWidget {
+  const BInsurancedetail({super.key});
 
   @override
-  State<CustomerDetails> createState() => _CustomerDetailsState();
+  State<BInsurancedetail> createState() => _InsurancedetailState();
 }
 
-class _CustomerDetailsState extends State<CustomerDetails> {
-  final _namecontroller = TextEditingController();
-  final _placecontroller = TextEditingController();
-  final _materialcontroller = TextEditingController();
-  final _paymentcontroller = TextEditingController();
-  final _paidcontroller = TextEditingController();
-  final _notpaidcontroller = TextEditingController();
+class _InsurancedetailState extends State<BInsurancedetail> {
+  var _companycontroller = TextEditingController();
+  var _policytypecontroller = TextEditingController();
+  var _policynocontroller = TextEditingController();
+  var _issuecontroller = TextEditingController();
+  var _expirecontroller = TextEditingController();
+  var _insuranceamountcontroller = TextEditingController();
 
   void _saveData() {
-    if (_namecontroller.text.isEmpty ||
-        _placecontroller.text.isEmpty ||
-        _materialcontroller.text.isEmpty ||
-        _paymentcontroller.text.isEmpty ||
-        _paidcontroller.text.isEmpty ||
-        _notpaidcontroller.text.isEmpty) {
+    if (_companycontroller.text.isEmpty ||
+        _policytypecontroller.text.isEmpty ||
+        _policynocontroller.text.isEmpty ||
+        _issuecontroller.text.isEmpty ||
+        _expirecontroller.text.isEmpty ||
+        _insuranceamountcontroller.text.isEmpty) {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -45,13 +45,13 @@ class _CustomerDetailsState extends State<CustomerDetails> {
       return;
     } else {
       try {
-        FirebaseFirestore.instance.collection('customerdetails').add({
-          'Name': _namecontroller.text,
-          'Place': _placecontroller.text,
-          'Material': _materialcontroller.text,
-          'Payment': _paymentcontroller.text,
-          'Paid': _paidcontroller.text,
-          'Not_Paid': _notpaidcontroller.text
+        FirebaseFirestore.instance.collection('bharathbenzinsurance').add({
+          'Company': _companycontroller.text,
+          'Policy Type': _policytypecontroller.text,
+          'Policy Number': _policynocontroller.text,
+          'Issue': _issuecontroller.text,
+          'Expire': _expirecontroller.text,
+          'Insurance Amount': _insuranceamountcontroller.text
         });
       } on FirebaseException catch (e) {
         print('Failed with error code: ${e.code}');
@@ -63,9 +63,8 @@ class _CustomerDetailsState extends State<CustomerDetails> {
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.sizeOf(context).width;
-
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Add Customer Details'),
+      appBar: const CustomAppBar(title: 'Insurance Detail'),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
@@ -87,12 +86,12 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Name')),
+                            child: Text('Company')),
                       ),
                       CustomTextFormField(
                         width: 320,
-                        controller: _namecontroller,
-                        hintText: '',
+                        controller: _companycontroller,
+                        hintText: 'type',
                         labeltext: '',
                         keyboardType: TextInputType.name,
                       ),
@@ -104,15 +103,14 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('place')),
+                            child: Text('Policy Type')),
                       ),
-                      CustomTextFormFieldIcon(
+                      CustomTextFormField(
                         width: 320,
-                        controller: _placecontroller,
+                        controller: _policytypecontroller,
                         hintText: 'Type',
                         labeltext: '',
                         keyboardType: TextInputType.name,
-                        prefixicon: const Icon(Icons.share_location_sharp),
                       ),
                       Padding(
                         padding: EdgeInsets.only(
@@ -122,30 +120,13 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Material')),
+                            child: Text('Policy no')),
                       ),
                       CustomTextFormField(
                         width: 320,
-                        controller: _materialcontroller,
+                        controller: _policynocontroller,
                         hintText: 'Type',
-                        labeltext: 'Type',
-                        keyboardType: TextInputType.name,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Payment')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _paymentcontroller,
-                        hintText: 'Type',
-                        labeltext: 'Type',
+                        labeltext: '',
                         keyboardType: TextInputType.number,
                       ),
                       Padding(
@@ -156,13 +137,13 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Paid')),
+                            child: Text('Issue')),
                       ),
                       CustomTextFormField(
                         width: 320,
-                        controller: _paidcontroller,
+                        controller: _issuecontroller,
                         hintText: 'Type',
-                        labeltext: 'Type',
+                        labeltext: '',
                         keyboardType: TextInputType.name,
                       ),
                       Padding(
@@ -173,17 +154,33 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Not Paid')),
+                            child: Text('Expires')),
+                      ),
+                      CustomTextFormField(
+                        width: 320,
+                        controller: _expirecontroller,
+                        hintText: 'Type',
+                        labeltext: '',
+                        keyboardType: TextInputType.number,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Insurance Amount')),
                       ),
                       Padding(
                         padding: EdgeInsets.only(bottom: w * 0.044),
-                        child: CustomTextFormFieldIcon(
+                        child: CustomTextFormField(
                           width: 320,
-                          controller: _notpaidcontroller,
+                          controller: _insuranceamountcontroller,
                           hintText: 'Type',
                           labeltext: '',
-                          keyboardType: TextInputType.name,
-                          prefixicon: const Icon(Icons.share_location_sharp),
+                          keyboardType: TextInputType.number,
                         ),
                       ),
                     ],
@@ -211,12 +208,18 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                 Padding(
                   padding: EdgeInsets.only(left: w * 0.15),
                   child: CustomTextButtonOut(
-                    title: 'fetch',
+                    title: 'Fetch',
                     width: w * 0.3,
                     background: Colors.transparent,
                     textColor: black,
                     fontSize: 20,
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const Insuranceretrive()),
+                      );
+                    },
                     color: black,
                   ),
                 )

@@ -45,6 +45,11 @@ dependencies:
   cloud_firestore: ^5.1.0
   image_picker: ^1.1.2
   loading_animation_widget: ^1.2.1
+  url_launcher: ^6.3.0
+  firebase_auth: ^5.1.4
+  fluttertoast: ^8.2.8
+  flutter_stripe: ^11.0.0
+  phonepe_payment_sdk: ^2.0.3
 
 dev_dependencies:
   flutter_test:

@@ -1,43 +1,41 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:e_commerce/BharathBenz/screens/forms/retrieve/loadretrieve.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/retrieve/fuelretrieve.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%202/screens/forms/retrieve/fuelretrieve2.dart';
 import 'package:e_commerce/constants/colors.dart';
+import 'package:e_commerce/screens/forms/retrieve/fuelretrieve.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:e_commerce/widgets/custombuttom%20outlined.dart';
 import 'package:e_commerce/widgets/custombutton.dart';
-import 'package:e_commerce/widgets/customtextform.dart';
 import 'package:e_commerce/widgets/customtextformwithicon.dart';
+import 'package:e_commerce/widgets/customtextform.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class BLoadDetails extends StatefulWidget {
-  const BLoadDetails({super.key});
+class BFuel2 extends StatefulWidget {
+  const BFuel2({super.key});
 
   @override
-  State<BLoadDetails> createState() => _LoadDetailsState();
+  State<BFuel2> createState() => _FuelState();
 }
 
-class _LoadDetailsState extends State<BLoadDetails> {
+class _FuelState extends State<BFuel2> {
   final TextEditingController _datepickController = TextEditingController();
-
-  var _startpointcontroller = TextEditingController();
-  var _loadpointcontroller = TextEditingController();
-  var _droppointcontroller = TextEditingController();
-  var _nooftonscontroller = TextEditingController();
-  var _loadamountcontroller = TextEditingController();
-  var _deliveryamountcontroller = TextEditingController();
-  var _customernamecontroller = TextEditingController();
-  var _customernocontroller = TextEditingController();
+  var _startKmcontroller = TextEditingController();
+  var _priceontroller = TextEditingController();
+  var _literscontroller = TextEditingController();
+  var _placecontroller = TextEditingController();
+  var _endKMcontroller = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    void _fetchData() {}
+
     void _saveData() {
-      if (_startpointcontroller.text.isEmpty ||
-          _loadpointcontroller.text.isEmpty ||
-          _droppointcontroller.text.isEmpty ||
-          _nooftonscontroller.text.isEmpty ||
-          _loadamountcontroller.text.isEmpty ||
-          _deliveryamountcontroller.text.isEmpty ||
-          _customernamecontroller.text.isEmpty ||
-          _customernocontroller.text.isEmpty) {
+      if (_datepickController.text.isEmpty ||
+          _startKmcontroller.text.isEmpty ||
+          _priceontroller.text.isEmpty ||
+          _literscontroller.text.isEmpty ||
+          _placecontroller.text.isEmpty ||
+          _endKMcontroller.text.isEmpty) {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -54,15 +52,13 @@ class _LoadDetailsState extends State<BLoadDetails> {
         return;
       } else {
         try {
-          FirebaseFirestore.instance.collection('bharathbenzloaddetail').add({
-            'Start Point': _startpointcontroller.text,
-            'Load Point': _loadpointcontroller.text,
-            'Drop Point': _droppointcontroller.text,
-            'No Of Tons / Units': _nooftonscontroller.text,
-            'Load Amount': _loadamountcontroller.text,
-            'Delivery Amount': _deliveryamountcontroller.text,
-            'Customer Name': _customernamecontroller.text,
-            'Customer Number': _customernocontroller.text
+          FirebaseFirestore.instance.collection('bharthbenzrefuel2').add({
+            'date': _datepickController.text,
+            'Start KM': _startKmcontroller.text,
+            'Price': _priceontroller.text,
+            'Liter': _literscontroller.text,
+            'Place': _placecontroller.text,
+            'End Km': _endKMcontroller.text
           });
         } on FirebaseException catch (e) {
           print('Failed with error code: ${e.code}');
@@ -85,15 +81,13 @@ class _LoadDetailsState extends State<BLoadDetails> {
     }
 
     var w = MediaQuery.sizeOf(context).width;
+
     return Scaffold(
-      appBar: CustomAppBar(title: 'Load Detail'),
+      appBar: CustomAppBar(title: 'Refuel Detail'),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
           children: [
-            SizedBox(
-              height: w * 0.041,
-            ),
             Padding(
               padding: EdgeInsets.only(left: w * 0.03, right: w * 0.03),
               child: Container(
@@ -111,14 +105,41 @@ class _LoadDetailsState extends State<BLoadDetails> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Start Point')),
+                            child: Text('Date')),
                       ),
-                      CustomTextFormFieldIcon(
-                        controller: _startpointcontroller,
-                        hintText: 'City/Location',
-                        labeltext: '',
-                        keyboardType: TextInputType.name,
-                        prefixicon: Icon(Icons.share_location_sharp),
+                      Container(
+                        width: 320,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4),
+                          boxShadow: const [
+                            BoxShadow(
+                              offset: Offset(-4, 4),
+                              blurRadius: 18,
+                              spreadRadius: 0,
+                              color: Color(0x17000000),
+                            )
+                          ],
+                        ),
+                        child: TextFormField(
+                          controller: _datepickController,
+                          readOnly: true,
+                          decoration: InputDecoration(
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: orange),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: Colors.red),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              hintText: 'Choose Date',
+                              prefixIcon: GestureDetector(
+                                  onTap: _selectDate,
+                                  child: Icon(Icons.calendar_month))),
+                        ),
                       ),
                       Padding(
                         padding: EdgeInsets.only(
@@ -128,14 +149,14 @@ class _LoadDetailsState extends State<BLoadDetails> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Load Point')),
+                            child: Text('Start Km')),
                       ),
                       CustomTextFormFieldIcon(
                         width: 320,
-                        controller: _loadpointcontroller,
+                        controller: _startKmcontroller,
                         hintText: 'Type',
                         labeltext: '',
-                        keyboardType: TextInputType.name,
+                        keyboardType: TextInputType.number,
                         prefixicon: Icon(Icons.share_location_sharp),
                       ),
                       Padding(
@@ -146,15 +167,48 @@ class _LoadDetailsState extends State<BLoadDetails> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Drop Point')),
+                            child: Text('Price')),
                       ),
-                      CustomTextFormFieldIcon(
+                      CustomTextFormField(
                         width: 320,
-                        controller: _droppointcontroller,
+                        controller: _priceontroller,
+                        hintText: 'Type',
+                        labeltext: 'Type',
+                        keyboardType: TextInputType.number,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Liters')),
+                      ),
+                      CustomTextFormField(
+                        width: 320,
+                        controller: _literscontroller,
+                        hintText: 'Type',
+                        labeltext: 'Type',
+                        keyboardType: TextInputType.number,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Place')),
+                      ),
+                      CustomTextFormField(
+                        width: 320,
+                        controller: _placecontroller,
                         hintText: 'Type',
                         labeltext: 'Type',
                         keyboardType: TextInputType.name,
-                        prefixicon: Icon(Icons.share_location_sharp),
                       ),
                       Padding(
                         padding: EdgeInsets.only(
@@ -162,86 +216,19 @@ class _LoadDetailsState extends State<BLoadDetails> {
                             right: w * 0.03,
                             left: w * 0.025,
                             bottom: w * 0.02),
-                        child: const Align(
+                        child: Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('No of Tons / Units')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _nooftonscontroller,
-                        hintText: 'ItemWeight in Tons',
-                        labeltext: '',
-                        keyboardType: TextInputType.number,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Load Amount')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _loadamountcontroller,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.number,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Delivery Amount')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _deliveryamountcontroller,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.number,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Customer Name')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _customernamecontroller,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.name,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Customer No')),
+                            child: Text('End Km')),
                       ),
                       Padding(
                         padding: EdgeInsets.only(bottom: w * 0.044),
-                        child: CustomTextFormField(
+                        child: CustomTextFormFieldIcon(
                           width: 320,
-                          controller: _customernocontroller,
+                          controller: _endKMcontroller,
                           hintText: 'Type',
                           labeltext: '',
                           keyboardType: TextInputType.number,
+                          prefixicon: Icon(Icons.share_location_sharp),
                         ),
                       ),
                     ],
@@ -277,7 +264,8 @@ class _LoadDetailsState extends State<BLoadDetails> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Loadretrieve()),
+                        MaterialPageRoute(
+                            builder: (context) => const BFuelretrieve2()),
                       );
                     },
                     color: black,

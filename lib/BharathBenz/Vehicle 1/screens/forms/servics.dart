@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/retrieve/serviceretrieve.dart';
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:e_commerce/widgets/custombuttom%20outlined.dart';
@@ -6,29 +7,31 @@ import 'package:e_commerce/widgets/custombutton.dart';
 import 'package:e_commerce/widgets/customtextformwithicon.dart';
 import 'package:e_commerce/widgets/customtextform.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
-class CustomerDetails extends StatefulWidget {
-  const CustomerDetails({super.key});
+class BServices extends StatefulWidget {
+  const BServices({super.key});
 
   @override
-  State<CustomerDetails> createState() => _CustomerDetailsState();
+  State<BServices> createState() => _ServicesState();
 }
 
-class _CustomerDetailsState extends State<CustomerDetails> {
-  final _namecontroller = TextEditingController();
-  final _placecontroller = TextEditingController();
-  final _materialcontroller = TextEditingController();
-  final _paymentcontroller = TextEditingController();
-  final _paidcontroller = TextEditingController();
-  final _notpaidcontroller = TextEditingController();
+class _ServicesState extends State<BServices> {
+  final TextEditingController _datepickController = TextEditingController();
+  var _servicecontroller = TextEditingController();
+  var _serviceplacetroller = TextEditingController();
+  var _contactcontroller = TextEditingController();
+  var _amountcontroller = TextEditingController();
+  var _KMridingcontroller = TextEditingController();
+
 
   void _saveData() {
-    if (_namecontroller.text.isEmpty ||
-        _placecontroller.text.isEmpty ||
-        _materialcontroller.text.isEmpty ||
-        _paymentcontroller.text.isEmpty ||
-        _paidcontroller.text.isEmpty ||
-        _notpaidcontroller.text.isEmpty) {
+    if (_datepickController.text.isEmpty ||
+        _servicecontroller.text.isEmpty ||
+        _serviceplacetroller.text.isEmpty ||
+        _contactcontroller.text.isEmpty ||
+        _amountcontroller.text.isEmpty ||
+        _KMridingcontroller.text.isEmpty) {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -45,13 +48,13 @@ class _CustomerDetailsState extends State<CustomerDetails> {
       return;
     } else {
       try {
-        FirebaseFirestore.instance.collection('customerdetails').add({
-          'Name': _namecontroller.text,
-          'Place': _placecontroller.text,
-          'Material': _materialcontroller.text,
-          'Payment': _paymentcontroller.text,
-          'Paid': _paidcontroller.text,
-          'Not_Paid': _notpaidcontroller.text
+        FirebaseFirestore.instance.collection('bharathbenzservices').add({
+          'date': _datepickController.text,
+          'Service': _servicecontroller.text,
+          'Service Place': _serviceplacetroller.text,
+          'Contact': _contactcontroller.text,
+          'Amount': _amountcontroller.text,
+          'KM Riding': _KMridingcontroller.text
         });
       } on FirebaseException catch (e) {
         print('Failed with error code: ${e.code}');
@@ -62,10 +65,22 @@ class _CustomerDetailsState extends State<CustomerDetails> {
 
   @override
   Widget build(BuildContext context) {
-    var w = MediaQuery.sizeOf(context).width;
+    Future<void> _selectDate() async {
+      DateTime? picked = await showDatePicker(
+          context: context,
+          initialDate: DateTime.now(),
+          firstDate: DateTime(2000),
+          lastDate: DateTime(2099));
+      if (picked != null) {
+        setState(() {
+          _datepickController.text = DateFormat('yyyy-MM-dd').format(picked);
+        });
+      }
+    }
 
+    var w = MediaQuery.sizeOf(context).width;
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Add Customer Details'),
+      appBar: const CustomAppBar(title: 'Service Detail'),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
@@ -87,12 +102,73 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Name')),
+                            child: Text('Date')),
+                      ),
+                      Container(
+                        width: 320,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4),
+                          boxShadow: const [
+                            BoxShadow(
+                              offset: Offset(-4, 4),
+                              blurRadius: 18,
+                              spreadRadius: 0,
+                              color: Color(0x17000000),
+                            )
+                          ],
+                        ),
+                        child: TextFormField(
+                          controller: _datepickController,
+                          readOnly: true,
+                          decoration: InputDecoration(
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: orange),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: Colors.red),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              hintText: 'Choose Date',
+                              prefixIcon: GestureDetector(
+                                  onTap: _selectDate,
+                                  child: Icon(Icons.calendar_month))),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Service Type')),
                       ),
                       CustomTextFormField(
                         width: 320,
-                        controller: _namecontroller,
-                        hintText: '',
+                        controller: _servicecontroller,
+                        hintText: 'Type',
+                        labeltext: '',
+                        keyboardType: TextInputType.name,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Service Place')),
+                      ),
+                      CustomTextFormField(
+                        width: 320,
+                        controller: _serviceplacetroller,
+                        hintText: 'Type',
                         labeltext: '',
                         keyboardType: TextInputType.name,
                       ),
@@ -104,48 +180,13 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('place')),
+                            child: Text('Contact No')),
                       ),
-                      CustomTextFormFieldIcon(
+                      CustomTextFormField(
                         width: 320,
-                        controller: _placecontroller,
+                        controller: _contactcontroller,
                         hintText: 'Type',
                         labeltext: '',
-                        keyboardType: TextInputType.name,
-                        prefixicon: const Icon(Icons.share_location_sharp),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Material')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _materialcontroller,
-                        hintText: 'Type',
-                        labeltext: 'Type',
-                        keyboardType: TextInputType.name,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Payment')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _paymentcontroller,
-                        hintText: 'Type',
-                        labeltext: 'Type',
                         keyboardType: TextInputType.number,
                       ),
                       Padding(
@@ -156,14 +197,14 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Paid')),
+                            child: Text('Amount')),
                       ),
                       CustomTextFormField(
                         width: 320,
-                        controller: _paidcontroller,
+                        controller: _amountcontroller,
                         hintText: 'Type',
-                        labeltext: 'Type',
-                        keyboardType: TextInputType.name,
+                        labeltext: '',
+                        keyboardType: TextInputType.number,
                       ),
                       Padding(
                         padding: EdgeInsets.only(
@@ -171,19 +212,19 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                             right: w * 0.03,
                             left: w * 0.025,
                             bottom: w * 0.02),
-                        child: const Align(
+                        child: Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Not Paid')),
+                            child: Text('Km Riding')),
                       ),
                       Padding(
                         padding: EdgeInsets.only(bottom: w * 0.044),
                         child: CustomTextFormFieldIcon(
                           width: 320,
-                          controller: _notpaidcontroller,
+                          controller: _KMridingcontroller,
                           hintText: 'Type',
                           labeltext: '',
-                          keyboardType: TextInputType.name,
-                          prefixicon: const Icon(Icons.share_location_sharp),
+                          keyboardType: TextInputType.number,
+                          prefixicon: Icon(Icons.map),
                         ),
                       ),
                     ],
@@ -211,12 +252,18 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                 Padding(
                   padding: EdgeInsets.only(left: w * 0.15),
                   child: CustomTextButtonOut(
-                    title: 'fetch',
+                    title: 'Fetch',
                     width: w * 0.3,
                     background: Colors.transparent,
                     textColor: black,
                     fontSize: 20,
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Serviceretrieve()),
+                      );
+
+                    },
                     color: black,
                   ),
                 )

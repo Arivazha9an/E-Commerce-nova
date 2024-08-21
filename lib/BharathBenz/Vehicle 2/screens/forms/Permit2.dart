@@ -1,34 +1,34 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/retrieve/PermitRetrieve.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%202/screens/forms/retrieve/PermitRetrieve2.dart';
 import 'package:e_commerce/constants/colors.dart';
+import 'package:e_commerce/screens/forms/retrieve/PermitRetrieve.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:e_commerce/widgets/custombuttom%20outlined.dart';
 import 'package:e_commerce/widgets/custombutton.dart';
-import 'package:e_commerce/widgets/customtextformwithicon.dart';
 import 'package:e_commerce/widgets/customtextform.dart';
 import 'package:flutter/material.dart';
 
-class CustomerDetails extends StatefulWidget {
-  const CustomerDetails({super.key});
+class BPermit2 extends StatefulWidget {
+  const BPermit2({super.key});
 
   @override
-  State<CustomerDetails> createState() => _CustomerDetailsState();
+  State<BPermit2> createState() => _PermitState();
 }
 
-class _CustomerDetailsState extends State<CustomerDetails> {
-  final _namecontroller = TextEditingController();
-  final _placecontroller = TextEditingController();
-  final _materialcontroller = TextEditingController();
-  final _paymentcontroller = TextEditingController();
-  final _paidcontroller = TextEditingController();
-  final _notpaidcontroller = TextEditingController();
+class _PermitState extends State<BPermit2> {
+  var _permittypecontroller = TextEditingController();
+  var _permitnocontroller = TextEditingController();
+  var _expirycontroller = TextEditingController();
+  var _issuecontroller = TextEditingController();
+  var _permitcardcontroller = TextEditingController();
 
   void _saveData() {
-    if (_namecontroller.text.isEmpty ||
-        _placecontroller.text.isEmpty ||
-        _materialcontroller.text.isEmpty ||
-        _paymentcontroller.text.isEmpty ||
-        _paidcontroller.text.isEmpty ||
-        _notpaidcontroller.text.isEmpty) {
+    if (_permittypecontroller.text.isEmpty ||
+        _permitnocontroller.text.isEmpty ||
+        _expirycontroller.text.isEmpty ||
+        _issuecontroller.text.isEmpty ||
+        _permitcardcontroller.text.isEmpty) {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -45,13 +45,12 @@ class _CustomerDetailsState extends State<CustomerDetails> {
       return;
     } else {
       try {
-        FirebaseFirestore.instance.collection('customerdetails').add({
-          'Name': _namecontroller.text,
-          'Place': _placecontroller.text,
-          'Material': _materialcontroller.text,
-          'Payment': _paymentcontroller.text,
-          'Paid': _paidcontroller.text,
-          'Not_Paid': _notpaidcontroller.text
+        FirebaseFirestore.instance.collection('bharathbenzpermit2').add({
+          'Permit Type': _permittypecontroller.text,
+          'Permit Number': _permitnocontroller.text,
+          'Expiry': _expirycontroller.text,
+          'Issue': _issuecontroller.text,
+          'Permit Card': _permitcardcontroller.text
         });
       } on FirebaseException catch (e) {
         print('Failed with error code: ${e.code}');
@@ -63,9 +62,8 @@ class _CustomerDetailsState extends State<CustomerDetails> {
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.sizeOf(context).width;
-
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Add Customer Details'),
+      appBar: const CustomAppBar(title: 'Permit Detail'),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
@@ -87,12 +85,12 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Name')),
+                            child: Text('Permit Type')),
                       ),
                       CustomTextFormField(
                         width: 320,
-                        controller: _namecontroller,
-                        hintText: '',
+                        controller: _permittypecontroller,
+                        hintText: 'type',
                         labeltext: '',
                         keyboardType: TextInputType.name,
                       ),
@@ -104,48 +102,13 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('place')),
+                            child: Text('Permit No')),
                       ),
-                      CustomTextFormFieldIcon(
+                      CustomTextFormField(
                         width: 320,
-                        controller: _placecontroller,
+                        controller: _permitnocontroller,
                         hintText: 'Type',
                         labeltext: '',
-                        keyboardType: TextInputType.name,
-                        prefixicon: const Icon(Icons.share_location_sharp),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Material')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _materialcontroller,
-                        hintText: 'Type',
-                        labeltext: 'Type',
-                        keyboardType: TextInputType.name,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Payment')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _paymentcontroller,
-                        hintText: 'Type',
-                        labeltext: 'Type',
                         keyboardType: TextInputType.number,
                       ),
                       Padding(
@@ -156,13 +119,30 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Paid')),
+                            child: Text('Expiry')),
                       ),
                       CustomTextFormField(
                         width: 320,
-                        controller: _paidcontroller,
+                        controller: _expirycontroller,
                         hintText: 'Type',
-                        labeltext: 'Type',
+                        labeltext: '',
+                        keyboardType: TextInputType.number,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Issue')),
+                      ),
+                      CustomTextFormField(
+                        width: 320,
+                        controller: _issuecontroller,
+                        hintText: 'Type',
+                        labeltext: '',
                         keyboardType: TextInputType.name,
                       ),
                       Padding(
@@ -173,17 +153,16 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Not Paid')),
+                            child: Text('Permit Card')),
                       ),
                       Padding(
                         padding: EdgeInsets.only(bottom: w * 0.044),
-                        child: CustomTextFormFieldIcon(
+                        child: CustomTextFormField(
                           width: 320,
-                          controller: _notpaidcontroller,
+                          controller: _permitcardcontroller,
                           hintText: 'Type',
                           labeltext: '',
                           keyboardType: TextInputType.name,
-                          prefixicon: const Icon(Icons.share_location_sharp),
                         ),
                       ),
                     ],
@@ -211,12 +190,18 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                 Padding(
                   padding: EdgeInsets.only(left: w * 0.15),
                   child: CustomTextButtonOut(
-                    title: 'fetch',
+                    title: 'Fetch',
                     width: w * 0.3,
                     background: Colors.transparent,
                     textColor: black,
                     fontSize: 20,
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const BPermitretrieve2()),
+                      );
+                    },
                     color: black,
                   ),
                 )

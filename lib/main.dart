@@ -1,20 +1,27 @@
 
+import 'package:e_commerce/Auth/keeplogin.dart';
+import 'package:e_commerce/Auth/login.dart';
+import 'package:e_commerce/Auth/signup.dart';
+import 'package:e_commerce/days.dart';
 import 'package:e_commerce/firebase_options.dart';
 import 'package:e_commerce/screens/BottomNavigation.dart';
+
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 
-void main() {
+void main()async {
+   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
-  init();
+ 
 }
 
-void init() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-}
+// void init() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+// }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -26,9 +33,13 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home:
+        home:// DatePickerExample()
+        //Login()
+        //Signup()
+        AuthWrapper()
     
-        const BottomNavigationBarExample()
+     //   const BottomNavigationBarExample()
+      //  PageViewExample()
   
         );
   }

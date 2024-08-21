@@ -1,10 +1,15 @@
 import 'package:e_commerce/constants/colors.dart';
 import 'package:flutter/material.dart';
 
+import '../models/customer.dart';
+import '../screens/customer_detail.dart';
+
 class CustomFieldButton extends StatelessWidget {
   final String name;
+  final Customer cutomerData;
 
-  const CustomFieldButton({super.key, required this.name});
+  const CustomFieldButton(
+      {super.key, required this.name, required this.cutomerData});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +22,7 @@ class CustomFieldButton extends StatelessWidget {
             enabled: false,
             decoration: InputDecoration(
               hintText: name,
-              hintStyle: TextStyle(color: black),
+              hintStyle: const TextStyle(color: black),
               border: const OutlineInputBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(17),
@@ -31,11 +36,19 @@ class CustomFieldButton extends StatelessWidget {
         ),
         Positioned(
           left: 250,
-          child: Container(
+          child: SizedBox(
             width: 80,
             height: 55,
             child: InkWell(
-              onTap: () {},
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) {
+                    return CustomerDetail(
+                      customerData: cutomerData,
+                    );
+                  },
+                ));
+              },
               child: Container(
                 width: 80,
                 height: 46,

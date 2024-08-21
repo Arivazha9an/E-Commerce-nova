@@ -28,6 +28,7 @@ class IncomeExpense extends StatelessWidget {
         return Scaffold(
           appBar: CustomAppBarcolor(
             height: 185,
+            title: '',
             child: Column(
               children: [
                 const SizedBox(
@@ -100,9 +101,9 @@ class IncomeExpense extends StatelessWidget {
                 children: snapshot.data!.docs.map((DocumentSnapshot document) {
                   Map<String, dynamic> data =
                       document.data() as Map<String, dynamic>;
-              
+
                   String name = data['Name'] ?? '';
-              
+
                   return SingleChildScrollView(
                     scrollDirection: Axis.vertical,
                     child: Column(
@@ -183,7 +184,7 @@ class IncomeExpense extends StatelessWidget {
                         const SizedBox(
                           height: 50,
                         ),
-                        CustomFieldButton(name: name),
+                        // CustomFieldButton(name: name),
                         const SizedBox(
                           height: 40,
                         ),
