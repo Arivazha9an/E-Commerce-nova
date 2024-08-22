@@ -48,8 +48,11 @@ dependencies:
   url_launcher: ^6.3.0
   firebase_auth: ^5.1.4
   fluttertoast: ^8.2.8
-  flutter_stripe: ^11.0.0
-  phonepe_payment_sdk: ^2.0.3
+  flutter_credit_card: ^4.0.1
+  pay: ^2.0.0
+  flutter_pay_upi: ^0.2.1
+  pdf: ^3.11.1
+  printing: ^5.13.1
 
 dev_dependencies:
   flutter_test:

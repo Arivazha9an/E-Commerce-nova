@@ -1,4 +1,5 @@
 import 'package:e_commerce/models/customer.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerce/constants/colors.dart';
@@ -98,10 +99,14 @@ class _CustomerretrivehoverState extends State<Customerretrivehover> {
         combinedexpense = combinedExpense;
       });
 
-      print(
+      if (kDebugMode) {
+        print(
           'Combined sum of field1, field2, and field3 values across collections: $combinedexpense');
+      }
     } catch (e) {
-      print('Error fetching documents: $e');
+      if (kDebugMode) {
+        print('Error fetching documents: $e');
+      }
     }
   }
 
@@ -147,10 +152,14 @@ class _CustomerretrivehoverState extends State<Customerretrivehover> {
         combineincome = combinedIncome;
       });
 
-      print(
+      if (kDebugMode) {
+        print(
           'Combined sum of field1, field2, and field3 values across collections: $combinedIncome');
+      }
     } catch (e) {
-      print('Error fetching documents: $e');
+      if (kDebugMode) {
+        print('Error fetching documents: $e');
+      }
     }
   }
 
@@ -193,7 +202,7 @@ class _CustomerretrivehoverState extends State<Customerretrivehover> {
                                       const Icon(Icons.currency_rupee),
                                       const Text(
                                         '+',
-                                        style: const TextStyle(
+                                        style:  TextStyle(
                                           fontSize: 20,
                                         ),
                                       ),
@@ -232,7 +241,7 @@ class _CustomerretrivehoverState extends State<Customerretrivehover> {
                                       const Icon(Icons.currency_rupee),
                                       const Text(
                                         '-',
-                                        style: const TextStyle(
+                                        style:   TextStyle(
                                           fontSize: 25,
                                         ),
                                       ),

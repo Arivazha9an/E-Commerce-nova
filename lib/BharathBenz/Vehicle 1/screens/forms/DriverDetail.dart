@@ -199,7 +199,7 @@ Future<String> uploadImage(File imageFile) async {
                           readOnly: true,
                           decoration: InputDecoration(
                               focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: orange),
+                                borderSide: const BorderSide(color: orange),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               enabledBorder: OutlineInputBorder(
@@ -215,7 +215,7 @@ Future<String> uploadImage(File imageFile) async {
                      _pickImage();
                      
                     },
-                                  child: Icon(Icons.image))),
+                                  child: const Icon(Icons.image))),
                         ),
                       ),
                       Padding(
@@ -291,7 +291,7 @@ Future<String> uploadImage(File imageFile) async {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => Driverretrieve()),
+                            builder: (context) => const Driverretrieve()),
                       );
 
                     },

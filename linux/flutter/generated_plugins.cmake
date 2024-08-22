@@ -4,6 +4,8 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   file_selector_linux
+  flutter_pay_upi
+  printing
   url_launcher_linux
 )
 

@@ -8,6 +8,8 @@ list(APPEND FLUTTER_PLUGIN_LIST
   firebase_auth
   firebase_core
   firebase_storage
+  flutter_pay_upi
+  printing
   url_launcher_windows
 )
 

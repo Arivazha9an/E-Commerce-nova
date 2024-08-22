@@ -4,6 +4,7 @@ import 'package:e_commerce/Auth/login.dart';
 import 'package:e_commerce/Auth/signup.dart';
 import 'package:e_commerce/days.dart';
 import 'package:e_commerce/firebase_options.dart';
+import 'package:e_commerce/payment/payment.dart';
 import 'package:e_commerce/screens/BottomNavigation.dart';
 
 
@@ -37,6 +38,7 @@ class MyApp extends StatelessWidget {
         //Login()
         //Signup()
         AuthWrapper()
+      // PaymentScreen()
     
      //   const BottomNavigationBarExample()
       //  PageViewExample()
