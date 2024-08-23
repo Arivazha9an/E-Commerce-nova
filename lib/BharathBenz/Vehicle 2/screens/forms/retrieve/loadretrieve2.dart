@@ -34,7 +34,7 @@ class BLoadretrieve2 extends StatelessWidget {
             children: snapshot.data!.docs.map((DocumentSnapshot document) {
               Map<String, dynamic> data =
                   document.data() as Map<String, dynamic>;
-
+              String date = data['date'] ?? '';
               String startPoint = data['Start Point'] ?? '';
               String loadPoint = data['Load Point'] ?? '';
               String dropPoint = data['Drop Point'] ?? '';
@@ -56,6 +56,12 @@ class BLoadretrieve2 extends StatelessWidget {
                         const EdgeInsets.only(left: 70, right: 20, top: 10),
                     child: Column(
                       children: [
+                           Row(
+                          children: [
+                            Text('Date  = '),
+                            Text(date),
+                          ],
+                        ),
                         Row(
                           children: [
                             Text('Start Point  = '),

@@ -23,7 +23,7 @@ class BExpenseretreieve2 extends StatelessWidget {
           return LoadingAnimationWidget.discreteCircle(color: orange, size: 60);
         }
 
-        return Scaffold(
+       return Scaffold(
           appBar: const CustomAppBar(
             title: 'Expense Data',
             isGoBack: true,
@@ -33,10 +33,10 @@ class BExpenseretreieve2 extends StatelessWidget {
               Map<String, dynamic> data =
                   document.data() as Map<String, dynamic>;
 
-              String tollno = data['Toll No 1'] ?? '';
-              String tollprice = data['Toll Price'] ?? '';
-              String loadman = data['Loadman'] ?? '';
-              String others = data['Others'] ?? '';
+              String date = data['Date'] ?? '';
+              String Expenstype = data['ExpenseType'] ?? '';
+              String Amount = data['Amount'] ?? '';
+              String km = data['Km'] ?? '';
 
               return Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -53,26 +53,26 @@ class BExpenseretreieve2 extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            Text('Toll  No  = '),
-                            Text(tollno),
+                            Text('Date  = '),
+                            Text(date),
                           ],
                         ),
                         Row(
                           children: [
-                            Text('Total Price  = '),
-                            Text(tollprice),
+                            Text('Expense Type  = '),
+                            Text(Expenstype),
                           ],
                         ),
                         Row(
                           children: [
-                            Text('LoadMan = '),
-                            Text(loadman),
+                            Text('Amount = '),
+                            Text(Amount),
                           ],
                         ),
                         Row(
                           children: [
-                            Text('Others = '),
-                            Text(others),
+                            Text('Km Reading = '),
+                            Text(km),
                           ],
                         ),
                       ],
@@ -87,3 +87,4 @@ class BExpenseretreieve2 extends StatelessWidget {
     );
   }
 }
+

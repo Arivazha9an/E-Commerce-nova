@@ -33,10 +33,10 @@ class Expenseretreieve extends StatelessWidget {
               Map<String, dynamic> data =
                   document.data() as Map<String, dynamic>;
 
-              String tollno = data['Toll No 1'] ?? '';
-              String tollprice = data['Toll Price'] ?? '';
-              String loadman = data['Loadman'] ?? '';
-              String others = data['Others'] ?? '';
+              String date = data['Date'] ?? '';
+              String Expenstype = data['ExpenseType'] ?? '';
+              String Amount = data['Amount'] ?? '';
+              String km = data['Km'] ?? '';
 
               return Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -53,26 +53,26 @@ class Expenseretreieve extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            Text('Toll  No  = '),
-                            Text(tollno),
+                            const Text('Date  = '),
+                            Text(date),
                           ],
                         ),
                         Row(
                           children: [
-                            Text('Total Price  = '),
-                            Text(tollprice),
+                            const Text('Expense Type  = '),
+                            Text(Expenstype),
                           ],
                         ),
                         Row(
                           children: [
-                            Text('LoadMan = '),
-                            Text(loadman),
+                            const Text('Amount = '),
+                            Text(Amount),
                           ],
                         ),
                         Row(
                           children: [
-                            Text('Others = '),
-                            Text(others),
+                            const Text('Km Reading = '),
+                            Text(km),
                           ],
                         ),
                       ],

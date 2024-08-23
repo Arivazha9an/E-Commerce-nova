@@ -6,6 +6,7 @@ import 'package:e_commerce/days.dart';
 import 'package:e_commerce/firebase_options.dart';
 import 'package:e_commerce/payment/payment.dart';
 import 'package:e_commerce/screens/BottomNavigation.dart';
+import 'package:e_commerce/screens/calender.dart';
 
 
 import 'package:flutter/material.dart';
@@ -37,7 +38,8 @@ class MyApp extends StatelessWidget {
         home:// DatePickerExample()
         //Login()
         //Signup()
-        AuthWrapper()
+       // AuthWrapper()
+       CalendarWithNumbers()
       // PaymentScreen()
     
      //   const BottomNavigationBarExample()

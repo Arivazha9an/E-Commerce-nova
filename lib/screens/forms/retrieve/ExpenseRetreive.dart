@@ -33,10 +33,10 @@ class Expenseretreieve2 extends StatelessWidget {
               Map<String, dynamic> data =
                   document.data() as Map<String, dynamic>;
 
-              String tollno = data['Toll No 1'] ?? '';
-              String tollprice = data['Toll Price'] ?? '';
-              String loadman = data['Loadman'] ?? '';
-              String others = data['Others'] ?? '';
+            String date = data['Date'] ?? '';
+              String Expenstype = data['ExpenseType'] ?? '';
+              String Amount = data['Amount'] ?? '';
+              String km = data['Km'] ?? '';
 
               return Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -51,28 +51,28 @@ class Expenseretreieve2 extends StatelessWidget {
                         const EdgeInsets.only(left: 80, right: 20, top: 30),
                     child: Column(
                       children: [
-                        Row(
+                           Row(
                           children: [
-                            Text('Toll  No  = '),
-                            Text(tollno),
+                            Text('Date  = '),
+                            Text(date),
                           ],
                         ),
                         Row(
                           children: [
-                            Text('Total Price  = '),
-                            Text(tollprice),
+                            Text('Expense Type  = '),
+                            Text(Expenstype),
                           ],
                         ),
                         Row(
                           children: [
-                            Text('LoadMan = '),
-                            Text(loadman),
+                            Text('Amount = '),
+                            Text(Amount),
                           ],
                         ),
                         Row(
                           children: [
-                            Text('Others = '),
-                            Text(others),
+                            Text('Km Reading = '),
+                            Text(km),
                           ],
                         ),
                       ],

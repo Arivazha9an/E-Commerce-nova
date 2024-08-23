@@ -34,7 +34,7 @@ class Loadretrieve2 extends StatelessWidget {
             children: snapshot.data!.docs.map((DocumentSnapshot document) {
               Map<String, dynamic> data =
                   document.data() as Map<String, dynamic>;
-
+              String date = data['Date'] ?? '';
               String startPoint = data['Start Point'] ?? '';
               String loadPoint = data['Load Point'] ?? '';
               String dropPoint = data['Drop Point'] ?? '';
@@ -58,49 +58,55 @@ class Loadretrieve2 extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            Text('Start Point  = '),
+                            const Text('Date  = '),
+                            Text(date),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            const Text('Start Point  = '),
                             Text(startPoint),
                           ],
                         ),
                         Row(
                           children: [
-                            Text('Load Point  = '),
+                            const Text('Load Point  = '),
                             Text(loadPoint),
                           ],
                         ),
                         Row(
                           children: [
-                            Text('Drop Point = '),
+                            const Text('Drop Point = '),
                             Text(dropPoint),
                           ],
                         ),
                         Row(
                           children: [
-                            Text('No os Tons= '),
+                            const Text('No os Tons= '),
                             Text(tons),
                           ],
                         ),
                         Row(
                           children: [
-                            Text('Load Amount = '),
+                            const Text('Load Amount = '),
                             Text(loadAmount),
                           ],
                         ),
                         Row(
                           children: [
-                            Text('Delivery Amount = '),
+                            const Text('Delivery Amount = '),
                             Text(deliveryAmount),
                           ],
                         ),
                          Row(
                           children: [
-                            Text('Customer Name = '),
+                            const Text('Customer Name = '),
                             Text(customerName),
                           ],
                         ),
                          Row(
                           children: [
-                            Text('Customer No= '),
+                            const Text('Customer No= '),
                             Text(customerNo),
                           ],
                         ),

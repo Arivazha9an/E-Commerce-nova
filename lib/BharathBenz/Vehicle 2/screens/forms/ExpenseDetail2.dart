@@ -8,6 +8,7 @@ import 'package:e_commerce/widgets/custombuttom%20outlined.dart';
 import 'package:e_commerce/widgets/custombutton.dart';
 import 'package:e_commerce/widgets/customtextform.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class BExpensedetail2 extends StatefulWidget {
   const BExpensedetail2({super.key});
@@ -17,14 +18,16 @@ class BExpensedetail2 extends StatefulWidget {
 }
 
 class _ExpensedetailState extends State<BExpensedetail2> {
-  var _toleno1controller = TextEditingController();
-  var _tollpricecontroller = TextEditingController();
+  final TextEditingController _datepickController = TextEditingController();
+
   var _loadmancontroller = TextEditingController();
   var _otherscontroller = TextEditingController();
-
+  var valuecontroller = TextEditingController();
+  String? selectedItem; 
+  List<String> items = ['Food', 'Lorry Service', 'Tyre', 'Fast tag/Tole'];
   void _saveData() {
-    if (_toleno1controller.text.isEmpty ||
-        _tollpricecontroller.text.isEmpty ||
+    if (_datepickController.text.isEmpty ||
+        valuecontroller.text.isEmpty ||
         _loadmancontroller.text.isEmpty ||
         _otherscontroller.text.isEmpty) {
       showDialog(
@@ -44,10 +47,10 @@ class _ExpensedetailState extends State<BExpensedetail2> {
     } else {
       try {
         FirebaseFirestore.instance.collection('bharathbenzexpensedetail2').add({
-          'Toll No 1': _toleno1controller.text,
-          'Toll Price': _tollpricecontroller.text,
-          'Loadman': _loadmancontroller.text,
-          'Others': _otherscontroller.text
+               'Date': _datepickController.text,
+          'ExpenseType': valuecontroller.text,
+          'Amount': _loadmancontroller.text,
+          'Km': _otherscontroller.text
         });
       } on FirebaseException catch (e) {
         print('Failed with error code: ${e.code}');
@@ -55,6 +58,19 @@ class _ExpensedetailState extends State<BExpensedetail2> {
       }
     }
   }
+    Future<void> _selectDate() async {
+    DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(2000),
+        lastDate: DateTime(2099));
+    if (picked != null) {
+      setState(() {
+        _datepickController.text = DateFormat('yyyy-MM-dd').format(picked);
+      });
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -82,14 +98,41 @@ class _ExpensedetailState extends State<BExpensedetail2> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Toll No 1')),
+                            child: Text('Date')),
                       ),
-                      CustomTextFormField(
+                      Container(
                         width: 320,
-                        controller: _toleno1controller,
-                        hintText: 'type',
-                        labeltext: '',
-                        keyboardType: TextInputType.name,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4),
+                          boxShadow: const [
+                            BoxShadow(
+                              offset: Offset(-4, 4),
+                              blurRadius: 18,
+                              spreadRadius: 0,
+                              color: Color(0x17000000),
+                            )
+                          ],
+                        ),
+                        child: TextFormField(
+                          controller: _datepickController,
+                          readOnly: true,
+                          decoration: InputDecoration(
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: orange),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: Colors.red),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              hintText: 'Choose Date',
+                              prefixIcon: GestureDetector(
+                                  onTap: _selectDate,
+                                  child: Icon(Icons.calendar_month))),
+                        ),
                       ),
                       Padding(
                         padding: EdgeInsets.only(
@@ -99,14 +142,53 @@ class _ExpensedetailState extends State<BExpensedetail2> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Toll Price')),
+                            child: Text('Expense Type')),
                       ),
-                      CustomTextFormField(
+                      Container(
                         width: 320,
-                        controller: _tollpricecontroller,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.number,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4),
+                          boxShadow: const [
+                            BoxShadow(
+                              offset: Offset(-4, 4),
+                              blurRadius: 18,
+                              spreadRadius: 0,
+                              color: Color(0x17000000),
+                            )
+                          ],
+                        ),
+                        child: TextFormField(
+                          controller: valuecontroller,
+                          readOnly: true,
+                          decoration: InputDecoration(
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: orange),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.red),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            hintText: '',
+                            suffixIcon: DropdownButton<String>(
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  selectedItem = newValue;
+                                  valuecontroller.text = newValue!;
+                                });
+                              },
+                              items: items.map((String item) {
+                                return DropdownMenuItem<String>(
+                                  value: item,
+                                  child: Text(item),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        ),
                       ),
                       Padding(
                         padding: EdgeInsets.only(
@@ -116,7 +198,7 @@ class _ExpensedetailState extends State<BExpensedetail2> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Loadman')),
+                            child: Text('Amount')),
                       ),
                       CustomTextFormField(
                         width: 320,
@@ -133,7 +215,7 @@ class _ExpensedetailState extends State<BExpensedetail2> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Others')),
+                            child: Text('Km Reading')),
                       ),
                       Padding(
                         padding: EdgeInsets.only(bottom: w * 0.04),

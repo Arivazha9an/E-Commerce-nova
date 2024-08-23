@@ -32,7 +32,8 @@ class _LoadDetailsState extends State<BLoadDetails2> {
   @override
   Widget build(BuildContext context) {
     void _saveData() {
-      if (_startpointcontroller.text.isEmpty ||
+      if (_datepickController.text.isEmpty||
+        _startpointcontroller.text.isEmpty ||
           _loadpointcontroller.text.isEmpty ||
           _droppointcontroller.text.isEmpty ||
           _nooftonscontroller.text.isEmpty ||
@@ -57,6 +58,7 @@ class _LoadDetailsState extends State<BLoadDetails2> {
       } else {
         try {
           FirebaseFirestore.instance.collection('bharathbenzloaddetail2').add({
+            'Date':_datepickController.text,
             'Start Point': _startpointcontroller.text,
             'Load Point': _loadpointcontroller.text,
             'Drop Point': _droppointcontroller.text,
@@ -105,6 +107,50 @@ class _LoadDetailsState extends State<BLoadDetails2> {
                 child: Center(
                   child: Column(
                     children: [
+                                            Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Date')),
+                      ),
+                      Container(
+                        width: 320,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4),
+                          boxShadow: const [
+                            BoxShadow(
+                              offset: Offset(-4, 4),
+                              blurRadius: 18,
+                              spreadRadius: 0,
+                              color: Color(0x17000000),
+                            )
+                          ],
+                        ),
+                        child: TextFormField(
+                          controller: _datepickController,
+                          readOnly: true,
+                          decoration: InputDecoration(
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: orange),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: Colors.red),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              hintText: 'Choose Date',
+                              prefixIcon: GestureDetector(
+                                  onTap: _selectDate,
+                                  child: Icon(Icons.calendar_month))),
+                        ),
+                      ),
                       Padding(
                         padding: EdgeInsets.only(
                             top: w * 0.03,
@@ -116,6 +162,7 @@ class _LoadDetailsState extends State<BLoadDetails2> {
                             child: Text('Start Point')),
                       ),
                       CustomTextFormFieldIcon(
+                        width: 320,
                         controller: _startpointcontroller,
                         hintText: 'City/Location',
                         labeltext: '',

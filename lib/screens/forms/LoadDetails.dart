@@ -9,8 +9,6 @@ import 'package:e_commerce/widgets/customtextformwithicon.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-
-
 class LoadDetails extends StatefulWidget {
   const LoadDetails({super.key});
 
@@ -19,7 +17,7 @@ class LoadDetails extends StatefulWidget {
 }
 
 class _LoadDetailsState extends State<LoadDetails> {
-    final TextEditingController _datepickController = TextEditingController();
+  final TextEditingController _datepickController = TextEditingController();
   var _startpointcontroller = TextEditingController();
   var _loadpointcontroller = TextEditingController();
   var _droppointcontroller = TextEditingController();
@@ -38,6 +36,7 @@ class _LoadDetailsState extends State<LoadDetails> {
           _loadamountcontroller.text.isEmpty ||
           _deliveryamountcontroller.text.isEmpty ||
           _customernamecontroller.text.isEmpty ||
+          _datepickController.text.isEmpty||
           _customernocontroller.text.isEmpty) {
         showDialog(
           context: context,
@@ -56,6 +55,7 @@ class _LoadDetailsState extends State<LoadDetails> {
       } else {
         try {
           FirebaseFirestore.instance.collection('taurusloaddetail').add({
+            'Date':_datepickController.text,
             'Start Point': _startpointcontroller.text,
             'Load Point': _loadpointcontroller.text,
             'Drop Point': _droppointcontroller.text,
@@ -104,6 +104,50 @@ class _LoadDetailsState extends State<LoadDetails> {
                 child: Center(
                   child: Column(
                     children: [
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Date')),
+                      ),
+                      Container(
+                        width: 320,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4),
+                          boxShadow: const [
+                            BoxShadow(
+                              offset: Offset(-4, 4),
+                              blurRadius: 18,
+                              spreadRadius: 0,
+                              color: Color(0x17000000),
+                            )
+                          ],
+                        ),
+                        child: TextFormField(
+                          controller: _datepickController,
+                          readOnly: true,
+                          decoration: InputDecoration(
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: orange),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: Colors.red),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              hintText: 'Choose Date',
+                              prefixIcon: GestureDetector(
+                                  onTap: _selectDate,
+                                  child: Icon(Icons.calendar_month))),
+                        ),
+                      ),
                       Padding(
                         padding: EdgeInsets.only(
                             top: w * 0.03,
@@ -281,8 +325,6 @@ class _LoadDetailsState extends State<LoadDetails> {
                         MaterialPageRoute(
                             builder: (context) => const Loadretrieve2()),
                       );
-
-
                     },
                     color: black,
                   ),

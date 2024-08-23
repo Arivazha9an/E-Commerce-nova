@@ -29,34 +29,34 @@ class _DriverpaymentState extends State<Driverpayment> {
   TextEditingController _transactionNoteController = TextEditingController();
   TextEditingController _transactionStatusController = TextEditingController();
 
-  Future<void> _initiateUPITransaction() async {
-    String upiId = _upiIdController.text.trim();
-    String receiverName = _receiverNameController.text.trim();
-    String amount = _amountController.text.trim();
-    String transactionNote = _transactionNoteController.text.trim();
-    String transactionRefId =
-        "TransactionRef${DateTime.now().millisecondsSinceEpoch}"; // Generate a unique transaction reference ID
+  // Future<void> _initiateUPITransaction() async {
+  //   String upiId = _upiIdController.text.trim();
+  //   String receiverName = _receiverNameController.text.trim();
+  //   String amount = _amountController.text.trim();
+  //   String transactionNote = _transactionNoteController.text.trim();
+  //   String transactionRefId =
+  //       "TransactionRef${DateTime.now().millisecondsSinceEpoch}"; // Generate a unique transaction reference ID
 
-    String upiUrl =
-        "upi://pay?pa=$upiId&pn=$receiverName&tr=$transactionRefId&tn=$transactionNote&am=$amount&cu=INR";
+  //   String upiUrl =
+  //       "upi://pay?pa=$upiId&pn=$receiverName&tr=$transactionRefId&tn=$transactionNote&am=$amount&cu=INR";
 
-    if (await canLaunchUrl(Uri.parse(upiUrl))) {
-      bool success = await launchUrl(Uri.parse(upiUrl));
-      if (success) {
-        setState(() {
-          _transactionStatusController.text = "Transaction Successful!";
-        });
-      } else {
-        setState(() {
-          _transactionStatusController.text = "Transaction Failed!";
-        });
-      }
-    } else {
-      setState(() {
-        _transactionStatusController.text = "UPI App not found!";
-      });
-    }
-  }
+  //   if (await canLaunchUrl(Uri.parse(upiUrl))) {
+  //     bool success = await launchUrl(Uri.parse(upiUrl));
+  //     if (success) {
+  //       setState(() {
+  //         _transactionStatusController.text = "Transaction Successful!";
+  //       });
+  //     } else {
+  //       setState(() {
+  //         _transactionStatusController.text = "Transaction Failed!";
+  //       });
+  //     }
+  //   } else {
+  //     setState(() {
+  //       _transactionStatusController.text = "UPI App not found!";
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -284,57 +284,57 @@ class _DriverpaymentState extends State<Driverpayment> {
                 )
               ],
             ),
-            Column(
-              children: [
-                 TextField(
-                  controller: _upiIdController,
-                  decoration: const InputDecoration(
-                    labelText: "Receiver UPI ID",
-                    border: OutlineInputBorder(),
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _receiverNameController,
-                  decoration: const InputDecoration(
-                    labelText: "Receiver Name",
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _amountController,
-                  decoration: const InputDecoration(
-                    labelText: "Amount",
-                    border: OutlineInputBorder(),
-                  ),
-                  keyboardType: TextInputType.number,
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _transactionNoteController,
-                  decoration: const InputDecoration(
-                    labelText: "Transaction Note",
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _transactionStatusController,
-                  decoration: InputDecoration(
-                    labelText: "Transaction Status",
-                    border: const OutlineInputBorder(),
-                    suffixIcon: IconButton(
-                      icon: const Icon(Icons.payment),
-                      onPressed:
-                          _initiateUPITransaction, // Initiate UPI transaction
-                    ),
-                  ),
-                  readOnly: true,
-                ),
-              ],
-            )
+            // Column(
+            //   children: [
+            //      TextField(
+            //       controller: _upiIdController,
+            //       decoration: const InputDecoration(
+            //         labelText: "Receiver UPI ID",
+            //         border: OutlineInputBorder(),
+            //       ),
+            //       keyboardType: TextInputType.emailAddress,
+            //     ),
+            //     const SizedBox(height: 16),
+            //     TextField(
+            //       controller: _receiverNameController,
+            //       decoration: const InputDecoration(
+            //         labelText: "Receiver Name",
+            //         border: OutlineInputBorder(),
+            //       ),
+            //     ),
+            //     const SizedBox(height: 16),
+            //     TextField(
+            //       controller: _amountController,
+            //       decoration: const InputDecoration(
+            //         labelText: "Amount",
+            //         border: OutlineInputBorder(),
+            //       ),
+            //       keyboardType: TextInputType.number,
+            //     ),
+            //     const SizedBox(height: 16),
+            //     TextField(
+            //       controller: _transactionNoteController,
+            //       decoration: const InputDecoration(
+            //         labelText: "Transaction Note",
+            //         border: OutlineInputBorder(),
+            //       ),
+            //     ),
+            //     const SizedBox(height: 16),
+            //     TextField(
+            //       controller: _transactionStatusController,
+            //       decoration: InputDecoration(
+            //         labelText: "Transaction Status",
+            //         border: const OutlineInputBorder(),
+            //         suffixIcon: IconButton(
+            //           icon: const Icon(Icons.payment),
+            //           onPressed:
+            //               _initiateUPITransaction, // Initiate UPI transaction
+            //         ),
+            //       ),
+            //       readOnly: true,
+            //     ),
+            //   ],
+            // )
           ],
         ),
         
