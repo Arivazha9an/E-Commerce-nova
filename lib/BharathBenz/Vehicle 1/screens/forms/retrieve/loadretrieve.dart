@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class Loadretrieve extends StatelessWidget {
@@ -34,7 +35,18 @@ class Loadretrieve extends StatelessWidget {
             children: snapshot.data!.docs.map((DocumentSnapshot document) {
               Map<String, dynamic> data =
                   document.data() as Map<String, dynamic>;
-              String date = data['Date'] ?? '';
+             var dateField = data['Date01'];
+              DateTime dateTime;
+
+              if (dateField is Timestamp) {
+                dateTime = dateField.toDate();
+              } else if (dateField is String) {
+                dateTime = DateTime.parse(dateField);
+              } else {
+                return Center(child: Text(''));
+              }
+              String formattedDate =
+                  DateFormat('dd / MM / yyyy').format(dateTime);
               String startPoint = data['Start Point'] ?? '';
               String loadPoint = data['Load Point'] ?? '';
               String dropPoint = data['Drop Point'] ?? '';
@@ -59,7 +71,7 @@ class Loadretrieve extends StatelessWidget {
                           Row(
                           children: [
                             Text('Date  = '),
-                            Text(date),
+                            Text(formattedDate),
                           ],
                         ),
                         Row(

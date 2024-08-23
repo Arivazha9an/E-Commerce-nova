@@ -17,6 +17,7 @@ class LoadDetails extends StatefulWidget {
 }
 
 class _LoadDetailsState extends State<LoadDetails> {
+  DateTime? pickeddate;
   final TextEditingController _datepickController = TextEditingController();
   var _startpointcontroller = TextEditingController();
   var _loadpointcontroller = TextEditingController();
@@ -28,6 +29,20 @@ class _LoadDetailsState extends State<LoadDetails> {
   var _customernocontroller = TextEditingController();
   @override
   Widget build(BuildContext context) {
+
+       Future<void> _selectDate() async {
+      DateTime? picked = await showDatePicker(
+          context: context,
+          initialDate: DateTime.now(),
+          firstDate: DateTime(2000),
+          lastDate: DateTime(2099));
+      if (picked != null) {
+        setState(() {
+          _datepickController.text = DateFormat('yyyy-MM-dd').format(picked);
+          pickeddate = picked;
+        });
+      }
+    }
     void _saveData() {
       if (_startpointcontroller.text.isEmpty ||
           _loadpointcontroller.text.isEmpty ||
@@ -55,7 +70,7 @@ class _LoadDetailsState extends State<LoadDetails> {
       } else {
         try {
           FirebaseFirestore.instance.collection('taurusloaddetail').add({
-            'Date':_datepickController.text,
+            'Date01': Timestamp.fromDate(pickeddate!),
             'Start Point': _startpointcontroller.text,
             'Load Point': _loadpointcontroller.text,
             'Drop Point': _droppointcontroller.text,
@@ -72,18 +87,7 @@ class _LoadDetailsState extends State<LoadDetails> {
       }
     }
 
-    Future<void> _selectDate() async {
-      DateTime? picked = await showDatePicker(
-          context: context,
-          initialDate: DateTime.now(),
-          firstDate: DateTime(2000),
-          lastDate: DateTime(2099));
-      if (picked != null) {
-        setState(() {
-          _datepickController.text = DateFormat('yyyy-MM-dd').format(picked);
-        });
-      }
-    }
+  
 
     var w = MediaQuery.sizeOf(context).width;
     return Scaffold(

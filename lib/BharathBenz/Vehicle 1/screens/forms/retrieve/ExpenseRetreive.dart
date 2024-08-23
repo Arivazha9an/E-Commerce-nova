@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class Expenseretreieve extends StatelessWidget {
@@ -33,11 +34,23 @@ class Expenseretreieve extends StatelessWidget {
               Map<String, dynamic> data =
                   document.data() as Map<String, dynamic>;
 
-              String date = data['Date'] ?? '';
+              //  Timestamp timestamp = data['Date']??'';
               String Expenstype = data['ExpenseType'] ?? '';
               String Amount = data['Amount'] ?? '';
               String km = data['Km'] ?? '';
+              // Timestamp timestamp =data['Date']; // assuming 'date' is the field name
+              var dateField = data['Date01'];
+              DateTime dateTime;
 
+              if (dateField is Timestamp) {
+                dateTime = dateField.toDate();
+              } else if (dateField is String) {
+                dateTime = DateTime.parse(dateField);
+              } else {
+                return Center(child: Text(''));
+              }
+String formattedDate =
+                  DateFormat('dd / MM / yyyy').format(dateTime);
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
@@ -54,7 +67,7 @@ class Expenseretreieve extends StatelessWidget {
                         Row(
                           children: [
                             const Text('Date  = '),
-                            Text(date),
+                            Text(formattedDate),
                           ],
                         ),
                         Row(

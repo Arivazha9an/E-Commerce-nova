@@ -17,13 +17,26 @@ class Expensedetail extends StatefulWidget {
 
 class _ExpensedetailState extends State<Expensedetail> {
   final TextEditingController _datepickController = TextEditingController();
-
+DateTime? pickeddate;
   var _loadmancontroller = TextEditingController();
   var _otherscontroller = TextEditingController();
   var valuecontroller = TextEditingController();
   String? selectedItem;
 
   List<String> items = ['Food', 'Lorry Service', 'Tyre', 'Fast tag/Tole'];
+     Future<void> _selectDate() async {
+    DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(2000),
+        lastDate: DateTime(2099));
+    if (picked != null) {
+      setState(() {
+        _datepickController.text = DateFormat('yyyy-MM-dd').format(picked);
+        pickeddate = picked;
+      });
+    }
+  }
   void _saveData() {
     if (_datepickController.text.isEmpty ||
         valuecontroller.text.isEmpty ||
@@ -46,7 +59,7 @@ class _ExpensedetailState extends State<Expensedetail> {
     } else {
       try {
         FirebaseFirestore.instance.collection('taurusexpensedetail').add({
-         'Date': _datepickController.text,
+         'Date01': Timestamp.fromDate(pickeddate!),
           'ExpenseType': valuecontroller.text,
           'Amount': _loadmancontroller.text,
           'Km': _otherscontroller.text
@@ -57,18 +70,7 @@ class _ExpensedetailState extends State<Expensedetail> {
       }
     }
   }
-   Future<void> _selectDate() async {
-    DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(2000),
-        lastDate: DateTime(2099));
-    if (picked != null) {
-      setState(() {
-        _datepickController.text = DateFormat('yyyy-MM-dd').format(picked);
-      });
-    }
-  }
+   
  @override
   Widget build(BuildContext context) {
     var w = MediaQuery.sizeOf(context).width;
