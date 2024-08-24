@@ -1,12 +1,12 @@
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/screens/DriverPayment.dart';
 import 'package:e_commerce/screens/calender.dart';
+import 'package:e_commerce/screens/piechart.dart';
+import 'package:e_commerce/screens/piechartbackend.dart';
 import 'DateWiseExpense.dart';
 import 'IncomeExpense.dart';
 import 'VehicleList.dart';
 import 'package:flutter/material.dart';
-
-
 
 class BottomNavigationBarExampleApp extends StatelessWidget {
   const BottomNavigationBarExampleApp({super.key});
@@ -35,7 +35,7 @@ class _BottomNavigationBarExampleState
     const VehicleList(),
     const IncomeExpense(),
     CalendarWithNumbers(),
-    const Driverpayment(),
+    MyPieChart()
   ];
 
   void _onItemTapped(int index) {
@@ -78,7 +78,7 @@ class _BottomNavigationBarExampleState
               backgroundColor: lightorange),
           BottomNavigationBarItem(
               icon: Icon(
-                Icons.wallet,
+                Icons.pie_chart,
                 // color: grey,
               ),
               label: '',
@@ -89,8 +89,3 @@ class _BottomNavigationBarExampleState
     );
   }
 }
-
-
-
-
-

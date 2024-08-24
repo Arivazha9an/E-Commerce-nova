@@ -57,7 +57,7 @@ class _DatewiseexpenseState extends State<Datewiseexpense> {
             color: Colors.orange,
             alignment: Alignment.center,
             child: TextField(
-              style: TextStyle(color: white),
+              style: const TextStyle(color: white),
               readOnly: true,
               controller: TextEditingController(
                 text: _selectedDate != null
@@ -101,7 +101,7 @@ class _DatewiseexpenseState extends State<Datewiseexpense> {
                       },
                       child: Row(
                         children: [
-                          SizedBox(
+                          const SizedBox(
                             width: 20,
                           ),
                           Center(

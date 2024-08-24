@@ -6,9 +6,12 @@ import 'package:e_commerce/firebase_options.dart';
 import 'package:e_commerce/payment/payment.dart';
 import 'package:e_commerce/screens/BottomNavigation.dart';
 import 'package:e_commerce/screens/calender.dart';
+import 'package:e_commerce/screens/piechart.dart';
+import 'package:e_commerce/screens/piechartbackend.dart';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:pie_chart/pie_chart.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,6 +38,8 @@ class MyApp extends StatelessWidget {
             //Login()
             //Signup()
            AuthWrapper()
+        // ExpensePieChart()
+         // MyPieChart()
          //CalendarWithNumbers()
         // PaymentScreen()
 

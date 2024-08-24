@@ -47,18 +47,126 @@ class _CalendarWithNumbersState extends State<CalendarWithNumbers> {
       _events = events;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBarcolor(
+      appBar: const CustomAppBarcolor(
         height: 185,
         title: '',
         child: Column(
           children: [
-           Row(
+            SizedBox(
+              height: 120,
+            ),
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-              
+                Column(
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.add_circle_outline_rounded,
+                          color: white,
+                        ),
+                        Text(
+                          'Income',
+                          style: TextStyle(
+                              color: white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w400),
+                        )
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.currency_rupee,
+                          color: white,
+                        ),
+                        Text(
+                          '100',
+                          style: TextStyle(
+                              color: white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400),
+                        )
+                      ],
+                    )
+                  ],
+                ),
+                Column(
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.remove_circle_outline,
+                          color: white,
+                        ),
+                        Text(
+                          'Expense',
+                          style: TextStyle(
+                              color: white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w400),
+                        )
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.currency_rupee,
+                          color: white,
+                        ),
+                        Text(
+                          '28,100',
+                          style: TextStyle(
+                              color: white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400),
+                        )
+                      ],
+                    )
+                  ],
+                ),
+                Column(
+                  children: [
+                    Row(
+                      children: [
+                        RotatedBox(
+                          quarterTurns: 5,
+                          child: Icon(
+                            Icons.pause_circle_outline_outlined,
+                            color: white,
+                          ),
+                        ),
+                        Text(
+                          'Balance',
+                          style: TextStyle(
+                              color: white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w400),
+                        )
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.currency_rupee,
+                          color: white,
+                        ),
+                        Text(
+                          '-27,100',
+                          style: TextStyle(
+                              color: white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400),
+                        )
+                      ],
+                    )
+                  ],
+                )
               ],
             ),
           ],
@@ -74,11 +182,11 @@ class _CalendarWithNumbersState extends State<CalendarWithNumbers> {
                   children: [
                     Text(
                       _events[date]?['Amount']?.toString() ?? '-',
-                      style: TextStyle(color: Colors.red),
+                      style: const TextStyle(color: Colors.red),
                     ),
                     Text(
                       _events[date]?['Delivery Amount']?.toString() ?? '-',
-                      style: TextStyle(color: Colors.blue),
+                      style: const TextStyle(color: Colors.blue),
                     ),
                   ],
                 ),
