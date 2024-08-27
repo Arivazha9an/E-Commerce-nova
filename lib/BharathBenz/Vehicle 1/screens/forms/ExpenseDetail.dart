@@ -61,6 +61,7 @@ DateTime? pickeddate;
       try {
         FirebaseFirestore.instance.collection('bharathbenzexpensedetail').add({
           'Date01': Timestamp.fromDate(pickeddate!) ,
+          'Date': _datepickController.text,
           'ExpenseType': valuecontroller.text,
           'Amount': _loadmancontroller.text,
           'Km': _otherscontroller.text

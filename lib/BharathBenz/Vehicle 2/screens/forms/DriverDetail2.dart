@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/retrieve/driverretrieve.dart';
+
 import 'package:e_commerce/BharathBenz/Vehicle%202/screens/forms/retrieve/driverretrieve2.dart';
 import 'package:e_commerce/constants/colors.dart';
-import 'package:e_commerce/screens/forms/retrieve/driverretrieve.dart';
+
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:e_commerce/widgets/custombuttom%20outlined.dart';
 import 'package:e_commerce/widgets/custombutton.dart';
@@ -30,7 +30,6 @@ class _driverDetailState extends State<BDriverDetail2> {
   var _expirecontroller = TextEditingController();
   var _insuranceamountcontroller = TextEditingController();
   File imageFile = File('');
-  String? _imageName;
 
 
   void _pickImage() async {
@@ -39,7 +38,6 @@ class _driverDetailState extends State<BDriverDetail2> {
     setState(() {
       if (pickedFile != null) {
         imageFile = File(pickedFile.path);
-          _imageName = imageFile.path.split('/').last;
           _imgnamecontroller.text = imageFile.path.split('/').last;
       } else {
         print('No image selected.');
@@ -64,9 +62,7 @@ Future<String> uploadImage(File imageFile) async {
   void _saveData() async{
     if (_namecontroller.text.isEmpty ||
         _placecontroller.text.isEmpty ||
-        _bloddgroupcontroller.text.isEmpty ||
-        //_lorrycontroller.text.isEmpty ||
-        imageFile == null||
+        _bloddgroupcontroller.text.isEmpty||
         _expirecontroller.text.isEmpty ||
         _insuranceamountcontroller.text.isEmpty) {
       showDialog(

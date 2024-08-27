@@ -1,57 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/widgets/customcolorappbar.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-
-Future<double> getSumByExpenseType(String expenseType) async {
-  double totalAmount = 0.0;
-
-  // Define the three collections
-  List<String> collections = [
-    'bharathbenzexpensedetail',
-    'bharathbenzexpensedetail2',
-    'taurusexpensedetail'
-  ];
-
-  // Iterate over each collection
-  for (String collection in collections) {
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection(collection)
-        .where('ExpenseType', isEqualTo: expenseType)
-        .get();
-    // Sum the amounts for the matching expense type
-    for (var doc in querySnapshot.docs) {
-      // Convert the amount from String to double
-      String amountString = doc['Amount'];
-      double amount = double.tryParse(amountString) ?? 0.0;
-      totalAmount += amount;
-    }
-  }
-
-  return totalAmount;
-}
-
-Future<Map<String, double>> fetchExpenseData() async {
-  // Define the expense types
-  List<String> expenseTypes = [
-    'Food',
-    'Lorry Service',
-    'Tyre',
-    'Fast tag/Tole'
-  ];
-
-  // Initialize the map
-  Map<String, double> dataMap = {};
-
-  // Retrieve the sum for each expense type
-  for (String expenseType in expenseTypes) {
-    double totalAmount = await getSumByExpenseType(expenseType);
-    dataMap[expenseType] = totalAmount;
-  }
-
-  return dataMap;
-}
+import 'package:intl/intl.dart';
 
 class MyPieChart extends StatefulWidget {
   @override
@@ -59,13 +12,117 @@ class MyPieChart extends StatefulWidget {
 }
 
 class _MyPieChartState extends State<MyPieChart> {
+  DateTime selectedDate = DateTime.now();
+  final TextEditingController _datepickController = TextEditingController();
+  double combinedexpense = 0.0;
+  double combineincome = 0.0;
 
   @override
   void initState() {
     super.initState();
-  fetchExpenseData();
+    fetchExpenseData();
+    incomeSum();
+    expenseSum();
   }
 
+  Future incomeSum() async {
+    try {
+      // Initialize a combined sum variable
+      double combinedIncome = 0.0;
+
+      // List of collection names
+      List<String> collections = [
+        'bharathbenzloaddetail',
+        'bharathbenzloaddetail2',
+        'taurusloaddetail',
+      ];
+
+      // Field names to sum
+      String field1 = 'Delivery Amount';
+
+      // Iterate through each collection
+      for (String collection in collections) {
+        // Fetch all documents from the current collection
+        QuerySnapshot querySnapshot =
+            await FirebaseFirestore.instance.collection(collection).get();
+
+        // Iterate through documents in the current collection
+        for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+          // Access document data
+          final data = doc.data() as Map<String, dynamic>;
+
+          // Get the values of field1, field2, and field3
+          final fieldValue1 = data[field1];
+
+          // Convert to double and add to combined sum
+          if (fieldValue1 != null) {
+            if (fieldValue1 is String) {
+              combinedIncome += double.tryParse(fieldValue1) ?? 0.0;
+            } else if (fieldValue1 is num) {
+              combinedIncome += fieldValue1.toInt();
+            }
+          }
+        }
+      }
+      setState(() {
+        combineincome = combinedIncome;
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching documents: $e');
+      }
+    }
+  }
+
+  Future expenseSum() async {
+    try {
+      // Initialize a combined sum variable
+      double combinedExpense = 0.0;
+
+      // List of collection names
+      List<String> collections = [
+        'bharathbenzexpensedetail',
+        'bharathbenzexpensedetail2',
+        'taurusexpensedetail',
+      ];
+
+      // Field names to sum
+      String field1 = 'Amount';
+
+      // Iterate through each collection
+      for (String collection in collections) {
+        // Fetch all documents from the current collection
+        QuerySnapshot querySnapshot =
+            await FirebaseFirestore.instance.collection(collection).get();
+
+        // Iterate through documents in the current collection
+        for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+          // Access document data
+          final data = doc.data() as Map<String, dynamic>;
+
+          // Get the values of field1, field2, and field3
+          final fieldValue1 = data[field1];
+
+          // Convert to double and add to combined sum
+          if (fieldValue1 != null) {
+            if (fieldValue1 is String) {
+              combinedExpense += double.tryParse(fieldValue1) ?? 0.0;
+            } else if (fieldValue1 is num) {
+              combinedExpense += fieldValue1.toInt();
+            }
+          }
+        }
+      }
+
+      setState(() {
+        combinedexpense = combinedExpense;
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching documents: $e');
+      }
+    }
+  }
 
   final Map<String, Color> expenseColors = {
     'Food': Colors.green,
@@ -73,6 +130,73 @@ class _MyPieChartState extends State<MyPieChart> {
     'Tyre': Colors.red,
     'Fast tag/Tole': Colors.orange,
   };
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2030),
+    );
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+        _datepickController.text = DateFormat('dd MMMM yyyy').format(picked);
+        print('selected$selectedDate');
+        //_retrievePieChartData(); // Fetch pie chart data for the selected date
+      });
+    }
+  }
+
+  Future<double> getSumByExpenseType(String expenseType) async {
+    double totalAmount = 0.0;
+
+    // Define the three collections
+    List<String> collections = [
+      'bharathbenzexpensedetail',
+      'bharathbenzexpensedetail2',
+      'taurusexpensedetail'
+    ];
+
+    // Iterate over each collection
+    String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
+    for (String collection in collections) {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection(collection)
+          .where('ExpenseType', isEqualTo: expenseType)
+          .where('Date', isEqualTo: formattedDate)
+          .get();
+      // Sum the amounts for the matching expense type
+      for (var doc in querySnapshot.docs) {
+        // Convert the amount from String to double
+        String amountString = doc['Amount'];
+        double amount = double.tryParse(amountString) ?? 0.0;
+        totalAmount += amount;
+      }
+    }
+
+    return totalAmount;
+  }
+
+  Future<Map<String, double>> fetchExpenseData() async {
+    // Define the expense types
+    List<String> expenseTypes = [
+      'Food',
+      'Lorry Service',
+      'Tyre',
+      'Fast tag/Tole'
+    ];
+
+    // Initialize the map
+    Map<String, double> dataMap = {};
+
+    // Retrieve the sum for each expense type
+    for (String expenseType in expenseTypes) {
+      double totalAmount = await getSumByExpenseType(expenseType);
+      dataMap[expenseType] = totalAmount;
+    }
+
+    return dataMap;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,20 +218,42 @@ class _MyPieChartState extends State<MyPieChart> {
         Map<String, double> dataMap = snapshot.data!;
 
         return Scaffold(
-            appBar: const CustomAppBarcolor(
+            appBar: CustomAppBarcolor(
               height: 185,
               title: '',
               child: Column(
                 children: [
-                  SizedBox(
-                    height: 120,
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  TextField(
+                    readOnly: true,
+                    style: const TextStyle(color: white),
+                    controller: _datepickController,
+                    decoration: InputDecoration(
+                      prefixIcon: GestureDetector(
+                          onTap: () {
+                            _selectDate(context);
+                          },
+                          child: const Icon(
+                            Icons.calendar_today,
+                            color: white,
+                          )),
+                      hintText: 'Pick A Date',
+                      hintStyle: const TextStyle(color: white),
+                      border:
+                          const OutlineInputBorder(borderSide: BorderSide.none),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 30,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Column(
                         children: [
-                          Row(
+                          const Row(
                             children: [
                               Icon(
                                 Icons.add_circle_outline_rounded,
@@ -124,13 +270,13 @@ class _MyPieChartState extends State<MyPieChart> {
                           ),
                           Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.currency_rupee,
                                 color: white,
                               ),
                               Text(
-                                '100',
-                                style: TextStyle(
+                                combineincome.toString(),
+                                style: const TextStyle(
                                     color: white,
                                     fontSize: 18,
                                     fontWeight: FontWeight.w400),
@@ -141,7 +287,7 @@ class _MyPieChartState extends State<MyPieChart> {
                       ),
                       Column(
                         children: [
-                          Row(
+                          const Row(
                             children: [
                               Icon(
                                 Icons.remove_circle_outline,
@@ -158,13 +304,13 @@ class _MyPieChartState extends State<MyPieChart> {
                           ),
                           Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.currency_rupee,
                                 color: white,
                               ),
                               Text(
-                                '28,100',
-                                style: TextStyle(
+                                combinedexpense.toString(),
+                                style: const TextStyle(
                                     color: white,
                                     fontSize: 18,
                                     fontWeight: FontWeight.w400),
@@ -175,7 +321,7 @@ class _MyPieChartState extends State<MyPieChart> {
                       ),
                       Column(
                         children: [
-                          Row(
+                          const Row(
                             children: [
                               RotatedBox(
                                 quarterTurns: 5,
@@ -195,13 +341,13 @@ class _MyPieChartState extends State<MyPieChart> {
                           ),
                           Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.currency_rupee,
                                 color: white,
                               ),
                               Text(
-                                '-27,100',
-                                style: TextStyle(
+                                (combineincome - combinedexpense).toString(),
+                                style: const TextStyle(
                                     color: white,
                                     fontSize: 18,
                                     fontWeight: FontWeight.w400),
@@ -224,10 +370,10 @@ class _MyPieChartState extends State<MyPieChart> {
                     children: [
                       // Pie Chart
                       Expanded(
-                        flex: 2,
+                        flex: 3,
                         child: Padding(
                           padding: const EdgeInsets.only(
-                              top: 40, right: 16.0, left: 16.0, bottom: 16.0),
+                              top: 60, right: 16.0, left: 30.0, bottom: 16.0),
                           child: PieChart(
                             PieChartData(
                               sections: dataMap.entries.map((entry) {
@@ -236,12 +382,17 @@ class _MyPieChartState extends State<MyPieChart> {
                                 return PieChartSectionData(
                                   value: entry.value,
                                   title: "",
+                                  titlePositionPercentageOffset: 1.2,
                                   color: color,
-                                  radius: 60,
-                                  titleStyle: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white),
+                                  radius: 70,
+                                  titleStyle: TextStyle(
+                                    fontSize: 8,
+                                    fontWeight: FontWeight.bold,
+                                    color: white,
+                                    height: 1.5,
+                                    letterSpacing: 2.0,
+                                    backgroundColor: color,
+                                  ),
                                 );
                               }).toList(),
                               borderData: FlBorderData(show: false),
@@ -259,7 +410,7 @@ class _MyPieChartState extends State<MyPieChart> {
                         flex: 2,
                         child: Padding(
                           padding: const EdgeInsets.only(
-                              top: 25, right: 16.0, left: 16.0, bottom: 8),
+                              top: 34, right: 16.0, left: 16.0, bottom: 0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: dataMap.entries.map((entry) {
@@ -277,7 +428,7 @@ class _MyPieChartState extends State<MyPieChart> {
                                   ),
                                   const SizedBox(width: 10),
                                   Text(
-                                    '${entry.key}',
+                                    entry.key,
                                     style: const TextStyle(fontSize: 14),
                                   ),
                                 ],

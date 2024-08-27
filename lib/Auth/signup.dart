@@ -5,7 +5,7 @@ import 'package:e_commerce/widgets/customtextform.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
+
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -24,7 +24,7 @@ class _SignupState extends State<Signup> {
   final _firebase = FirebaseAuth.instance;
 
    _submit() async{
-    final isValid = _formKey.currentState!.validate();
+_formKey.currentState!.validate();
     
     _formKey.currentState!.save();
      try {

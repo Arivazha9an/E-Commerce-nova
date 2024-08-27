@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/retrieve/ExpenseRetreive.dart';
+
 import 'package:e_commerce/BharathBenz/Vehicle%202/screens/forms/retrieve/ExpenseRetreive2.dart';
 import 'package:e_commerce/constants/colors.dart';
-import 'package:e_commerce/screens/forms/retrieve/ExpenseRetreive.dart';
+
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:e_commerce/widgets/custombuttom%20outlined.dart';
 import 'package:e_commerce/widgets/custombutton.dart';
@@ -61,6 +61,7 @@ DateTime? pickeddate;
       try {
         FirebaseFirestore.instance.collection('bharathbenzexpensedetail2').add({
           'Date01': Timestamp.fromDate(pickeddate!),
+          'Date': _datepickController.text,
           'ExpenseType': valuecontroller.text,
           'Amount': _loadmancontroller.text,
           'Km': _otherscontroller.text

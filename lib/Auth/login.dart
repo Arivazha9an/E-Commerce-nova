@@ -2,10 +2,10 @@ import 'package:e_commerce/Auth/signup.dart';
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/screens/BottomNavigation.dart';
 import 'package:e_commerce/widgets/custombutton.dart';
-import 'package:e_commerce/widgets/customtextform.dart';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:fluttertoast/fluttertoast.dart';
 
 class Login extends StatefulWidget {
@@ -23,7 +23,7 @@ class _LoginState extends State<Login> {
     var _emailcontroller = TextEditingController();
     var _passwordcontroller = TextEditingController();
     login() async {
-      final isValid = _formKey.currentState!.validate();
+      _formKey.currentState!.validate();
 
       _formKey.currentState!.save();
       try {

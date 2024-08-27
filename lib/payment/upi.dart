@@ -6,9 +6,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_pay_upi/flutter_pay_upi_manager.dart';
 import 'package:flutter_pay_upi/model/upi_response.dart';
 import 'package:flutter_pay_upi/utils/widget/upi_app_list.dart';
-import 'package:pdf/pdf.dart';
+
 import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
+
 
 class FlutterPayUPI extends StatefulWidget {
   const FlutterPayUPI({super.key});
@@ -154,14 +154,10 @@ class _FlutterPayUPIState extends State<FlutterPayUPI>
 
     // Save the PDF
     final file = await pdf.save();
-    if (file != null) {
-      if (kDebugMode) {
-        print('PDF saved successfully: ${file.path}');
-      }
-    } else {
-      print('Error saving PDF');
+    if (kDebugMode) {
+      print('PDF saved successfully: ${file.path}');
     }
-  }
+    }
 
   void _showRoundedDialog(BuildContext context, String? message) {
     showDialog(

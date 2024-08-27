@@ -28,7 +28,6 @@ class _driverDetailState extends State<BDriverDetail> {
   var _expirecontroller = TextEditingController();
   var _insuranceamountcontroller = TextEditingController();
   File imageFile = File('');
-  String? _imageName;
 
 
   void _pickImage() async {
@@ -37,7 +36,6 @@ class _driverDetailState extends State<BDriverDetail> {
     setState(() {
       if (pickedFile != null) {
         imageFile = File(pickedFile.path);
-          _imageName = imageFile.path.split('/').last;
           _imgnamecontroller.text = imageFile.path.split('/').last;
       } else {
         print('No image selected.');
@@ -62,9 +60,7 @@ Future<String> uploadImage(File imageFile) async {
   void _saveData() async{
     if (_namecontroller.text.isEmpty ||
         _placecontroller.text.isEmpty ||
-        _bloddgroupcontroller.text.isEmpty ||
-        //_lorrycontroller.text.isEmpty ||
-        imageFile == null||
+        _bloddgroupcontroller.text.isEmpty||
         _expirecontroller.text.isEmpty ||
         _insuranceamountcontroller.text.isEmpty) {
       showDialog(

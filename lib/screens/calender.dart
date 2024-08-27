@@ -1,6 +1,8 @@
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/widgets/customcolorappbar.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -11,11 +13,119 @@ class CalendarWithNumbers extends StatefulWidget {
 
 class _CalendarWithNumbersState extends State<CalendarWithNumbers> {
   Map<DateTime, Map<String, int>> _events = {};
+  DateTime selectedDate = DateTime.now();
+  final TextEditingController _datepickController = TextEditingController();
+    double combinedexpense = 0.0;
+  double combineincome = 0.0;
 
   @override
   void initState() {
     super.initState();
     _fetchDataFromFirebase();
+     incomeSum();
+    expenseSum();
+  }
+   
+
+  
+
+  Future incomeSum() async {
+    try {
+      // Initialize a combined sum variable
+      double combinedIncome = 0.0;
+
+      // List of collection names
+      List<String> collections = [
+        'bharathbenzloaddetail',
+        'bharathbenzloaddetail2',
+        'taurusloaddetail',
+      ];
+
+      // Field names to sum
+      String field1 = 'Delivery Amount';
+
+      // Iterate through each collection
+      for (String collection in collections) {
+        // Fetch all documents from the current collection
+        QuerySnapshot querySnapshot =
+            await FirebaseFirestore.instance.collection(collection).get();
+
+        // Iterate through documents in the current collection
+        for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+          // Access document data
+          final data = doc.data() as Map<String, dynamic>;
+
+          // Get the values of field1, field2, and field3
+          final fieldValue1 = data[field1];
+
+          // Convert to double and add to combined sum
+          if (fieldValue1 != null) {
+            if (fieldValue1 is String) {
+              combinedIncome += double.tryParse(fieldValue1) ?? 0.0;
+            } else if (fieldValue1 is num) {
+              combinedIncome += fieldValue1.toInt();
+            }
+          }
+        }
+      }
+      setState(() {
+        combineincome = combinedIncome;
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching documents: $e');
+      }
+    }
+  }
+
+  Future expenseSum() async {
+    try {
+      // Initialize a combined sum variable
+      double combinedExpense = 0.0;
+
+      // List of collection names
+      List<String> collections = [
+        'bharathbenzexpensedetail',
+        'bharathbenzexpensedetail2',
+        'taurusexpensedetail',
+      ];
+
+      // Field names to sum
+      String field1 = 'Amount';
+
+      // Iterate through each collection
+      for (String collection in collections) {
+        // Fetch all documents from the current collection
+        QuerySnapshot querySnapshot =
+            await FirebaseFirestore.instance.collection(collection).get();
+
+        // Iterate through documents in the current collection
+        for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+          // Access document data
+          final data = doc.data() as Map<String, dynamic>;
+
+          // Get the values of field1, field2, and field3
+          final fieldValue1 = data[field1];
+
+          // Convert to double and add to combined sum
+          if (fieldValue1 != null) {
+            if (fieldValue1 is String) {
+              combinedExpense += double.tryParse(fieldValue1) ?? 0.0;
+            } else if (fieldValue1 is num) {
+              combinedExpense += fieldValue1.toInt();
+            }
+          }
+        }
+      }
+
+      setState(() {
+        combinedexpense = combinedExpense;
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching documents: $e');
+      }
+    }
   }
 
   void _fetchDataFromFirebase() async {
@@ -47,24 +157,62 @@ class _CalendarWithNumbersState extends State<CalendarWithNumbers> {
       _events = events;
     });
   }
+    Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2030),
+    );
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+        _datepickController.text = DateFormat('dd MMMM yyyy').format(picked);
+        print('selected$selectedDate');
+        //_retrievePieChartData(); // Fetch pie chart data for the selected date
+      });
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBarcolor(
+      appBar: CustomAppBarcolor(
         height: 185,
         title: '',
         child: Column(
           children: [
-            SizedBox(
-              height: 120,
+            const SizedBox(
+              height: 30,
             ),
-            Row(
+            TextField(
+              readOnly: true,
+              style: const TextStyle(color: white),
+              controller: _datepickController,
+              decoration: InputDecoration(
+                prefixIcon: GestureDetector(
+                    onTap: () {
+                      _selectDate(context);
+                    },
+                    child: const Icon(
+                      Icons.calendar_today,
+                      color: white,
+                    )),
+                hintText: 'Pick A Date',
+                hintStyle: const TextStyle(color: white),
+                border: const OutlineInputBorder(borderSide: BorderSide.none),
+              ),
+            ),
+            const SizedBox(
+              height: 30,
+            ),
+           Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Column(
                   children: [
-                    Row(
+                    const Row(
                       children: [
                         Icon(
                           Icons.add_circle_outline_rounded,
@@ -81,13 +229,13 @@ class _CalendarWithNumbersState extends State<CalendarWithNumbers> {
                     ),
                     Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.currency_rupee,
                           color: white,
                         ),
                         Text(
-                          '100',
-                          style: TextStyle(
+                          combineincome.toString(),
+                          style: const TextStyle(
                               color: white,
                               fontSize: 18,
                               fontWeight: FontWeight.w400),
@@ -96,9 +244,9 @@ class _CalendarWithNumbersState extends State<CalendarWithNumbers> {
                     )
                   ],
                 ),
-                Column(
+                  Column(
                   children: [
-                    Row(
+                    const Row(
                       children: [
                         Icon(
                           Icons.remove_circle_outline,
@@ -115,13 +263,13 @@ class _CalendarWithNumbersState extends State<CalendarWithNumbers> {
                     ),
                     Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.currency_rupee,
                           color: white,
                         ),
                         Text(
-                          '28,100',
-                          style: TextStyle(
+                          combinedexpense.toString(),
+                          style: const TextStyle(
                               color: white,
                               fontSize: 18,
                               fontWeight: FontWeight.w400),
@@ -132,7 +280,7 @@ class _CalendarWithNumbersState extends State<CalendarWithNumbers> {
                 ),
                 Column(
                   children: [
-                    Row(
+                    const Row(
                       children: [
                         RotatedBox(
                           quarterTurns: 5,
@@ -152,13 +300,13 @@ class _CalendarWithNumbersState extends State<CalendarWithNumbers> {
                     ),
                     Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.currency_rupee,
                           color: white,
                         ),
                         Text(
-                          '-27,100',
-                          style: TextStyle(
+                          (combineincome-combinedexpense).toString(),
+                          style: const TextStyle(
                               color: white,
                               fontSize: 18,
                               fontWeight: FontWeight.w400),
@@ -192,6 +340,7 @@ class _CalendarWithNumbersState extends State<CalendarWithNumbers> {
                 ),
               );
             }
+            return null;
           },
         ),
         firstDay: DateTime.utc(2020, 1, 1),

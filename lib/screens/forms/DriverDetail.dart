@@ -27,7 +27,6 @@ class _driverDetailState extends State<DriverDetail> {
   var _expirecontroller = TextEditingController();
   var _insuranceamountcontroller = TextEditingController();
   File imageFile = File('');
-  String? _imageName;
 
   void _pickImage() async {
     final picker = ImagePicker();
@@ -35,7 +34,6 @@ class _driverDetailState extends State<DriverDetail> {
     setState(() {
       if (pickedFile != null) {
         imageFile = File(pickedFile.path);
-        _imageName = imageFile.path.split('/').last;
         _imgnamecontroller.text = imageFile.path.split('/').last;
       } else {
         print('No image selected.');
@@ -60,8 +58,6 @@ class _driverDetailState extends State<DriverDetail> {
     if (_namecontroller.text.isEmpty ||
         _placecontroller.text.isEmpty ||
         _bloddgroupcontroller.text.isEmpty ||
-        //_lorrycontroller.text.isEmpty ||
-        imageFile == null ||
         _expirecontroller.text.isEmpty ||
         _insuranceamountcontroller.text.isEmpty) {
       showDialog(

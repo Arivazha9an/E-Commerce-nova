@@ -7,7 +7,7 @@ import 'package:e_commerce/widgets/custombutton.dart';
 import 'package:e_commerce/widgets/customtextform.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
+
 
 class Driverpayment extends StatefulWidget {
   const Driverpayment({super.key});
@@ -23,11 +23,7 @@ class _DriverpaymentState extends State<Driverpayment> {
   var _vehiclenamecontroller = TextEditingController();
   var _salarycontroller = TextEditingController();
   var _paymentcontroller = TextEditingController();
-  TextEditingController _upiIdController = TextEditingController();
-  TextEditingController _receiverNameController = TextEditingController();
-  TextEditingController _amountController = TextEditingController();
-  TextEditingController _transactionNoteController = TextEditingController();
-  TextEditingController _transactionStatusController = TextEditingController();
+
 
   // Future<void> _initiateUPITransaction() async {
   //   String upiId = _upiIdController.text.trim();

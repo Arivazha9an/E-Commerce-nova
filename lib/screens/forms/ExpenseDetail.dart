@@ -60,6 +60,7 @@ DateTime? pickeddate;
       try {
         FirebaseFirestore.instance.collection('taurusexpensedetail').add({
          'Date01': Timestamp.fromDate(pickeddate!),
+         'Date':_datepickController.text,
           'ExpenseType': valuecontroller.text,
           'Amount': _loadmancontroller.text,
           'Km': _otherscontroller.text

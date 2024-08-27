@@ -1,16 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:e_commerce/constants/colors.dart';
-import 'package:e_commerce/screens/forms/CustomerDetails.dart';
-import 'package:e_commerce/screens/forms/Supplierdetails.dart';
+
 import 'package:e_commerce/screens/forms/retrieve/customerretrivehover.dart';
 import 'package:e_commerce/screens/forms/retrieve/supplierretrievehover.dart';
-import 'package:e_commerce/widgets/TextfieldwithButton.dart';
-import 'package:e_commerce/widgets/customappbar.dart';
+
 import 'package:e_commerce/widgets/customcolorappbar.dart';
 import 'package:flutter/material.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
-
-import '../models/customer.dart';
 
 class IncomeExpense extends StatefulWidget {
   const IncomeExpense({super.key});
@@ -43,7 +38,6 @@ class _IncomeExpenseState extends State<IncomeExpense> {
 
   @override
   Widget build(BuildContext context) {
-    var w = MediaQuery.sizeOf(context).width;
     return Scaffold(
       appBar: CustomAppBarcolor(
         height: 185,

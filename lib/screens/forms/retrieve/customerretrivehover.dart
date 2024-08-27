@@ -21,8 +21,9 @@ class _CustomerretrivehoverState extends State<Customerretrivehover> {
   @override
   void initState() {
     super.initState();
-    expenseSum();
+
     _simulateLoading();
+    expenseSum();
     incomeSum();
   }
 
@@ -37,80 +38,8 @@ class _CustomerretrivehoverState extends State<Customerretrivehover> {
   double combinedexpense = 0.0;
   double combineincome = 0.0;
 
-  Future<void> expenseSum() async {
-    try {
-      // Initialize a combined sum variable
-      double combinedExpense = 0.0;
-
-      // List of collection names
-      List<String> collections = [
-        'taurusexpensedetail',
-        'bharathbenzexpensedetail',
-      ];
-
-      // Field names to sum
-      String field1 = 'Loadman';
-      String field2 = 'Others';
-      String field3 = 'Toll Price';
-
-      // Iterate through each collection
-      for (String collection in collections) {
-        // Fetch all documents from the current collection
-        QuerySnapshot querySnapshot =
-            await FirebaseFirestore.instance.collection(collection).get();
-
-        // Iterate through documents in the current collection
-        for (QueryDocumentSnapshot doc in querySnapshot.docs) {
-          // Access document data
-          final data = doc.data() as Map<String, dynamic>;
-
-          // Get the values of field1, field2, and field3
-          final fieldValue1 = data[field1];
-          final fieldValue2 = data[field2];
-          final fieldValue3 = data[field3];
-
-          // Convert to double and add to combined sum
-          if (fieldValue1 != null) {
-            if (fieldValue1 is String) {
-              combinedExpense += double.tryParse(fieldValue1) ?? 0.0;
-            } else if (fieldValue1 is num) {
-              combinedExpense += fieldValue1.toInt();
-            }
-          }
-
-          if (fieldValue2 != null) {
-            if (fieldValue2 is String) {
-              combinedExpense += double.tryParse(fieldValue2) ?? 0.0;
-            } else if (fieldValue2 is num) {
-              combinedExpense += fieldValue2.toInt();
-            }
-          }
-
-          if (fieldValue3 != null) {
-            if (fieldValue3 is String) {
-              combinedExpense += double.tryParse(fieldValue3) ?? 0.0;
-            } else if (fieldValue3 is num) {
-              combinedExpense += fieldValue3.toInt();
-            }
-          }
-        }
-      }
-      setState(() {
-        combinedexpense = combinedExpense;
-      });
-
-      if (kDebugMode) {
-        print(
-          'Combined sum of field1, field2, and field3 values across collections: $combinedexpense');
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error fetching documents: $e');
-      }
-    }
-  }
-
-  Future<void> incomeSum() async {
+ 
+  Future incomeSum() async {
     try {
       // Initialize a combined sum variable
       double combinedIncome = 0.0;
@@ -118,6 +47,7 @@ class _CustomerretrivehoverState extends State<Customerretrivehover> {
       // List of collection names
       List<String> collections = [
         'bharathbenzloaddetail',
+        'bharathbenzloaddetail2',
         'taurusloaddetail',
       ];
 
@@ -151,11 +81,56 @@ class _CustomerretrivehoverState extends State<Customerretrivehover> {
       setState(() {
         combineincome = combinedIncome;
       });
-
+    } catch (e) {
       if (kDebugMode) {
-        print(
-          'Combined sum of field1, field2, and field3 values across collections: $combinedIncome');
+        print('Error fetching documents: $e');
       }
+    }
+  }
+
+  Future expenseSum() async {
+    try {
+      // Initialize a combined sum variable
+      double combinedExpense = 0.0;
+
+      // List of collection names
+      List<String> collections = [
+        'bharathbenzexpensedetail',
+        'bharathbenzexpensedetail2',
+        'taurusexpensedetail',
+      ];
+
+      // Field names to sum
+      String field1 = 'Amount';
+
+      // Iterate through each collection
+      for (String collection in collections) {
+        // Fetch all documents from the current collection
+        QuerySnapshot querySnapshot =
+            await FirebaseFirestore.instance.collection(collection).get();
+
+        // Iterate through documents in the current collection
+        for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+          // Access document data
+          final data = doc.data() as Map<String, dynamic>;
+
+          // Get the values of field1, field2, and field3
+          final fieldValue1 = data[field1];
+
+          // Convert to double and add to combined sum
+          if (fieldValue1 != null) {
+            if (fieldValue1 is String) {
+              combinedExpense += double.tryParse(fieldValue1) ?? 0.0;
+            } else if (fieldValue1 is num) {
+              combinedExpense += fieldValue1.toInt();
+            }
+          }
+        }
+      }
+
+      setState(() {
+        combinedexpense = combinedExpense;
+      });
     } catch (e) {
       if (kDebugMode) {
         print('Error fetching documents: $e');
@@ -202,7 +177,7 @@ class _CustomerretrivehoverState extends State<Customerretrivehover> {
                                       const Icon(Icons.currency_rupee),
                                       const Text(
                                         '+',
-                                        style:  TextStyle(
+                                        style: TextStyle(
                                           fontSize: 20,
                                         ),
                                       ),
@@ -241,7 +216,7 @@ class _CustomerretrivehoverState extends State<Customerretrivehover> {
                                       const Icon(Icons.currency_rupee),
                                       const Text(
                                         '-',
-                                        style:   TextStyle(
+                                        style: TextStyle(
                                           fontSize: 25,
                                         ),
                                       ),
@@ -325,3 +300,90 @@ class _CustomerretrivehoverState extends State<Customerretrivehover> {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+// import 'package:flutter/material.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+
+// class ListViewWithData extends StatefulWidget {
+//   @override
+//   _ListViewWithDataState createState() => _ListViewWithDataState();
+// }
+
+// class _ListViewWithDataState extends State<ListViewWithData> {
+//   List<Map<String, dynamic>> dataList = [];
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _fetchData();
+//   }
+
+//   Future<void> _fetchData() async {
+//     QuerySnapshot querySnapshot =
+//         await FirebaseFirestore.instance.collection('yourCollectionName').get();
+
+//     setState(() {
+//       dataList = querySnapshot.docs.map((doc) {
+//         return doc.data() as Map<String, dynamic>;
+//       }).toList();
+//     });
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('Firestore ListView'),
+//       ),
+//       body: ListView.builder(
+//         itemCount: dataList.length,
+//         itemBuilder: (context, index) {
+//           return ListTile(
+//             title: Text(dataList[index]['name']),
+//             trailing: ElevatedButton(
+//               onPressed: () {
+//                 Navigator.push(
+//                   context,
+//                   MaterialPageRoute(
+//                     builder: (context) => DetailPage(data: dataList[index]),
+//                   ),
+//                 );
+//               },
+//               child: Text('Show Data'),
+//             ),
+//           );
+//         },
+//       ),
+//     );
+//   }
+// }
+
+// class DetailPage extends StatelessWidget {
+//   final Map<String, dynamic> data;
+
+//   DetailPage({required this.data});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text(data['name']),
+//       ),
+//       body: Padding(
+//         padding: const EdgeInsets.all(16.0),
+//         child: Text('Data: ${data.toString()}'),
+//       ),
+//     );
+//   }
+// }
+
+
