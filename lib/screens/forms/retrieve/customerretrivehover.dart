@@ -21,12 +21,24 @@ class _CustomerretrivehoverState extends State<Customerretrivehover> {
   @override
   void initState() {
     super.initState();
-
+    _fetchData();
     _simulateLoading();
     expenseSum();
     incomeSum();
   }
+  List<Map<String, dynamic>> dataList = [];
 
+ 
+  Future<void> _fetchData() async {
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('customerdetails').get();
+
+    setState(() {
+      dataList = querySnapshot.docs.map((doc) {
+        return doc.data() as Map<String, dynamic>;
+      }).toList();
+    });
+  }
   Future<void> _simulateLoading() async {
     await Future.delayed(
         const Duration(seconds: 2)); // Simulate a 2-second loading time
@@ -39,7 +51,7 @@ class _CustomerretrivehoverState extends State<Customerretrivehover> {
   double combineincome = 0.0;
 
  
-  Future incomeSum() async {
+ Future incomeSum() async {
     try {
       // Initialize a combined sum variable
       double combinedIncome = 0.0;
@@ -53,6 +65,7 @@ class _CustomerretrivehoverState extends State<Customerretrivehover> {
 
       // Field names to sum
       String field1 = 'Delivery Amount';
+      String field2 = 'Delivery Amount1';
 
       // Iterate through each collection
       for (String collection in collections) {
@@ -67,6 +80,7 @@ class _CustomerretrivehoverState extends State<Customerretrivehover> {
 
           // Get the values of field1, field2, and field3
           final fieldValue1 = data[field1];
+          final fieldValue2 = data[field2];
 
           // Convert to double and add to combined sum
           if (fieldValue1 != null) {
@@ -74,6 +88,13 @@ class _CustomerretrivehoverState extends State<Customerretrivehover> {
               combinedIncome += double.tryParse(fieldValue1) ?? 0.0;
             } else if (fieldValue1 is num) {
               combinedIncome += fieldValue1.toInt();
+            }
+          }
+          if (fieldValue2 != null) {
+            if (fieldValue2 is String) {
+              combinedIncome += double.tryParse(fieldValue2) ?? 0.0;
+            } else if (fieldValue2 is num) {
+              combinedIncome += fieldValue2.toInt();
             }
           }
         }
@@ -244,28 +265,29 @@ class _CustomerretrivehoverState extends State<Customerretrivehover> {
                       ),
                     ),
                     Expanded(
-                      child: ListView(
-                        children: snapshot.data!.docs
-                            .map((DocumentSnapshot document) {
-                          Map<String, dynamic> data =
-                              document.data() as Map<String, dynamic>;
-
-                          String name = data['Name'] ?? '';
-
-                          Customer customerData = Customer.fromMap(
-                              document.data() as Map<String, dynamic>);
+                      child: ListView.builder(
+                         itemCount: dataList.length,
+                        itemBuilder: (context, index)  { 
+                     
+                         
                           return Center(
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: CustomFieldButton(
-                                name: name,
-                                cutomerData: customerData,
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
+                                name:dataList[index]['Name'],
+                                 ontap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DetailPage(data: dataList[index]),
+                  ),
+                );
+              },
+               ),
+               ),
+               );                                      
+                       },
+                    ),),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Align(
@@ -310,80 +332,75 @@ class _CustomerretrivehoverState extends State<Customerretrivehover> {
 
 
 
-// import 'package:flutter/material.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
 
-// class ListViewWithData extends StatefulWidget {
-//   @override
-//   _ListViewWithDataState createState() => _ListViewWithDataState();
-// }
 
-// class _ListViewWithDataState extends State<ListViewWithData> {
-//   List<Map<String, dynamic>> dataList = [];
 
-//   @override
-//   void initState() {
-//     super.initState();
-//     _fetchData();
-//   }
+class DetailPage extends StatelessWidget {
+  final Map<String, dynamic> data;
 
-//   Future<void> _fetchData() async {
-//     QuerySnapshot querySnapshot =
-//         await FirebaseFirestore.instance.collection('yourCollectionName').get();
+  DetailPage({required this.data});
 
-//     setState(() {
-//       dataList = querySnapshot.docs.map((doc) {
-//         return doc.data() as Map<String, dynamic>;
-//       }).toList();
-//     });
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Firestore ListView'),
-//       ),
-//       body: ListView.builder(
-//         itemCount: dataList.length,
-//         itemBuilder: (context, index) {
-//           return ListTile(
-//             title: Text(dataList[index]['name']),
-//             trailing: ElevatedButton(
-//               onPressed: () {
-//                 Navigator.push(
-//                   context,
-//                   MaterialPageRoute(
-//                     builder: (context) => DetailPage(data: dataList[index]),
-//                   ),
-//                 );
-//               },
-//               child: Text('Show Data'),
-//             ),
-//           );
-//         },
-//       ),
-//     );
-//   }
-// }
-
-// class DetailPage extends StatelessWidget {
-//   final Map<String, dynamic> data;
-
-//   DetailPage({required this.data});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text(data['name']),
-//       ),
-//       body: Padding(
-//         padding: const EdgeInsets.all(16.0),
-//         child: Text('Data: ${data.toString()}'),
-//       ),
-//     );
-//   }
-// }
+  @override
+  Widget build(BuildContext context) {
+     var w = MediaQuery.sizeOf(context).width;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Customer Information'),
+      ),
+      body: Center(
+        child: Column(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.all(Radius.circular(10)),
+                  border: Border.all(color: orange, width: w * 0.005)),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    children: [
+                      Text('Customer Name ='),
+                      Text('${data['Name']}'),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Text('Place ='),
+                      Text('${data['Place']}'),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Text('Material ='),
+                      Text('${data['Material']}'),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Text('Paid  ='),
+                      Text('${data['Paid']}'),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Text('Not Paid  ='),
+                      Text('${data['Not_Paid']}'),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Text('Payment  ='),
+                      Text('${data['Payment']}'),
+                    ],
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 

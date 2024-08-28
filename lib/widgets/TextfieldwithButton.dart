@@ -1,15 +1,15 @@
 import 'package:e_commerce/constants/colors.dart';
 import 'package:flutter/material.dart';
 
-import '../models/customer.dart';
-import '../screens/customer_detail.dart';
+
 
 class CustomFieldButton extends StatelessWidget {
   final String name;
-  final Customer cutomerData;
+
+  final VoidCallback ontap;
 
   const CustomFieldButton(
-      {super.key, required this.name, required this.cutomerData});
+      {super.key, required this.name,required this.ontap});
 
   @override
   Widget build(BuildContext context) {
@@ -40,15 +40,7 @@ class CustomFieldButton extends StatelessWidget {
             width: 80,
             height: 55,
             child: InkWell(
-              onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) {
-                    return CustomerDetail(
-                      customerData: cutomerData,
-                    );
-                  },
-                ));
-              },
+              onTap: ontap,
               child: Container(
                 width: 80,
                 height: 46,

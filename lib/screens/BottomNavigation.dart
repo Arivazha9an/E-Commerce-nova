@@ -3,6 +3,7 @@ import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/screens/calender.dart';
 
 import 'package:e_commerce/screens/piechartbackend.dart';
+import 'package:flutter/services.dart';
 
 import 'IncomeExpense.dart';
 import 'VehicleList.dart';
@@ -46,46 +47,73 @@ class _BottomNavigationBarExampleState
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _pages,
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(
-              icon: Icon(
-                Icons.home,
-                // color: grey,
+    return  WillPopScope(
+      onWillPop: () async {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Exit App'),
+            content: Text('Are you sure you want to exit?'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(false); 
+
+                },
+                child: Text('No'),
               ),
-              label: '',
-              backgroundColor: lightorange),
-          BottomNavigationBarItem(
-              icon: Icon(
-                Icons.person,
-                // color: grey,
+              TextButton(
+                onPressed: () {
+                  SystemNavigator.pop();
+                },
+                child:  
+ Text('Yes'),
               ),
-              label: '',
-              backgroundColor: lightorange),
-          BottomNavigationBarItem(
-              icon: Icon(
-                Icons.calendar_month,
-                //color: grey,
-              ),
-              label: '',
-              backgroundColor: lightorange),
-          BottomNavigationBarItem(
-              icon: Icon(
-                Icons.pie_chart,
-                // color: grey,
-              ),
-              label: '',
-              backgroundColor: lightorange),
-        ],
-        selectedItemColor: Colors.amber[800],
-      ),
-    );
+            ],
+          ),
+        );
+        return false; // Prevent the app from navigating back
+      },child:   Scaffold(
+        body: IndexedStack(
+          index: _selectedIndex,
+          children: _pages,
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          items: const [
+            BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.home,
+                  // color: grey,
+                ),
+                label: '',
+                backgroundColor: lightorange),
+            BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.person,
+                  // color: grey,
+                ),
+                label: '',
+                backgroundColor: lightorange),
+            BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.calendar_month,
+                  //color: grey,
+                ),
+                label: '',
+                backgroundColor: lightorange),
+            BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.pie_chart,
+                  // color: grey,
+                ),
+                label: '',
+                backgroundColor: lightorange),
+          ],
+          selectedItemColor: Colors.amber[800],
+        ),
+      ),);
+  
   }
 }

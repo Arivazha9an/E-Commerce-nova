@@ -45,7 +45,6 @@ class _LoginState extends State<Login> {
               gravity: ToastGravity.BOTTOM,
               backgroundColor: grey,
               textColor: black);
-          ;
         } else if (e.code == 'wrong-password') {
           Fluttertoast.showToast(
               msg: 'Wrong Password',

@@ -17,14 +17,28 @@ class Supplierretrievehover extends StatefulWidget {
 
 class _SupplierretrievehoverState extends State<Supplierretrievehover> {
   bool _isLoading = true;
-
-  @override
+   List<Map<String, dynamic>> dataList = [];
+    @override
   void initState() {
     super.initState();
+     _fetchData();
     _simulateLoading();
     expenseSum();
     incomeSum();
   }
+
+  Future<void> _fetchData() async {
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('supplierdetails').get();
+
+    setState(() {
+      dataList = querySnapshot.docs.map((doc) {
+        return doc.data() as Map<String, dynamic>;
+      }).toList();
+    });
+  }
+
+ 
 
   Future<void> _simulateLoading() async {
     await Future.delayed(
@@ -37,7 +51,7 @@ class _SupplierretrievehoverState extends State<Supplierretrievehover> {
   double combinedexpense = 0.0;
   double combineincome = 0.0;
 
-  Future incomeSum() async {
+ Future incomeSum() async {
     try {
       // Initialize a combined sum variable
       double combinedIncome = 0.0;
@@ -51,6 +65,7 @@ class _SupplierretrievehoverState extends State<Supplierretrievehover> {
 
       // Field names to sum
       String field1 = 'Delivery Amount';
+      String field2 = 'Delivery Amount1';
 
       // Iterate through each collection
       for (String collection in collections) {
@@ -65,6 +80,7 @@ class _SupplierretrievehoverState extends State<Supplierretrievehover> {
 
           // Get the values of field1, field2, and field3
           final fieldValue1 = data[field1];
+          final fieldValue2 = data[field2];
 
           // Convert to double and add to combined sum
           if (fieldValue1 != null) {
@@ -72,6 +88,13 @@ class _SupplierretrievehoverState extends State<Supplierretrievehover> {
               combinedIncome += double.tryParse(fieldValue1) ?? 0.0;
             } else if (fieldValue1 is num) {
               combinedIncome += fieldValue1.toInt();
+            }
+          }
+          if (fieldValue2 != null) {
+            if (fieldValue2 is String) {
+              combinedIncome += double.tryParse(fieldValue2) ?? 0.0;
+            } else if (fieldValue2 is num) {
+              combinedIncome += fieldValue2.toInt();
             }
           }
         }
@@ -242,27 +265,28 @@ class _SupplierretrievehoverState extends State<Supplierretrievehover> {
                         ],
                       ),
                     ),
-                    Expanded(
-                      child: ListView(
-                        children: snapshot.data!.docs
-                            .map((DocumentSnapshot document) {
-                          Map<String, dynamic> data =
-                              document.data() as Map<String, dynamic>;
-
-                          String name = data['Name'] ?? '';
-
-                          Customer customerData = Customer.fromMap(
-                              document.data() as Map<String, dynamic>);
+                       Expanded(
+                      child: ListView.builder(
+                        itemCount: dataList.length,
+                        itemBuilder: (context, index) {
                           return Center(
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: CustomFieldButton(
-                                name: name,
-                                cutomerData: customerData,
+                                name: dataList[index]['Name'],
+                                ontap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          DetailPage1(data: dataList[index]),
+                                    ),
+                                  );
+                                },
                               ),
                             ),
                           );
-                        }).toList(),
+                        },
                       ),
                     ),
                     Padding(
@@ -299,3 +323,75 @@ class _SupplierretrievehoverState extends State<Supplierretrievehover> {
     );
   }
 }
+
+
+class DetailPage1 extends StatelessWidget {
+  final Map<String, dynamic> data;
+
+  DetailPage1({required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    var w = MediaQuery.sizeOf(context).width;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Supplier Information'),
+      ),
+      body: Center(
+        child: Column(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.all(Radius.circular(10)),
+                  border: Border.all(color: orange, width: w * 0.005)),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    children: [
+                      Text('Customer Name ='),
+                      Text('${data['Name']}'),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Text('Place ='),
+                      Text('${data['Place']}'),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Text('Material ='),
+                      Text('${data['Material']}'),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Text('Paid  ='),
+                      Text('${data['Paid']}'),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Text('Not Paid  ='),
+                      Text('${data['Not_Paid']}'),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Text('Payment  ='),
+                      Text('${data['Payment']}'),
+                    ],
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+

@@ -18,7 +18,9 @@ class LoadDetails extends StatefulWidget {
 
 class _LoadDetailsState extends State<LoadDetails> {
   DateTime? pickeddate;
+  DateTime? pickeddate1;
   final TextEditingController _datepickController = TextEditingController();
+  final TextEditingController _datepickController1 = TextEditingController();
   var _startpointcontroller = TextEditingController();
   var _loadpointcontroller = TextEditingController();
   var _droppointcontroller = TextEditingController();
@@ -27,10 +29,17 @@ class _LoadDetailsState extends State<LoadDetails> {
   var _deliveryamountcontroller = TextEditingController();
   var _customernamecontroller = TextEditingController();
   var _customernocontroller = TextEditingController();
+  var _startpointcontroller1 = TextEditingController();
+  var _loadpointcontroller1 = TextEditingController();
+  var _droppointcontroller1 = TextEditingController();
+  var _nooftonscontroller1 = TextEditingController();
+  var _loadamountcontroller1 = TextEditingController();
+  var _deliveryamountcontroller1 = TextEditingController();
+  var _customernamecontroller1 = TextEditingController();
+  var _customernocontroller1 = TextEditingController();
   @override
   Widget build(BuildContext context) {
-
-       Future<void> _selectDate() async {
+    Future<void> _selectDate() async {
       DateTime? picked = await showDatePicker(
           context: context,
           initialDate: DateTime.now(),
@@ -43,6 +52,21 @@ class _LoadDetailsState extends State<LoadDetails> {
         });
       }
     }
+
+    Future<void> _selectDate1() async {
+      DateTime? picked = await showDatePicker(
+          context: context,
+          initialDate: DateTime.now(),
+          firstDate: DateTime(2000),
+          lastDate: DateTime(2099));
+      if (picked != null) {
+        setState(() {
+          _datepickController1.text = DateFormat('yyyy-MM-dd').format(picked);
+          pickeddate1 = picked;
+        });
+      }
+    }
+
     void _saveData() {
       if (_startpointcontroller.text.isEmpty ||
           _loadpointcontroller.text.isEmpty ||
@@ -51,8 +75,17 @@ class _LoadDetailsState extends State<LoadDetails> {
           _loadamountcontroller.text.isEmpty ||
           _deliveryamountcontroller.text.isEmpty ||
           _customernamecontroller.text.isEmpty ||
-          _datepickController.text.isEmpty||
-          _customernocontroller.text.isEmpty) {
+          _datepickController.text.isEmpty ||
+          _customernocontroller.text.isEmpty ||
+          _startpointcontroller1.text.isEmpty ||
+          _loadpointcontroller1.text.isEmpty ||
+          _droppointcontroller1.text.isEmpty ||
+          _nooftonscontroller1.text.isEmpty ||
+          _loadamountcontroller1.text.isEmpty ||
+          _deliveryamountcontroller1.text.isEmpty ||
+          _customernamecontroller1.text.isEmpty ||
+          _datepickController1.text.isEmpty ||
+          _customernocontroller1.text.isEmpty) {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -78,7 +111,16 @@ class _LoadDetailsState extends State<LoadDetails> {
             'Load Amount': _loadamountcontroller.text,
             'Delivery Amount': _deliveryamountcontroller.text,
             'Customer Name': _customernamecontroller.text,
-            'Customer Number': _customernocontroller.text
+            'Customer Number': _customernocontroller.text,
+            'Date02': Timestamp.fromDate(pickeddate1!),
+            'Start Point1': _startpointcontroller1.text,
+            'Load Point1': _loadpointcontroller1.text,
+            'Drop Point1': _droppointcontroller1.text,
+            'No Of Tons / Units1': _nooftonscontroller1.text,
+            'Load Amount1': _loadamountcontroller1.text,
+            'Delivery Amount1': _deliveryamountcontroller1.text,
+            'Customer Name1': _customernamecontroller1.text,
+            'Customer Number1': _customernocontroller1.text,
           });
         } on FirebaseException catch (e) {
           print('Failed with error code: ${e.code}');
@@ -87,11 +129,9 @@ class _LoadDetailsState extends State<LoadDetails> {
       }
     }
 
-  
-
     var w = MediaQuery.sizeOf(context).width;
     return Scaffold(
-      appBar: CustomAppBar(title: 'Load Detail'),
+      appBar: const CustomAppBar(title: 'Load Detail'),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
@@ -99,11 +139,23 @@ class _LoadDetailsState extends State<LoadDetails> {
             SizedBox(
               height: w * 0.041,
             ),
+            Container(
+              decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.all(Radius.circular(6)),
+                  border: Border.all(color: grey, width: w * 0.0025)),
+              child: const Padding(
+                padding: EdgeInsets.all(2.0),
+                child: Text('Load Dispatch Details'),
+              ),
+            ),
+            SizedBox(
+              height: w * 0.041,
+            ),
             Padding(
               padding: EdgeInsets.only(left: w * 0.03, right: w * 0.03),
               child: Container(
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
                     border: Border.all(color: orange, width: w * 0.005)),
                 child: Center(
                   child: Column(
@@ -136,7 +188,7 @@ class _LoadDetailsState extends State<LoadDetails> {
                           readOnly: true,
                           decoration: InputDecoration(
                               focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: orange),
+                                borderSide: const BorderSide(color: orange),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               enabledBorder: OutlineInputBorder(
@@ -149,7 +201,7 @@ class _LoadDetailsState extends State<LoadDetails> {
                               hintText: 'Choose Date',
                               prefixIcon: GestureDetector(
                                   onTap: _selectDate,
-                                  child: Icon(Icons.calendar_month))),
+                                  child: const Icon(Icons.calendar_month))),
                         ),
                       ),
                       Padding(
@@ -167,7 +219,7 @@ class _LoadDetailsState extends State<LoadDetails> {
                         hintText: 'City/Location',
                         labeltext: '',
                         keyboardType: TextInputType.name,
-                        prefixicon: Icon(Icons.share_location_sharp),
+                        prefixicon: const Icon(Icons.share_location_sharp),
                       ),
                       Padding(
                         padding: EdgeInsets.only(
@@ -185,7 +237,7 @@ class _LoadDetailsState extends State<LoadDetails> {
                         hintText: 'Type',
                         labeltext: '',
                         keyboardType: TextInputType.name,
-                        prefixicon: Icon(Icons.share_location_sharp),
+                        prefixicon: const Icon(Icons.share_location_sharp),
                       ),
                       Padding(
                         padding: EdgeInsets.only(
@@ -203,7 +255,7 @@ class _LoadDetailsState extends State<LoadDetails> {
                         hintText: 'Type',
                         labeltext: 'Type',
                         keyboardType: TextInputType.name,
-                        prefixicon: Icon(Icons.share_location_sharp),
+                        prefixicon: const Icon(Icons.share_location_sharp),
                       ),
                       Padding(
                         padding: EdgeInsets.only(
@@ -288,6 +340,220 @@ class _LoadDetailsState extends State<LoadDetails> {
                         child: CustomTextFormField(
                           width: 320,
                           controller: _customernocontroller,
+                          hintText: 'Type',
+                          labeltext: '',
+                          keyboardType: TextInputType.number,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: w * 0.11,
+            ),
+            Container(
+              decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.all(Radius.circular(6)),
+                  border: Border.all(color: grey, width: w * 0.0025)),
+              child: const Padding(
+                padding: EdgeInsets.all(2.0),
+                child: Text('Load Return Details'),
+              ),
+            ),
+            SizedBox(
+              height: w * 0.081,
+            ),
+            Padding(
+              padding: EdgeInsets.only(left: w * 0.03, right: w * 0.03),
+              child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
+                    border: Border.all(color: orange, width: w * 0.005)),
+                child: Center(
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Date')),
+                      ),
+                      Container(
+                        width: 320,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4),
+                          boxShadow: const [
+                            BoxShadow(
+                              offset: Offset(-4, 4),
+                              blurRadius: 18,
+                              spreadRadius: 0,
+                              color: Color(0x17000000),
+                            )
+                          ],
+                        ),
+                        child: TextFormField(
+                          controller: _datepickController1,
+                          readOnly: true,
+                          decoration: InputDecoration(
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: orange),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: Colors.red),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              hintText: 'Choose Date',
+                              prefixIcon: GestureDetector(
+                                  onTap: _selectDate1,
+                                  child: const Icon(Icons.calendar_month))),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Start Point')),
+                      ),
+                      CustomTextFormFieldIcon(
+                        controller: _startpointcontroller1,
+                        hintText: 'City/Location',
+                        labeltext: '',
+                        keyboardType: TextInputType.name,
+                        prefixicon: const Icon(Icons.share_location_sharp),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Load Point')),
+                      ),
+                      CustomTextFormFieldIcon(
+                        width: 320,
+                        controller: _loadpointcontroller1,
+                        hintText: 'Type',
+                        labeltext: '',
+                        keyboardType: TextInputType.name,
+                        prefixicon: const Icon(Icons.share_location_sharp),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Drop Point')),
+                      ),
+                      CustomTextFormFieldIcon(
+                        width: 320,
+                        controller: _droppointcontroller1,
+                        hintText: 'Type',
+                        labeltext: 'Type',
+                        keyboardType: TextInputType.name,
+                        prefixicon: const Icon(Icons.share_location_sharp),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('No of Tons / Units')),
+                      ),
+                      CustomTextFormField(
+                        width: 320,
+                        controller: _nooftonscontroller1,
+                        hintText: 'ItemWeight in Tons',
+                        labeltext: '',
+                        keyboardType: TextInputType.number,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Load Amount')),
+                      ),
+                      CustomTextFormField(
+                        width: 320,
+                        controller: _loadamountcontroller1,
+                        hintText: 'Type',
+                        labeltext: '',
+                        keyboardType: TextInputType.number,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Delivery Amount')),
+                      ),
+                      CustomTextFormField(
+                        width: 320,
+                        controller: _deliveryamountcontroller1,
+                        hintText: 'Type',
+                        labeltext: '',
+                        keyboardType: TextInputType.number,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Customer Name')),
+                      ),
+                      CustomTextFormField(
+                        width: 320,
+                        controller: _customernamecontroller1,
+                        hintText: 'Type',
+                        labeltext: '',
+                        keyboardType: TextInputType.name,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Customer No')),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(bottom: w * 0.044),
+                        child: CustomTextFormField(
+                          width: 320,
+                          controller: _customernocontroller1,
                           hintText: 'Type',
                           labeltext: '',
                           keyboardType: TextInputType.number,

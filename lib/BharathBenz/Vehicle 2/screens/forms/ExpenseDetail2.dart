@@ -24,7 +24,7 @@ DateTime? pickeddate;
   var _otherscontroller = TextEditingController();
   var valuecontroller = TextEditingController();
   String? selectedItem; 
-  List<String> items = ['Food', 'Lorry Service', 'Tyre', 'Fast tag/Tole'];
+  List<String> items = ['Food', 'Lorry Service', 'Tyre', 'Fast tag/Toll'];
    Future<void> _selectDate() async {
   DateTime? picked = await showDatePicker(
         context: context,

@@ -39,6 +39,7 @@ class _MyPieChartState extends State<MyPieChart> {
 
       // Field names to sum
       String field1 = 'Delivery Amount';
+      String field2= 'Delivery Amount1';
 
       // Iterate through each collection
       for (String collection in collections) {
@@ -53,6 +54,7 @@ class _MyPieChartState extends State<MyPieChart> {
 
           // Get the values of field1, field2, and field3
           final fieldValue1 = data[field1];
+          final fieldValue2 = data[field2];
 
           // Convert to double and add to combined sum
           if (fieldValue1 != null) {
@@ -60,6 +62,13 @@ class _MyPieChartState extends State<MyPieChart> {
               combinedIncome += double.tryParse(fieldValue1) ?? 0.0;
             } else if (fieldValue1 is num) {
               combinedIncome += fieldValue1.toInt();
+            }
+          }
+           if (fieldValue2 != null) {
+            if (fieldValue2 is String) {
+              combinedIncome += double.tryParse(fieldValue2) ?? 0.0;
+            } else if (fieldValue2 is num) {
+              combinedIncome += fieldValue2.toInt();
             }
           }
         }
@@ -128,7 +137,7 @@ class _MyPieChartState extends State<MyPieChart> {
     'Food': Colors.green,
     'Lorry Service': Colors.blue,
     'Tyre': Colors.red,
-    'Fast tag/Tole': Colors.orange,
+    'Fast tag/Toll': Colors.orange,
   };
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(

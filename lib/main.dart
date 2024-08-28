@@ -1,6 +1,7 @@
 import 'package:e_commerce/Auth/keeplogin.dart';
 
 import 'package:e_commerce/firebase_options.dart';
+import 'package:e_commerce/screens/forms/LoadDetails.dart';
 
 
 import 'package:flutter/material.dart';
@@ -31,6 +32,7 @@ class MyApp extends StatelessWidget {
             //Login()
             //Signup()
            AuthWrapper()
+        // LoadDetails()
         // ExpensePieChart()
          // MyPieChart()
          //CalendarWithNumbers()

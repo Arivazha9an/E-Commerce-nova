@@ -25,11 +25,7 @@ class _CalendarWithNumbersState extends State<CalendarWithNumbers> {
      incomeSum();
     expenseSum();
   }
-   
-
-  
-
-  Future incomeSum() async {
+   Future incomeSum() async {
     try {
       // Initialize a combined sum variable
       double combinedIncome = 0.0;
@@ -43,6 +39,7 @@ class _CalendarWithNumbersState extends State<CalendarWithNumbers> {
 
       // Field names to sum
       String field1 = 'Delivery Amount';
+      String field2 = 'Delivery Amount1';
 
       // Iterate through each collection
       for (String collection in collections) {
@@ -57,6 +54,7 @@ class _CalendarWithNumbersState extends State<CalendarWithNumbers> {
 
           // Get the values of field1, field2, and field3
           final fieldValue1 = data[field1];
+          final fieldValue2 = data[field2];
 
           // Convert to double and add to combined sum
           if (fieldValue1 != null) {
@@ -64,6 +62,13 @@ class _CalendarWithNumbersState extends State<CalendarWithNumbers> {
               combinedIncome += double.tryParse(fieldValue1) ?? 0.0;
             } else if (fieldValue1 is num) {
               combinedIncome += fieldValue1.toInt();
+            }
+          }
+          if (fieldValue2 != null) {
+            if (fieldValue2 is String) {
+              combinedIncome += double.tryParse(fieldValue2) ?? 0.0;
+            } else if (fieldValue2 is num) {
+              combinedIncome += fieldValue2.toInt();
             }
           }
         }
@@ -77,6 +82,7 @@ class _CalendarWithNumbersState extends State<CalendarWithNumbers> {
       }
     }
   }
+
 
   Future expenseSum() async {
     try {
@@ -169,7 +175,7 @@ class _CalendarWithNumbersState extends State<CalendarWithNumbers> {
         selectedDate = picked;
         _datepickController.text = DateFormat('dd MMMM yyyy').format(picked);
         print('selected$selectedDate');
-        //_retrievePieChartData(); // Fetch pie chart data for the selected date
+        
       });
     }
   }
