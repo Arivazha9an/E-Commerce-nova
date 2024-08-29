@@ -71,6 +71,40 @@ DateTime? pickeddate;
       }
     }
   }
+  
+  saveCalender(){
+      if (_datepickController.text.isEmpty ||
+        valuecontroller.text.isEmpty ||
+        _loadmancontroller.text.isEmpty ||
+        _otherscontroller.text.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Error'),
+          content: const Text('Please fill all fields.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+      return;
+    } else {
+      try {
+        FirebaseFirestore.instance.collection('CalendarAppointmentCollection').add({          
+          'Subject': _loadmancontroller.text,
+          'StartTime': _datepickController.text,         
+                    
+        });
+      } on FirebaseException catch (e) {
+        print('Failed with error code: ${e.code}');
+        print(e.message);
+      }
+    }
+
+  }
    
  @override
   Widget build(BuildContext context) {
@@ -251,6 +285,7 @@ DateTime? pickeddate;
                       fontSize: 20,
                       onTap: () {
                         _saveData();
+                        saveCalender();
                       }),
                 ),
                 Padding(
