@@ -37,6 +37,143 @@ class _LoadDetailsState extends State<LoadDetails> {
   var _deliveryamountcontroller1 = TextEditingController();
   var _customernamecontroller1 = TextEditingController();
   var _customernocontroller1 = TextEditingController();
+
+
+  void _storeOrUpdateData1(String date, String number) async {
+    if (_startpointcontroller.text.isEmpty ||
+        _loadpointcontroller.text.isEmpty ||
+        _droppointcontroller.text.isEmpty ||
+        _nooftonscontroller.text.isEmpty ||
+        _loadamountcontroller.text.isEmpty ||
+        _deliveryamountcontroller.text.isEmpty ||
+        _customernamecontroller.text.isEmpty ||
+        _datepickController.text.isEmpty ||
+        _customernocontroller.text.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Error'),
+          content: const Text('Please fill all fields.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+      return;
+    } else {
+      try {
+        // Reference to the Firestore collection
+        final collectionRef = FirebaseFirestore.instance
+            .collection('CalendarAppointmentCollectionIncome');
+
+        // Convert the number from String to int, ensuring no null or invalid conversion
+        int parsedNumber = int.tryParse(number) ?? 0;
+
+        // Query to check if a document with the same date exists
+        final querySnapshot =
+            await collectionRef.where('StartTime', isEqualTo: date).get();
+
+        if (querySnapshot.docs.isNotEmpty) {
+          // Document exists, update the number
+          final docRef = querySnapshot.docs.first.reference;
+          // Retrieve the existing number, ensuring it's treated as int
+          final existingNumberString =
+              (querySnapshot.docs.first.data()['Subject'] ?? 0) as String;
+          int existingNumber = int.tryParse(existingNumberString) ?? 0;
+
+          // Sum the existing number with the new number
+          final newNumber = existingNumber + parsedNumber;
+
+          // Update the document with the new summed number
+          await docRef.update({'Subject': newNumber.toString()});
+          print('Document updated: $date with new number: $newNumber');
+        } else {
+          // Document does not exist, create a new one
+          await collectionRef
+              .add({'StartTime': date, 'Subject': parsedNumber.toString()});
+          print(
+              'New document created: $date with number: ${parsedNumber.toString()}');
+        }
+      } catch (e) {
+        // Handle errors
+        print('Error: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update data: $e')),
+        );
+      }
+    }
+  }
+
+  void _storeOrUpdateData2(String date, String number) async {
+    if (_startpointcontroller.text.isEmpty ||
+        _loadpointcontroller.text.isEmpty ||
+        _droppointcontroller.text.isEmpty ||
+        _nooftonscontroller.text.isEmpty ||
+        _loadamountcontroller.text.isEmpty ||
+        _deliveryamountcontroller.text.isEmpty ||
+        _customernamecontroller.text.isEmpty ||
+        _datepickController.text.isEmpty ||
+        _customernocontroller.text.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Error'),
+          content: const Text('Please fill all fields.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+      return;
+    } else {
+      try {
+        // Reference to the Firestore collection
+        final collectionRef = FirebaseFirestore.instance
+            .collection('CalendarAppointmentCollectionIncome');
+
+        // Convert the number from String to int, ensuring no null or invalid conversion
+        int parsedNumber = int.tryParse(number) ?? 0;
+
+        // Query to check if a document with the same date exists
+        final querySnapshot =
+            await collectionRef.where('StartTime', isEqualTo: date).get();
+
+        if (querySnapshot.docs.isNotEmpty) {
+          // Document exists, update the number
+          final docRef = querySnapshot.docs.first.reference;
+          // Retrieve the existing number, ensuring it's treated as int
+          final existingNumberString =
+              (querySnapshot.docs.first.data()['Subject'] ?? 0) as String;
+          int existingNumber = int.tryParse(existingNumberString) ?? 0;
+
+          // Sum the existing number with the new number
+          final newNumber = existingNumber + parsedNumber;
+
+          // Update the document with the new summed number
+          await docRef.update({'Subject': newNumber.toString()});
+          print('Document updated: $date with new number: $newNumber');
+        } else {
+          // Document does not exist, create a new one
+          await collectionRef
+              .add({'StartTime': date, 'Subject': parsedNumber.toString()});
+          print(
+              'New document created: $date with number: ${parsedNumber.toString()}');
+        }
+      } catch (e) {
+        // Handle errors
+        print('Error: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update data: $e')),
+        );
+      }
+    }
+  }
   @override
   Widget build(BuildContext context) {
     Future<void> _selectDate() async {
@@ -47,7 +184,7 @@ class _LoadDetailsState extends State<LoadDetails> {
           lastDate: DateTime(2099));
       if (picked != null) {
         setState(() {
-          _datepickController.text = DateFormat('yyyy-MM-dd').format(picked);
+          _datepickController.text = DateFormat('dd/MM/yyy').format(picked);
           pickeddate = picked;
         });
       }
@@ -61,7 +198,7 @@ class _LoadDetailsState extends State<LoadDetails> {
           lastDate: DateTime(2099));
       if (picked != null) {
         setState(() {
-          _datepickController1.text = DateFormat('yyyy-MM-dd').format(picked);
+          _datepickController1.text = DateFormat('dd/MM/yyy').format(picked);
           pickeddate1 = picked;
         });
       }
@@ -579,6 +716,10 @@ class _LoadDetailsState extends State<LoadDetails> {
                       fontSize: 20,
                       onTap: () {
                         _saveData();
+                         _storeOrUpdateData1(_datepickController.text,
+                            _deliveryamountcontroller.text);
+                             _storeOrUpdateData2(_datepickController1.text,
+                            _deliveryamountcontroller1.text);
                       }),
                 ),
                 Padding(

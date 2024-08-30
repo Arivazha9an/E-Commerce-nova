@@ -167,7 +167,7 @@ class _MyPieChartState extends State<MyPieChart> {
     ];
 
     // Iterate over each collection
-    String formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate);
+    String formattedDate = DateFormat('dd/MM/yyyy').format(selectedDate);
     for (String collection in collections) {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection(collection)

@@ -5,10 +5,6 @@ import 'package:flutter/scheduler.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:intl/intl.dart';
 
-
-
-
-
 class LoadDataFromFireStore extends StatefulWidget {
   @override
   LoadDataFromFireStoreState createState() => LoadDataFromFireStoreState();
@@ -33,13 +29,13 @@ class LoadDataFromFireStoreState extends State<LoadDataFromFireStore> {
         .collection("CalendarAppointmentCollection")
         .snapshots()
         .listen((event) {
-      event.docChanges.forEach((element) {
+      for (var element in event.docChanges) {
         if (element.type == DocumentChangeType.added) {
           if (!isInitialLoaded) {
-            return;
+            continue;
           }
 
-          final Random random = new Random();
+          final Random random = Random();
           Meeting app = Meeting.fromFireBaseSnapShotData(
               element, _colorCollection[random.nextInt(9)]);
           setState(() {
@@ -48,7 +44,7 @@ class LoadDataFromFireStoreState extends State<LoadDataFromFireStore> {
           });
         } else if (element.type == DocumentChangeType.modified) {
           if (!isInitialLoaded) {
-            return;
+            continue;
           }
 
           final Random random = new Random();
@@ -67,7 +63,7 @@ class LoadDataFromFireStoreState extends State<LoadDataFromFireStore> {
           });
         } else if (element.type == DocumentChangeType.removed) {
           if (!isInitialLoaded) {
-            return;
+            continue;
           }
 
           setState(() {
@@ -79,7 +75,7 @@ class LoadDataFromFireStoreState extends State<LoadDataFromFireStore> {
             events!.notifyListeners(CalendarDataSourceAction.remove, [meeting]);
           });
         }
-      });
+      }
     });
     super.initState();
   }
@@ -93,8 +89,7 @@ class LoadDataFromFireStoreState extends State<LoadDataFromFireStore> {
     List<Meeting> list = snapShotsValue.docs
         .map((e) => Meeting(
             eventName: e.data()['Subject'],
-            from:
-                DateFormat('dd/MM/yyyy').parse(e.data()['StartTime']),
+            from: DateFormat('dd/MM/yyyy').parse(e.data()['StartTime']),
             to: DateFormat('dd/MM/yyyy').parse(e.data()['StartTime']),
             background: _colorCollection[random.nextInt(9)],
             isAllDay: false,
@@ -109,14 +104,17 @@ class LoadDataFromFireStoreState extends State<LoadDataFromFireStore> {
   Widget build(BuildContext context) {
     isInitialLoaded = true;
     return Scaffold(
-        appBar: AppBar(
-            ),
-        body: SfCalendar(
-          view: CalendarView.month,
-          initialDisplayDate: DateTime(2020, 4, 5, 9, 0, 0),
-          dataSource: events,
-          monthViewSettings: const MonthViewSettings(
-            showAgenda: true,
+        appBar: AppBar(),
+        body: Container(
+          height: 500,
+          width: 360,
+          child: SfCalendar(
+            view: CalendarView.month,
+            initialDisplayDate: DateTime.now(),
+            dataSource: events,
+            monthViewSettings: const MonthViewSettings(
+                appointmentDisplayMode:
+                    MonthAppointmentDisplayMode.appointment),
           ),
         ));
   }
@@ -185,10 +183,8 @@ class Meeting {
   static Meeting fromFireBaseSnapShotData(dynamic element, Color color) {
     return Meeting(
         eventName: element.doc.data()!['Subject'],
-        from: DateFormat('dd/MM/yyyy HH:mm:ss')
-            .parse(element.doc.data()!['StartTime']),
-        to: DateFormat('dd/MM/yyyy HH:mm:ss')
-            .parse(element.doc.data()!['EndTime']),
+        from: DateFormat('dd/MM/yyyy').parse(element.doc.data()!['StartTime']),
+        to: DateFormat('dd/MM/yyyy').parse(element.doc.data()!['StartTime']),
         background: color,
         isAllDay: false,
         key: element.doc.id);

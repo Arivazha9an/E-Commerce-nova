@@ -57,6 +57,7 @@ dependencies:
   pie_chart: ^5.4.0
   fl_chart: ^0.68.0
   syncfusion_flutter_calendar: ^26.2.11
+  firebase_database: ^11.1.0
 
 dev_dependencies:
   flutter_test:

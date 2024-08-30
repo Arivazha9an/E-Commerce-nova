@@ -33,7 +33,7 @@ DateTime? pickeddate;
         lastDate: DateTime(2099));
     if (picked != null) {
       setState(() {
-        _datepickController.text = DateFormat('yyyy-MM-dd').format(picked);
+        _datepickController.text = DateFormat('dd/MM/yyyy').format(picked);
         pickeddate =  picked;
       });
     }
@@ -73,6 +73,68 @@ DateTime? pickeddate;
     }
   }
 
+  void _storeOrUpdateData(String date, String number) async {
+    if (_datepickController.text.isEmpty ||
+        valuecontroller.text.isEmpty ||
+        _loadmancontroller.text.isEmpty ||
+        _otherscontroller.text.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Error'),
+          content: const Text('Please fill all fields.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+      return;
+    } else {
+      try {
+        // Reference to the Firestore collection
+        final collectionRef = FirebaseFirestore.instance
+            .collection('CalendarAppointmentCollectionExpense');
+
+        // Convert the number from String to int, ensuring no null or invalid conversion
+        int parsedNumber = int.tryParse(number) ?? 0;
+
+        // Query to check if a document with the same date exists
+        final querySnapshot =
+            await collectionRef.where('StartTime', isEqualTo: date).get();
+
+        if (querySnapshot.docs.isNotEmpty) {
+          // Document exists, update the number
+          final docRef = querySnapshot.docs.first.reference;
+          // Retrieve the existing number, ensuring it's treated as int
+          final existingNumberString =
+              (querySnapshot.docs.first.data()['Subject'] ?? 0) as String;
+          int existingNumber = int.tryParse(existingNumberString) ?? 0;
+
+          // Sum the existing number with the new number
+          final newNumber = existingNumber + parsedNumber;
+
+          // Update the document with the new summed number
+          await docRef.update({'Subject': newNumber.toString()});
+          print('Document updated: $date with new number: $newNumber');
+        } else {
+          // Document does not exist, create a new one
+          await collectionRef
+              .add({'StartTime': date, 'Subject': parsedNumber.toString()});
+          print(
+              'New document created: $date with number: ${parsedNumber.toString()}');
+        }
+      } catch (e) {
+        // Handle errors
+        print('Error: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update data: $e')),
+        );
+      }
+    }
+  }
 
 
   @override
@@ -255,6 +317,8 @@ DateTime? pickeddate;
                       fontSize: 20,
                       onTap: () {
                         _saveData();
+                        _storeOrUpdateData(
+                            _datepickController.text, _loadmancontroller.text);
                       }),
                 ),
                 Padding(

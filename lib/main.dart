@@ -1,10 +1,9 @@
 import 'package:e_commerce/Auth/keeplogin.dart';
-import 'package:e_commerce/calender/syncalender.dart';
-import 'package:e_commerce/calender/syncback.dart';
+import 'package:e_commerce/calender/syncalenderexpense.dart';
+import 'package:e_commerce/calender/syncalenderincome.dart';
 
 import 'package:e_commerce/firebase_options.dart';
-import 'package:e_commerce/calender/calenderbackend.dart';
-import 'package:e_commerce/calender/calendertest.dart';
+
 import 'package:e_commerce/screens/forms/LoadDetails.dart';
 
 import 'package:flutter/material.dart';
@@ -35,10 +34,11 @@ class MyApp extends StatelessWidget {
             //Login()
             //Signup()
             //AuthWrapper()
-            //   CalendarWithIncomeExpense()
-            //  CalendarPage()
-            // LoadDataFromFireStore1()
-            LoadDataFromFireStore()
+           // LoadDataFromFireStoreIncome()
+        //   CalendarWithIncomeExpense()
+        //  CalendarPage()
+        // LoadDataFromFireStore1()
+         LoadDataFromFireStore()
         // LoadDetails()
         // ExpensePieChart()
         // MyPieChart()
