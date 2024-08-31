@@ -14,8 +14,8 @@ class MyPieChart extends StatefulWidget {
 class _MyPieChartState extends State<MyPieChart> {
   DateTime selectedDate = DateTime.now();
   final TextEditingController _datepickController = TextEditingController();
-  double combinedexpense = 0.0;
-  double combineincome = 0.0;
+  int combinedexpense = 0;
+  int combineincome = 0;
 
   @override
   void initState() {
@@ -28,7 +28,7 @@ class _MyPieChartState extends State<MyPieChart> {
   Future incomeSum() async {
     try {
       // Initialize a combined sum variable
-      double combinedIncome = 0.0;
+      int combinedIncome = 0;
 
       // List of collection names
       List<String> collections = [
@@ -59,14 +59,14 @@ class _MyPieChartState extends State<MyPieChart> {
           // Convert to double and add to combined sum
           if (fieldValue1 != null) {
             if (fieldValue1 is String) {
-              combinedIncome += double.tryParse(fieldValue1) ?? 0.0;
+              combinedIncome += int.tryParse(fieldValue1) ?? 0;
             } else if (fieldValue1 is num) {
               combinedIncome += fieldValue1.toInt();
             }
           }
            if (fieldValue2 != null) {
             if (fieldValue2 is String) {
-              combinedIncome += double.tryParse(fieldValue2) ?? 0.0;
+              combinedIncome += int.tryParse(fieldValue2) ?? 0;
             } else if (fieldValue2 is num) {
               combinedIncome += fieldValue2.toInt();
             }
@@ -86,7 +86,7 @@ class _MyPieChartState extends State<MyPieChart> {
   Future expenseSum() async {
     try {
       // Initialize a combined sum variable
-      double combinedExpense = 0.0;
+      int combinedExpense = 0;
 
       // List of collection names
       List<String> collections = [
@@ -115,7 +115,7 @@ class _MyPieChartState extends State<MyPieChart> {
           // Convert to double and add to combined sum
           if (fieldValue1 != null) {
             if (fieldValue1 is String) {
-              combinedExpense += double.tryParse(fieldValue1) ?? 0.0;
+              combinedExpense += int.tryParse(fieldValue1) ?? 0;
             } else if (fieldValue1 is num) {
               combinedExpense += fieldValue1.toInt();
             }
@@ -192,7 +192,7 @@ class _MyPieChartState extends State<MyPieChart> {
       'Food',
       'Lorry Service',
       'Tyre',
-      'Fast tag/Tole'
+      'Fast tag/Toll'
     ];
 
     // Initialize the map
@@ -287,7 +287,7 @@ class _MyPieChartState extends State<MyPieChart> {
                                 combineincome.toString(),
                                 style: const TextStyle(
                                     color: white,
-                                    fontSize: 18,
+                                    fontSize: 15,
                                     fontWeight: FontWeight.w400),
                               )
                             ],
@@ -321,7 +321,7 @@ class _MyPieChartState extends State<MyPieChart> {
                                 combinedexpense.toString(),
                                 style: const TextStyle(
                                     color: white,
-                                    fontSize: 18,
+                                    fontSize: 15,
                                     fontWeight: FontWeight.w400),
                               )
                             ],
@@ -358,7 +358,7 @@ class _MyPieChartState extends State<MyPieChart> {
                                 (combineincome - combinedexpense).toString(),
                                 style: const TextStyle(
                                     color: white,
-                                    fontSize: 18,
+                                    fontSize: 15,
                                     fontWeight: FontWeight.w400),
                               )
                             ],

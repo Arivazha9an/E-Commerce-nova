@@ -3,6 +3,7 @@ import 'package:e_commerce/calender/syncalenderexpense.dart';
 import 'package:e_commerce/calender/syncalenderincome.dart';
 
 import 'package:e_commerce/firebase_options.dart';
+import 'package:e_commerce/screens/calenderslide.dart';
 
 import 'package:e_commerce/screens/forms/LoadDetails.dart';
 
@@ -33,12 +34,13 @@ class MyApp extends StatelessWidget {
         home: // DatePickerExample()
             //Login()
             //Signup()
-            //AuthWrapper()
+           AuthWrapper()
+        // Calenderslide()
            // LoadDataFromFireStoreIncome()
         //   CalendarWithIncomeExpense()
         //  CalendarPage()
         // LoadDataFromFireStore1()
-         LoadDataFromFireStore()
+        // LoadDataFromFireStore()
         // LoadDetails()
         // ExpensePieChart()
         // MyPieChart()

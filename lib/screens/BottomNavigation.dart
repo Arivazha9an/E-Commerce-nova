@@ -1,4 +1,5 @@
 import 'package:e_commerce/constants/colors.dart';
+import 'package:e_commerce/screens/calenderslide.dart';
 
 
 
@@ -35,7 +36,7 @@ class _BottomNavigationBarExampleState
   final List<Widget> _pages = [
     const VehicleList(),
     const IncomeExpense(),
-   
+   Calenderslide(),
     MyPieChart()
   ];
 

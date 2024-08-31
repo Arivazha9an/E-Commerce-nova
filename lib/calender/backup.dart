@@ -19,14 +19,13 @@ class LoadDataFromFireStoreState extends State<LoadDataFromFireStore> {
 
   @override
   void initState() {
-    _initializeEventColor();
     getDataFromFireStore().then((results) {
       SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
         setState(() {});
       });
     });
     fireStoreReference
-        .collection("CalendarAppointmentCollection")
+        .collection("CalendarAppointmentCollectionExpense")
         .snapshots()
         .listen((event) {
       for (var element in event.docChanges) {
@@ -82,16 +81,15 @@ class LoadDataFromFireStoreState extends State<LoadDataFromFireStore> {
 
   Future<void> getDataFromFireStore() async {
     var snapShotsValue = await fireStoreReference
-        .collection("CalendarAppointmentCollection")
+        .collection("CalendarAppointmentCollectionExpense")
         .get();
 
-    final Random random = new Random();
     List<Meeting> list = snapShotsValue.docs
         .map((e) => Meeting(
             eventName: e.data()['Subject'],
             from: DateFormat('dd/MM/yyyy').parse(e.data()['StartTime']),
             to: DateFormat('dd/MM/yyyy').parse(e.data()['StartTime']),
-            background: _colorCollection[random.nextInt(9)],
+            background: Colors.redAccent,
             isAllDay: false,
             key: e.id))
         .toList();
@@ -104,32 +102,51 @@ class LoadDataFromFireStoreState extends State<LoadDataFromFireStore> {
   Widget build(BuildContext context) {
     isInitialLoaded = true;
     return Scaffold(
-        appBar: AppBar(),
-        body: Container(
-          height: 500,
-          width: 360,
-          child: SfCalendar(
-            view: CalendarView.month,
-            initialDisplayDate: DateTime.now(),
-            dataSource: events,
-            monthViewSettings: const MonthViewSettings(
-                appointmentDisplayMode:
-                    MonthAppointmentDisplayMode.appointment),
-          ),
-        ));
-  }
-
-  void _initializeEventColor() {
-    _colorCollection.add(const Color(0xFF0F8644));
-    _colorCollection.add(const Color(0xFF8B1FA9));
-    _colorCollection.add(const Color(0xFFD20100));
-    _colorCollection.add(const Color(0xFFFC571D));
-    _colorCollection.add(const Color(0xFF36B37B));
-    _colorCollection.add(const Color(0xFF01A1EF));
-    _colorCollection.add(const Color(0xFF3D4FB5));
-    _colorCollection.add(const Color(0xFFE47C73));
-    _colorCollection.add(const Color(0xFF636363));
-    _colorCollection.add(const Color(0xFF0A8043));
+      body: SfCalendar(
+        view: CalendarView.month,
+        dataSource: events,
+        monthViewSettings: MonthViewSettings(
+          appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
+        ),
+        monthCellBuilder: (BuildContext context, MonthCellDetails details) {
+          return Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey, width: 0.5),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  details.date.day.toString(),
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                ),
+                ...details.appointments.map((appointment) {
+                  final meeting = appointment as Meeting;
+                  return Container(
+                    margin: const EdgeInsets.symmetric(vertical: 1),
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: meeting.background,
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    height: 20, // Custom height for each appointment
+                    child: Text(
+                      meeting.eventName,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  );
+                }),
+              ],
+            ),
+          );
+        },
+      ),
+    );
   }
 }
 

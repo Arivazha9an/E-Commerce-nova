@@ -102,10 +102,9 @@ class LoadDataFromFireStoreState extends State<LoadDataFromFireStore> {
   @override
   Widget build(BuildContext context) {
     isInitialLoaded = true;
-    return Scaffold(
-        appBar: AppBar(),
+    return Scaffold(        
         body: Container(
-          height: 500,
+          height: 700,
           width: 360,
           child: SfCalendar(
             view: CalendarView.month,
