@@ -40,47 +40,15 @@ class _IncomeExpenseState extends State<IncomeExpense> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBarcolor(
-        height: 185,
+        height: 120,
         title: '',
         child: Column(
           children: [
             const SizedBox(
               height: 70,
             ),
-            Padding(
-              padding: const EdgeInsets.only(right: 20, left: 20),
-              child: SizedBox(
-                height: 50,
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    hintStyle: const TextStyle(color: white),
-                    hintText: 'Search',
-                    suffixIcon: const Icon(
-                      Icons.search,
-                      color: white,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(17),
-                      borderSide: const BorderSide(
-                          color: white, style: BorderStyle.solid),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(17),
-                      borderSide: const BorderSide(
-                          color: white, style: BorderStyle.solid),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(17),
-                      borderSide: const BorderSide(
-                          color: white, style: BorderStyle.solid),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 25,
-            ),
+           
+           
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -96,7 +64,7 @@ class _IncomeExpenseState extends State<IncomeExpense> {
           controller: _pageController,
           onPageChanged: _onPageChanged,
           children: const [
-            Customerretrivehover(),
+            CustomerRetriveHover(),
             Supplierretrievehover(),
           ],
         ),

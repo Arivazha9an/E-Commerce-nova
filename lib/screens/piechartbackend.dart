@@ -29,17 +29,15 @@ class _MyPieChartState extends State<MyPieChart> {
     try {
       // Initialize a combined sum variable
       int combinedIncome = 0;
-
       // List of collection names
       List<String> collections = [
         'bharathbenzloaddetail',
         'bharathbenzloaddetail2',
         'taurusloaddetail',
       ];
-
       // Field names to sum
       String field1 = 'Delivery Amount';
-      String field2= 'Delivery Amount1';
+      String field2 = 'Delivery Amount1';
 
       // Iterate through each collection
       for (String collection in collections) {
@@ -64,7 +62,7 @@ class _MyPieChartState extends State<MyPieChart> {
               combinedIncome += fieldValue1.toInt();
             }
           }
-           if (fieldValue2 != null) {
+          if (fieldValue2 != null) {
             if (fieldValue2 is String) {
               combinedIncome += int.tryParse(fieldValue2) ?? 0;
             } else if (fieldValue2 is num) {
@@ -138,6 +136,7 @@ class _MyPieChartState extends State<MyPieChart> {
     'Lorry Service': Colors.blue,
     'Tyre': Colors.red,
     'Fast tag/Toll': Colors.orange,
+    'Others': Colors.pinkAccent
   };
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -192,7 +191,8 @@ class _MyPieChartState extends State<MyPieChart> {
       'Food',
       'Lorry Service',
       'Tyre',
-      'Fast tag/Toll'
+      'Fast tag/Toll',
+      'Others'
     ];
 
     // Initialize the map
@@ -382,7 +382,7 @@ class _MyPieChartState extends State<MyPieChart> {
                         flex: 3,
                         child: Padding(
                           padding: const EdgeInsets.only(
-                              top: 60, right: 16.0, left: 30.0, bottom: 16.0),
+                              top: 60, right: 16.0, left: 30.0, bottom: 20),
                           child: PieChart(
                             PieChartData(
                               sections: dataMap.entries.map((entry) {
@@ -411,15 +411,13 @@ class _MyPieChartState extends State<MyPieChart> {
                           ),
                         ),
                       ),
-                      const SizedBox(
-                        height: 100,
-                      ),
+
                       // Legend on the Right
                       Expanded(
                         flex: 2,
                         child: Padding(
                           padding: const EdgeInsets.only(
-                              top: 34, right: 16.0, left: 16.0, bottom: 0),
+                              top: 14, right: 16.0, left: 16.0, bottom: 0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: dataMap.entries.map((entry) {

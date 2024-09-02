@@ -1,10 +1,8 @@
-import 'package:e_commerce/models/customer.dart';
 import 'package:e_commerce/screens/forms/Supplierdetails.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerce/constants/colors.dart';
-
 import 'package:e_commerce/widgets/TextfieldwithButton.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
@@ -17,41 +15,73 @@ class Supplierretrievehover extends StatefulWidget {
 
 class _SupplierretrievehoverState extends State<Supplierretrievehover> {
   bool _isLoading = true;
-   List<Map<String, dynamic>> dataList = [];
-    @override
-  void initState() {
-    super.initState();
-     _fetchData();
-    _simulateLoading();
-    expenseSum();
-    incomeSum();
-  }
 
-  Future<void> _fetchData() async {
-    QuerySnapshot querySnapshot =
-        await FirebaseFirestore.instance.collection('supplierdetails').get();
-
-    setState(() {
-      dataList = querySnapshot.docs.map((doc) {
-        return doc.data() as Map<String, dynamic>;
-      }).toList();
-    });
-  }
-
- 
-
-  Future<void> _simulateLoading() async {
-    await Future.delayed(
-        const Duration(seconds: 2)); // Simulate a 2-second loading time
-    setState(() {
-      _isLoading = false; // Update state to show the main UI
-    });
-  }
-
+  List<Map<String, dynamic>> _allDataList = [];
+  List<Map<String, dynamic>> _filteredDataList = [];
+  TextEditingController _searchController = TextEditingController();
   double combinedexpense = 0.0;
   double combineincome = 0.0;
 
- Future incomeSum() async {
+  @override
+  void initState() {
+    super.initState();
+    _fetchData();
+    _simulateLoading();
+    expenseSum();
+    incomeSum();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _fetchData() async {
+    try {
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection('supplierdetails').get();
+
+      setState(() {
+        _allDataList = querySnapshot.docs.map((doc) {
+          return doc.data() as Map<String, dynamic>;
+        }).toList();
+        _filteredDataList = _allDataList; // Initialize with all data
+        _isLoading = false; // Stop loading once data is fetched
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching customer details: $e');
+      }
+      setState(() {
+        _isLoading = false; // Stop loading on error as well
+      });
+    }
+  }
+
+  void _onSearchChanged() {
+    setState(() {
+      _filteredDataList = _allDataList
+          .where((data) => data['Name']
+              .toString()
+              .toLowerCase()
+              .contains(_searchController.text.toLowerCase()))
+          .toList();
+    });
+  }
+
+  Future<void> _simulateLoading() async {
+    await Future.delayed(const Duration(seconds: 2));
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  double combinedExpense = 0.0;
+  double combinedIncome = 0.0;
+  Future incomeSum() async {
     try {
       // Initialize a combined sum variable
       double combinedIncome = 0.0;
@@ -161,237 +191,178 @@ class _SupplierretrievehoverState extends State<Supplierretrievehover> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream:
-          FirebaseFirestore.instance.collection('supplierdetails').snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        }
+    return Scaffold(
+      body: _isLoading
+          ? Center(
+              child: LoadingAnimationWidget.discreteCircle(
+                  color: orange, size: 60),
+            )
+          : Column(
+              children: [
+                _buildSummaryRow(),
+                const Divider(color: Color.fromARGB(101, 87, 86, 84)),
+                _buildSearchBar(),
+                _buildCustomerList(),
+                _buildAddCustomerButton(),
+              ],
+            ),
+    );
+  }
 
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return LoadingAnimationWidget.discreteCircle(color: orange, size: 60);
-        }
+  Widget _buildSummaryRow() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _buildSummaryItem('Income', combineincome),
+          Container(
+            height: 70,
+            child: const VerticalDivider(
+              color: Colors.grey, // Adjust the color as needed
+              thickness: 1, // Adjust the thickness as needed
+              width: 20, // Space around the divider
+            ),
+          ),
+          _buildSummaryItem('Expense', combinedexpense),
+        ],
+      ),
+    );
+  }
 
-        ;
-        return Scaffold(
-          body: _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : Column(
-                  children: [
-                    SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              const Spacer(),
-                              Column(
-                                children: [
-                                  const Text(
-                                    '   Income',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                  Row(
-                                    children: [
-                                      const Icon(Icons.currency_rupee),
-                                      const Text(
-                                        '+',
-                                        style: const TextStyle(
-                                          fontSize: 20,
-                                        ),
-                                      ),
-                                      Text(
-                                        combineincome.toString(),
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              const Spacer(),
-                              const Center(
-                                child: SizedBox(
-                                  height: 62,
-                                  child: VerticalDivider(
-                                    width: 2,
-                                    color: Color.fromARGB(101, 87, 86, 84),
-                                    thickness: 2,
-                                  ),
-                                ),
-                              ),
-                              const Spacer(),
-                              Column(
-                                children: [
-                                  const Text(
-                                    '   Expense',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                  Row(
-                                    children: [
-                                      const Icon(Icons.currency_rupee),
-                                      const Text(
-                                        '-',
-                                        style: const TextStyle(
-                                          fontSize: 25,
-                                        ),
-                                      ),
-                                      Text(
-                                        combinedexpense.toString(),
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              const Spacer(),
-                            ],
-                          ),
-                          Container(
-                            color: lightBrown,
-                            height: 70,
-                          ),
-                          const SizedBox(
-                            height: 50,
-                          ),
-                        ],
-                      ),
+  Widget _buildSummaryItem(String label, double amount) {
+    return Column(
+      children: [
+        Text(label, style: const TextStyle(fontSize: 18)),
+        Row(
+          children: [
+            const Icon(Icons.currency_rupee),
+            Text(
+              amount.toString(),
+              style: const TextStyle(fontSize: 16),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      child: TextFormField(
+        controller: _searchController,
+        decoration: InputDecoration(
+          hintText: 'Search',
+          hintStyle: const TextStyle(color: grey),
+          suffixIcon: const Icon(Icons.search, color: black),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(17),
+            borderSide: const BorderSide(color: black),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCustomerList() {
+    if (_filteredDataList.isEmpty) {
+      return const Center(child: Text('No Supplier found'));
+    }
+    return Expanded(
+      child: ListView.builder(
+        itemCount: _filteredDataList.length,
+        itemBuilder: (context, index) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: CustomFieldButton(
+                name: _filteredDataList[index]['Name'],
+                ontap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          DetailPage(data: _filteredDataList[index]),
                     ),
-                       Expanded(
-                      child: ListView.builder(
-                        itemCount: dataList.length,
-                        itemBuilder: (context, index) {
-                          return Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: CustomFieldButton(
-                                name: dataList[index]['Name'],
-                                ontap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          DetailPage1(data: dataList[index]),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: Row(
-                          children: [
-                            FloatingActionButton.small(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const Supplierdetails()),
-                                );
-                              },
-                              backgroundColor: orange,
-                              shape: const CircleBorder(),
-                              child: const Icon(
-                                Icons.add,
-                                color: white,
-                              ),
-                            ),
-                            const Text('Add Supllier'),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-        );
-      },
+                  );
+                },
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildAddCustomerButton() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton.small(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const Supplierdetails()),
+              );
+            },
+            backgroundColor: orange,
+            shape: const CircleBorder(),
+            child: const Icon(Icons.add, color: white),
+          ),
+          const Text('Add Supplier'),
+        ],
+      ),
     );
   }
 }
 
-
-class DetailPage1 extends StatelessWidget {
+class DetailPage extends StatelessWidget {
   final Map<String, dynamic> data;
 
-  DetailPage1({required this.data});
+  DetailPage({required this.data});
 
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.sizeOf(context).width;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Supplier Information'),
+        title: const Text('Customer Information'),
       ),
       body: Center(
-        child: Column(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(10)),
-                  border: Border.all(color: orange, width: w * 0.005)),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Row(
-                    children: [
-                      Text('Customer Name ='),
-                      Text('${data['Name']}'),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Text('Place ='),
-                      Text('${data['Place']}'),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Text('Material ='),
-                      Text('${data['Material']}'),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Text('Paid  ='),
-                      Text('${data['Paid']}'),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Text('Not Paid  ='),
-                      Text('${data['Not_Paid']}'),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Text('Payment  ='),
-                      Text('${data['Payment']}'),
-                    ],
-                  ),
-                ],
-              ),
-            )
-          ],
+        child: Container(
+          height: 150,
+          margin: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(10.0),
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
+            border: Border.all(color: orange, width: w * 0.005),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildDetailRow('Customer Name:', data['Name']),
+              _buildDetailRow('Place:', data['Place']),
+              _buildDetailRow('Material:', data['Material']),
+              _buildDetailRow('Paid:', data['Paid']),
+              _buildDetailRow('Not Paid:', data['Not_Paid']),
+              _buildDetailRow('Payment:', data['Payment']),
+            ],
+          ),
         ),
       ),
     );
   }
+
+  Widget _buildDetailRow(String label, dynamic value) {
+    return Row(
+      children: [
+        Text('$label ', style: const TextStyle(fontWeight: FontWeight.bold)),
+        Text('$value'),
+      ],
+    );
+  }
 }
-
-
-

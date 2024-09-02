@@ -19,9 +19,8 @@ class LoadDataFromFireStoreState extends State<LoadDataFromFireStore> {
 
   @override
   void initState() {
-   
     getDataFromFireStore().then((results) {
-      SchedulerBinding.instance!.addPostFrameCallback((timeStamp){
+      SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
         setState(() {});
       });
     });
@@ -85,12 +84,12 @@ class LoadDataFromFireStoreState extends State<LoadDataFromFireStore> {
         .collection("CalendarAppointmentCollectionExpense")
         .get();
 
-       List<Meeting> list = snapShotsValue.docs
+    List<Meeting> list = snapShotsValue.docs
         .map((e) => Meeting(
             eventName: e.data()['Subject'],
             from: DateFormat('dd/MM/yyyy').parse(e.data()['StartTime']),
             to: DateFormat('dd/MM/yyyy').parse(e.data()['StartTime']),
-            background:Colors.redAccent,
+            background: Colors.redAccent,
             isAllDay: false,
             key: e.id))
         .toList();
@@ -102,22 +101,22 @@ class LoadDataFromFireStoreState extends State<LoadDataFromFireStore> {
   @override
   Widget build(BuildContext context) {
     isInitialLoaded = true;
-    return Scaffold(        
-        body: Container(
-          height: 700,
-          width: 360,
-          child: SfCalendar(
-            view: CalendarView.month,
-            initialDisplayDate: DateTime.now(),
-            dataSource: events,
-            monthViewSettings: const MonthViewSettings(
-                appointmentDisplayMode:
-                    MonthAppointmentDisplayMode.appointment),
-          ),
-        ));
+    return Scaffold(
+        body: SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      child: Container(
+        height: 600,
+        width: 360,
+        child: SfCalendar(
+          view: CalendarView.month,
+          initialDisplayDate: DateTime.now(),
+          dataSource: events,
+          monthViewSettings: const MonthViewSettings(
+              appointmentDisplayMode: MonthAppointmentDisplayMode.appointment),
+        ),
+      ),
+    ));
   }
-
-
 }
 
 class MeetingDataSource extends CalendarDataSource {
@@ -171,8 +170,7 @@ class Meeting {
     return Meeting(
         eventName: element.doc.data()!['Subject'],
         from: DateFormat('dd/MM/yyyy').parse(element.doc.data()!['StartTime']),
-        to: DateFormat('dd/MM/yyyy')
-            .parse(element.doc.data()!['StartTime']),
+        to: DateFormat('dd/MM/yyyy').parse(element.doc.data()!['StartTime']),
         background: color,
         isAllDay: false,
         key: element.doc.id);

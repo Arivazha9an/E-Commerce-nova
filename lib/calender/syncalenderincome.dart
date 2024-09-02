@@ -13,7 +13,7 @@ class LoadDataFromFireStoreIncome extends StatefulWidget {
 class LoadDataFromFireStoreState extends State<LoadDataFromFireStoreIncome> {
   List<Color> _colorCollection = <Color>[];
   MeetingDataSource? events;
-  
+
   final fireStoreReference = FirebaseFirestore.instance;
   bool isInitialLoaded = false;
 
@@ -102,19 +102,20 @@ class LoadDataFromFireStoreState extends State<LoadDataFromFireStoreIncome> {
   Widget build(BuildContext context) {
     isInitialLoaded = true;
     return Scaffold(
-        
-        body: Container(
-          height: 700,
-          width: 360,
-          child: SfCalendar(
-            view: CalendarView.month,
-            initialDisplayDate: DateTime.now(),
-            dataSource: events,
-            monthViewSettings: const MonthViewSettings(
-                appointmentDisplayMode:
-                    MonthAppointmentDisplayMode.appointment),
-          ),
-        ));
+        body: SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      child: Container(
+        height: 600,
+        width: 360,
+        child: SfCalendar(
+          view: CalendarView.month,
+          initialDisplayDate: DateTime.now(),
+          dataSource: events,
+          monthViewSettings: const MonthViewSettings(
+              appointmentDisplayMode: MonthAppointmentDisplayMode.appointment),
+        ),
+      ),
+    ));
   }
 }
 

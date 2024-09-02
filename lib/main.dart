@@ -1,12 +1,6 @@
 import 'package:e_commerce/Auth/keeplogin.dart';
-import 'package:e_commerce/calender/syncalenderexpense.dart';
-import 'package:e_commerce/calender/syncalenderincome.dart';
-
+import 'package:e_commerce/emptybutton.dart';
 import 'package:e_commerce/firebase_options.dart';
-import 'package:e_commerce/screens/calenderslide.dart';
-
-import 'package:e_commerce/screens/forms/LoadDetails.dart';
-
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -34,7 +28,8 @@ class MyApp extends StatelessWidget {
         home: // DatePickerExample()
             //Login()
             //Signup()
-           AuthWrapper()
+         //  AuthWrapper()
+         StartScreen()
         // Calenderslide()
            // LoadDataFromFireStoreIncome()
         //   CalendarWithIncomeExpense()
