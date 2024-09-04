@@ -59,6 +59,9 @@ dependencies:
   syncfusion_flutter_calendar: ^26.2.11
   firebase_database: ^11.1.0
   permission_handler: ^11.3.1
+  path_provider: ^2.1.4
+  share_plus: ^10.0.0
+  google_fonts: ^4.0.4
 
 dev_dependencies:
   flutter_test:

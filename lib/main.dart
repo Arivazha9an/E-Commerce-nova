@@ -1,4 +1,5 @@
 import 'package:e_commerce/Auth/keeplogin.dart';
+import 'package:e_commerce/drop.dart';
 import 'package:e_commerce/emptybutton.dart';
 import 'package:e_commerce/firebase_options.dart';
 import 'package:flutter/material.dart';
@@ -25,26 +26,9 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: // DatePickerExample()
-            //Login()
-            //Signup()
-         //  AuthWrapper()
-         StartScreen()
-        // Calenderslide()
-           // LoadDataFromFireStoreIncome()
-        //   CalendarWithIncomeExpense()
-        //  CalendarPage()
-        // LoadDataFromFireStore1()
-        // LoadDataFromFireStore()
-        // LoadDetails()
-        // ExpensePieChart()
-        // MyPieChart()
-        //CalendarWithNumbers()
-        // PaymentScreen()
-
-        //   const BottomNavigationBarExample()
-        //  PageViewExample()
-
+        home:
+        // const StartScreen()      
+        FirestoreDropdownTextField()
         );
   }
 }

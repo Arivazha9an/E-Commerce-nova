@@ -1,7 +1,7 @@
-
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/addvehicle.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/select/vehicleselect.dart';
 import 'package:e_commerce/BharathBenz/Vehicle%202/Gride%20View/GrideView2.dart';
 import 'package:e_commerce/constants/colors.dart';
-
 
 import 'package:flutter/material.dart';
 
@@ -360,6 +360,38 @@ class _BGrideviewState extends State<BGrideview> {
                               fontSize: 24,
                               fontWeight: FontWeight.bold),
                         ))),
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const Vehicleselect()),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 21),
+                    child: Container(
+                      height: 100,
+                      width: 155,
+                      decoration: const BoxDecoration(
+                        color: black,
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                        image: DecorationImage(
+                          image: AssetImage("assets/images/add.png"),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      // child: const Center(
+                      //     child: Text(
+                      //   'Add Vehicle',
+                      //   style: TextStyle(
+                      //       color: white,
+                      //       fontSize: 24,
+                      //       fontWeight: FontWeight.bold),
+                      // ))
+                    ),
                   ),
                 ),
               ],

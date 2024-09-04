@@ -26,9 +26,6 @@ class _FuelState extends State<BFuel> {
   @override
   Widget build(BuildContext context) {
 
-  void _fetchData(){
-    
-  }
 
 
 
@@ -86,7 +83,7 @@ class _FuelState extends State<BFuel> {
     var w = MediaQuery.sizeOf(context).width;
 
     return Scaffold(
-      appBar: CustomAppBar(title: 'Refuel Detail'),
+      appBar: const CustomAppBar(title: 'Refuel Detail'),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
@@ -95,7 +92,7 @@ class _FuelState extends State<BFuel> {
               padding: EdgeInsets.only(left: w * 0.03, right: w * 0.03),
               child: Container(
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
                     border: Border.all(color: orange, width: w * 0.005)),
                 child: Center(
                   child: Column(
@@ -128,7 +125,7 @@ class _FuelState extends State<BFuel> {
                           readOnly: true,
                           decoration: InputDecoration(
                               focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: orange),
+                                borderSide: const BorderSide(color: orange),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               enabledBorder: OutlineInputBorder(
@@ -141,7 +138,7 @@ class _FuelState extends State<BFuel> {
                               hintText: 'Choose Date',
                               prefixIcon: GestureDetector(
                                   onTap: _selectDate,
-                                  child: Icon(Icons.calendar_month))),
+                                  child: const Icon(Icons.calendar_month))),
                         ),
                       ),
                       Padding(
@@ -160,7 +157,7 @@ class _FuelState extends State<BFuel> {
                         hintText: 'Type',
                         labeltext: '',
                         keyboardType: TextInputType.number,
-                        prefixicon: Icon(Icons.share_location_sharp),
+                        prefixicon: const Icon(Icons.share_location_sharp),
                       ),
                       Padding(
                         padding: EdgeInsets.only(
@@ -219,7 +216,7 @@ class _FuelState extends State<BFuel> {
                             right: w * 0.03,
                             left: w * 0.025,
                             bottom: w * 0.02),
-                        child: Align(
+                        child: const Align(
                             alignment: Alignment.centerLeft,
                             child: Text('End Km')),
                       ),
@@ -231,7 +228,7 @@ class _FuelState extends State<BFuel> {
                           hintText: 'Type',
                           labeltext: '',
                           keyboardType: TextInputType.number,
-                          prefixicon: Icon(Icons.share_location_sharp),
+                          prefixicon: const Icon(Icons.share_location_sharp),
                         ),
                       ),
                     ],
@@ -268,7 +265,7 @@ class _FuelState extends State<BFuel> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>  Fuelretrieve()),
+                            builder: (context) =>  const FuelRetrieve()),
                       );
 
                     },
