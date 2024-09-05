@@ -25,7 +25,7 @@ class Vehicleretrieve extends StatelessWidget {
 
         return Scaffold(
           appBar: const CustomAppBar(
-            title: 'Load  Data',
+            title: 'Vehicle Details',
             isGoBack: true,
           ),
           body: ListView(
@@ -39,7 +39,7 @@ class Vehicleretrieve extends StatelessWidget {
               String lorry = data['Lorry'] ?? '';
               String model = data['Model'] ?? '';
               String buildYear = data['Build Year'] ?? '';
-             return Padding(
+              return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
                   width: 100,
@@ -87,7 +87,6 @@ class Vehicleretrieve extends StatelessWidget {
                             Text(buildYear),
                           ],
                         ),
-                       
                       ],
                     ),
                   ),

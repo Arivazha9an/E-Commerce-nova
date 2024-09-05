@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/retrieve/updateforms/fuelupdate.dart';
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
+import 'package:e_commerce/widgets/custombutton.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
@@ -31,10 +32,14 @@ class _FuelRetrieveState extends State<FuelRetrieve> {
   bool _isLoading = false;
   bool _hasMoreData = true;
   late PageController _pageController;
+  final TextEditingController _dropController = TextEditingController();
+  List<String> _items = []; // List to hold Firestore data
+  String? _selectedItemvehicle;
 
   @override
   void initState() {
     super.initState();
+    _fetchItems();
     _fetchData(0);
     _pageController = PageController();
     _pageController.addListener(() {
@@ -50,6 +55,24 @@ class _FuelRetrieveState extends State<FuelRetrieve> {
     _endDateController.dispose();
     _pageController.dispose();
     super.dispose();
+  }
+
+  Future<void> _fetchItems() async {
+    try {
+      // Fetch data from Firestore (replace 'collectionName' and 'fieldName' with your actual Firestore collection and field)
+      QuerySnapshot snapshot =
+          await FirebaseFirestore.instance.collection('AddVehicles').get();
+
+      // Extract data from documents and convert to a list of strings
+      List<String> items =
+          snapshot.docs.map((doc) => doc['Vehicle Number'].toString()).toList();
+
+      setState(() {
+        _items = items; // Update the state with fetched items
+      });
+    } catch (e) {
+      print('Error fetching data from Firestore: $e'); // Handle errors
+    }
   }
 
   Future<void> _showDeleteConfirmationDialog(
@@ -101,7 +124,7 @@ class _FuelRetrieveState extends State<FuelRetrieve> {
     );
     if (picked != null) {
       setState(() {
-        controller.text = DateFormat('yyyy-MM-dd').format(picked);
+        controller.text = DateFormat('dd/MM/yyyy').format(picked);
         if (controller == _startDateController) {
           _startDate = picked;
         } else if (controller == _endDateController) {
@@ -118,38 +141,55 @@ class _FuelRetrieveState extends State<FuelRetrieve> {
       _isLoading = true;
     });
 
+    // Start with the base query
     Query query = FirebaseFirestore.instance
         .collection('bharthbenzrefuel')
         .orderBy('date')
         .limit(10);
 
+    // Apply date filters if selected
     if (_startDate != null) {
       query = query.where('date',
-          isGreaterThanOrEqualTo: DateFormat('yyyy-MM-dd').format(_startDate!));
+          isGreaterThanOrEqualTo: DateFormat('dd/MM/yyyy').format(_startDate!));
     }
     if (_endDate != null) {
       query = query.where('date',
-          isLessThanOrEqualTo: DateFormat('yyyy-MM-dd').format(_endDate!));
+          isLessThanOrEqualTo: DateFormat('dd/MM/yyyy').format(_endDate!));
     }
 
+    // Filter by the selected vehicle number if one is selected
+    if (_selectedItemvehicle != null && _selectedItemvehicle!.isNotEmpty) {
+      query = query.where('vehiclenumber', isEqualTo: _selectedItemvehicle);
+    }
+
+    // Paginate the results
     if (pageIndex > 0 && _pageData.containsKey(pageIndex - 1)) {
       query = query.startAfterDocument(_pageData[pageIndex - 1]!.last);
     }
 
-    QuerySnapshot querySnapshot = await query.get();
-    List<DocumentSnapshot> documents = querySnapshot.docs;
+    try {
+      QuerySnapshot querySnapshot = await query.get();
+      List<DocumentSnapshot> documents = querySnapshot.docs;
 
-    setState(() {
-      _isLoading = false;
-      if (documents.isEmpty) {
-        _hasMoreData = false;
-      } else {
-        _pageData[pageIndex] = documents;
-        if (documents.length < 10) {
+      setState(() {
+        _isLoading = false;
+        if (documents.isEmpty) {
           _hasMoreData = false;
+        } else {
+          _pageData[pageIndex] = documents;
+          if (documents.length < 10) {
+            _hasMoreData = false;
+          }
         }
-      }
-    });
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      print('Error fetching data: $e');
+      // Handle errors (optional)
+      Fluttertoast.showToast(msg: 'Failed to fetch data.');
+    }
   }
 
   void _onPageChanged(int index) {
@@ -183,6 +223,7 @@ class _FuelRetrieveState extends State<FuelRetrieve> {
               child: pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
+                  pw.Text('Vehicle No: ${data['vehiclenumber'] ?? ''}'),
                   pw.Text('Date: ${data['date'] ?? ''}'),
                   pw.Text('Start Km: ${data['Start KM'] ?? ''}'),
                   pw.Text('Price: ${data['Price'] ?? ''}'),
@@ -227,7 +268,7 @@ class _FuelRetrieveState extends State<FuelRetrieve> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(13.0),
             child: Row(
               children: [
                 Expanded(
@@ -244,7 +285,7 @@ class _FuelRetrieveState extends State<FuelRetrieve> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 16.0),
+                const SizedBox(width: 10.0),
                 Expanded(
                   child: TextField(
                     controller: _endDateController,
@@ -259,8 +300,8 @@ class _FuelRetrieveState extends State<FuelRetrieve> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 16.0),
-                ElevatedButton(
+                const SizedBox(width: 5.0),
+                IconButton(
                   onPressed: () {
                     setState(() {
                       _pageData.clear();
@@ -269,11 +310,62 @@ class _FuelRetrieveState extends State<FuelRetrieve> {
                       _fetchData(0); // Fetch first page
                     });
                   },
-                  child: const Text('Apply Filter'),
+                  icon: const Icon(Icons.refresh_rounded),
                 ),
               ],
             ),
           ),
+          Padding(
+            padding:
+                const EdgeInsets.only(right: 15, left: 15, top: 0, bottom: 5),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                DropdownButton<String>(
+                  value: _selectedItemvehicle,
+                  hint: const Text('Vehicle Number'),
+                  icon: const Icon(Icons.arrow_drop_down),
+                  items: _items.map((String item) {
+                    return DropdownMenuItem<String>(
+                      value: item,
+                      child: Text(item),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedItemvehicle =
+                          newValue; // Update the selected item
+                      _dropController.text =
+                          newValue ?? ''; // Update the text field
+                      _pageData.clear(); // Clear existing data
+                      _hasMoreData = true; // Reset data fetching state
+                      _currentPage = 0; // Reset to the first page
+                      _fetchData(0); // Fetch data for the first page
+                    });
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.close_rounded),
+                  onPressed: () {
+                    setState(() {
+                      _startDate = null; // Clear the start date filter
+                      _endDate = null; // Clear the end date filter
+                      _selectedItemvehicle = null; // Clear the vehicle filter
+                      _startDateController
+                          .clear(); // Clear the start date TextField
+                      _endDateController
+                          .clear(); // Clear the end date TextField
+                      _pageData.clear(); // Clear existing paginated data
+                      _hasMoreData = true; // Reset the flag to fetch more data
+                      _currentPage = 0; // Reset to the first page
+                      _fetchData(0); // Fetch data without filters
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
+
           Expanded(
             child: PageView.builder(
               controller: _pageController,
@@ -287,7 +379,7 @@ class _FuelRetrieveState extends State<FuelRetrieve> {
                     itemBuilder: (context, i) {
                       Map<String, dynamic> data =
                           documents[i].data() as Map<String, dynamic>;
-
+                      String vehicleno = data['vehiclenumber'] ?? '';
                       String date = data['date'] ?? '';
                       String startKm = data['Start KM'] ?? '';
                       String price = data['Price'] ?? '';
@@ -300,7 +392,7 @@ class _FuelRetrieveState extends State<FuelRetrieve> {
                         padding: const EdgeInsets.all(8.0),
                         child: Container(
                           width: 100,
-                          height: 200,
+                          height: 210,
                           decoration: BoxDecoration(
                               borderRadius:
                                   const BorderRadius.all(Radius.circular(10)),
@@ -312,6 +404,12 @@ class _FuelRetrieveState extends State<FuelRetrieve> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                Row(
+                                  children: [
+                                    const Text('Vehicle No: '),
+                                    Text(vehicleno),
+                                  ],
+                                ),
                                 Row(
                                   children: [
                                     const Text('Date: '),
@@ -379,28 +477,27 @@ class _FuelRetrieveState extends State<FuelRetrieve> {
                                       ),
                                     ),
                                     IconButton(
-                                        onPressed: () {
-                                          _showDeleteConfirmationDialog(
-                                              context, docId);
-                                        },
-                                        icon:
-                                        Container(
-                                          height: 35,
-                                          width: 35,
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(40),
-                                              color:Colors.red,
-                                              border:
-                                                  Border.all(color: Colors.red)),
-                                          child: const Icon(
-                                            Icons.delete,
-                                          color:white ,
-                                            // size: 30,
-                                          ),
+                                      onPressed: () {
+                                        _showDeleteConfirmationDialog(
+                                            context, docId);
+                                      },
+                                      icon: Container(
+                                        height: 35,
+                                        width: 35,
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(40),
+                                            color: Colors.red,
+                                            border:
+                                                Border.all(color: Colors.red)),
+                                        child: const Icon(
+                                          Icons.delete,
+                                          color: white,
+                                          // size: 30,
                                         ),
+                                      ),
                                     )
-                                                                         ],
+                                  ],
                                 ),
                               ],
                             ),

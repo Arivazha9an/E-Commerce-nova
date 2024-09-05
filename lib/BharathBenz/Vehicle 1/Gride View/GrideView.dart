@@ -1,10 +1,18 @@
 import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/addvehicle.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/select/Insuranceselect.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/select/Loadselect.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/select/PUCSelect.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/select/Permitselect.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/select/Refuelselect.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/select/driverselect.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/select/expenseSelect.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/select/serviceselect.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/select/vehicledetailselect.dart';
 import 'package:e_commerce/BharathBenz/Vehicle%201/screens/select/vehicleselect.dart';
-import 'package:e_commerce/BharathBenz/Vehicle%202/Gride%20View/GrideView2.dart';
+
 import 'package:e_commerce/constants/colors.dart';
-
+import 'package:e_commerce/screens/forms/Permit.dart';
 import 'package:flutter/material.dart';
-
 import '../screens/forms/DriverDetail.dart';
 import '../screens/forms/ExpenseDetail.dart';
 import '../screens/forms/LoadDetails.dart';
@@ -12,8 +20,6 @@ import '../screens/forms/PUCdetail.dart';
 import '../screens/forms/Permit.dart';
 import '../screens/forms/VehicleDetails.dart';
 import '../screens/forms/insurancedetail.dart';
-import '../screens/forms/refuel.dart';
-import '../screens/forms/servics.dart';
 
 class BGrideview extends StatefulWidget {
   const BGrideview({super.key});
@@ -23,46 +29,14 @@ class BGrideview extends StatefulWidget {
 }
 
 class _BGrideviewState extends State<BGrideview> {
-  String _appBarTitle = 'Vehicle 1'; // Default AppBar title
-
-  void _onDropdownChanged(String? newValue) {
-    if (newValue == 'Vehicle 1') {
-      setState(() {
-        _appBarTitle = newValue!; // Change AppBar title to Option 1
-      });
-    } else if (newValue == 'Vehicle 2') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => BGrideview2(),
-        ),
-      );
-    }
-  }
+  // Default AppBar title
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(_appBarTitle),
-            SizedBox(width: 8), // Space between title and dropdown
-            PopupMenuButton<String>(
-              icon: Icon(Icons.arrow_drop_down, color: black),
-              onSelected: _onDropdownChanged,
-              itemBuilder: (BuildContext context) {
-                return {'Vehicle 1', 'Vehicle 2'}.map((String choice) {
-                  return PopupMenuItem<String>(
-                    value: choice,
-                    child: Text(choice),
-                  );
-                }).toList();
-              },
-            ),
-          ],
-        ),
+        title: Text('Bharath Benz'),
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
@@ -78,7 +52,8 @@ class _BGrideviewState extends State<BGrideview> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => BFuel()),
+                      MaterialPageRoute(
+                          builder: (context) => const Fuelselect()),
                     );
                   },
                   child: Container(
@@ -106,7 +81,7 @@ class _BGrideviewState extends State<BGrideview> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const BServices()),
+                          builder: (context) => const Serviceselect()),
                     );
                   },
                   child: Container(
@@ -142,7 +117,7 @@ class _BGrideviewState extends State<BGrideview> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const BExpensedetail()),
+                          builder: (context) => const Expenseselect()),
                     );
                   },
                   child: Container(
@@ -170,7 +145,7 @@ class _BGrideviewState extends State<BGrideview> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const BInsurancedetail()),
+                          builder: (context) => const Insuranceselect()),
                     );
                   },
                   child: Container(
@@ -205,7 +180,8 @@ class _BGrideviewState extends State<BGrideview> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const BPermit()),
+                      MaterialPageRoute(
+                          builder: (context) => const Permitselect()),
                     );
                   },
                   child: Container(
@@ -235,7 +211,7 @@ class _BGrideviewState extends State<BGrideview> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const BPUCDetail()),
+                          builder: (context) => const Pucselect()),
                     );
                   },
                   child: Container(
@@ -273,7 +249,7 @@ class _BGrideviewState extends State<BGrideview> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const BLoadDetails()),
+                          builder: (context) => const Loadselect()),
                     );
                   },
                   child: Container(
@@ -301,7 +277,7 @@ class _BGrideviewState extends State<BGrideview> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const BVehicleDetails()),
+                          builder: (context) => const Vehicledetailselect()),
                     );
                   },
                   child: Container(
@@ -336,7 +312,7 @@ class _BGrideviewState extends State<BGrideview> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const BDriverDetail()),
+                          builder: (context) => const Driverselect()),
                     );
                   },
                   child: Padding(

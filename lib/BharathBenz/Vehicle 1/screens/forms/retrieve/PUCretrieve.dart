@@ -22,7 +22,7 @@ class Pucretrieve extends StatelessWidget {
 
         return Scaffold(
           appBar: const CustomAppBar(
-            title: 'Service Data',
+            title: 'PUC Data',
             isGoBack: true,
           ),
           body: ListView(

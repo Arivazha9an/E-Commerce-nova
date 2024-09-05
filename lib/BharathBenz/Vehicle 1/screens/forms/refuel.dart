@@ -1,4 +1,4 @@
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/retrieve/fuelretrieve.dart';
+
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:e_commerce/widgets/custombuttom%20outlined.dart';
@@ -23,14 +23,49 @@ class _FuelState extends State<BFuel> {
   var _literscontroller = TextEditingController();
   var _placecontroller = TextEditingController();
   var _endKMcontroller = TextEditingController();
+  final TextEditingController _dropController = TextEditingController();
+  List<String> _items = []; // List to hold Firestore data
+  String? _selectedItemvehicle; // Variable to hold the selected item
+  @override
+  void initState() {
+    super.initState();
+    _fetchItems(); // Fetch items when the widget is initialized
+  }
+
+  void clear() {
+    _datepickController.clear();
+    _startKmcontroller.clear();
+    _priceontroller.clear();
+    _literscontroller.clear();
+    _placecontroller.clear();
+    _endKMcontroller.clear();
+    _dropController.clear();
+  }
+
+  // Function to fetch data from Firestore
+  Future<void> _fetchItems() async {
+    try {
+      // Fetch data from Firestore (replace 'collectionName' and 'fieldName' with your actual Firestore collection and field)
+      QuerySnapshot snapshot =
+          await FirebaseFirestore.instance.collection('AddVehicles').get();
+
+      // Extract data from documents and convert to a list of strings
+      List<String> items =
+          snapshot.docs.map((doc) => doc['Vehicle Number'].toString()).toList();
+
+      setState(() {
+        _items = items; // Update the state with fetched items
+      });
+    } catch (e) {
+      print('Error fetching data from Firestore: $e'); // Handle errors
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-
-
-
-
     void _saveData() {
-      if (_datepickController.text.isEmpty ||
+      if (_dropController.text.isEmpty ||
+          _datepickController.text.isEmpty ||
           _startKmcontroller.text.isEmpty ||
           _priceontroller.text.isEmpty ||
           _literscontroller.text.isEmpty ||
@@ -39,7 +74,7 @@ class _FuelState extends State<BFuel> {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title:const  Text('Error'),
+            title: const Text('Error'),
             content: const Text('Please fill all fields.'),
             actions: [
               TextButton(
@@ -53,6 +88,7 @@ class _FuelState extends State<BFuel> {
       } else {
         try {
           FirebaseFirestore.instance.collection('bharthbenzrefuel').add({
+            'vehiclenumber': _dropController.text,
             'date': _datepickController.text,
             'Start KM': _startKmcontroller.text,
             'Price': _priceontroller.text,
@@ -75,7 +111,7 @@ class _FuelState extends State<BFuel> {
           lastDate: DateTime(2099));
       if (picked != null) {
         setState(() {
-          _datepickController.text = DateFormat('yyyy-MM-dd').format(picked);
+          _datepickController.text = DateFormat('dd/MM/yyyy').format(picked);
         });
       }
     }
@@ -97,6 +133,55 @@ class _FuelState extends State<BFuel> {
                 child: Center(
                   child: Column(
                     children: [
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Vehicle Number')),
+                      ),
+                      Container(
+                        width: 320,
+                        child: TextField(
+                          controller: _dropController,
+                          readOnly: true, // Make the text field read-only
+                          decoration: InputDecoration(
+                            labelText: 'Select Vehicle No',
+                            suffixIcon: DropdownButton<String>(
+                              value: _selectedItemvehicle,
+                              hint: const Text('Select'),
+                              icon: const Icon(Icons.arrow_drop_down),
+                              items: _items.map((String item) {
+                                return DropdownMenuItem<String>(
+                                  value: item,
+                                  child: Text(item),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _selectedItemvehicle =
+                                      newValue; // Update the selected item
+                                  _dropController.text =
+                                      newValue ?? ''; // Update the text field
+                                });
+                              },
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: orange),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: black),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            border: const OutlineInputBorder(
+                                borderSide: BorderSide(color: orange)),
+                          ),
+                        ),
+                      ),
                       Padding(
                         padding: EdgeInsets.only(
                             top: w * 0.03,
@@ -253,21 +338,16 @@ class _FuelState extends State<BFuel> {
                         _saveData();
                       }),
                 ),
-              Padding(
+                Padding(
                   padding: EdgeInsets.only(left: w * 0.15),
                   child: CustomTextButtonOut(
-                    title: 'Fetch',
+                    title: 'Clear',
                     width: w * 0.3,
                     background: Colors.transparent,
                     textColor: black,
                     fontSize: 20,
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>  const FuelRetrieve()),
-                      );
-
+                      clear();
                     },
                     color: black,
                   ),

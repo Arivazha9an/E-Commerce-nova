@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:e_commerce/constants/colors.dart';
 import 'package:flutter/material.dart';
 
 class FirestoreDropdownTextField extends StatefulWidget {
@@ -9,7 +10,7 @@ class FirestoreDropdownTextField extends StatefulWidget {
 
 class _FirestoreDropdownTextFieldState
     extends State<FirestoreDropdownTextField> {
-  final TextEditingController _textController = TextEditingController();
+  final TextEditingController _dropController = TextEditingController();
   List<String> _items = []; // List to hold Firestore data
   String? _selectedItem; // Variable to hold the selected item
 
@@ -41,16 +42,12 @@ class _FirestoreDropdownTextFieldState
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.sizeOf(context).width;
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Firestore Dropdown in TextField'),
-      ),
-      body: Padding(
+    return  Padding(
         padding: EdgeInsets.all(w * 0.05),
         child: Column(
           children: [
             TextField(
-              controller: _textController,
+              controller: _dropController,
               readOnly: true, // Make the text field read-only
               decoration: InputDecoration(
                 labelText: 'Select Item',
@@ -58,6 +55,7 @@ class _FirestoreDropdownTextFieldState
                   value: _selectedItem,
                   hint: const Text('Select'),
                   icon: const Icon(Icons.arrow_drop_down),
+                  
                   items: _items.map((String item) {
                     return DropdownMenuItem<String>(
                       value: item,
@@ -67,17 +65,27 @@ class _FirestoreDropdownTextFieldState
                   onChanged: (String? newValue) {
                     setState(() {
                       _selectedItem = newValue; // Update the selected item
-                      _textController.text =
+                      _dropController.text =
                           newValue ?? ''; // Update the text field
                     });
                   },
                 ),
-                border: const OutlineInputBorder(),
+                 focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: orange),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                enabledBorder: OutlineInputBorder(
+                   borderSide: BorderSide(color: orange),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                border: const OutlineInputBorder(
+                  borderSide: BorderSide(color: orange)
+                ),
               ),
             ),
           ],
         ),
-      ),
-    );
+      );
+    
   }
 }

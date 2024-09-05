@@ -1,8 +1,8 @@
 
 import 'package:e_commerce/constants/colors.dart';
 
-import 'package:e_commerce/screens/forms/retrieve/customerretrivehover.dart';
-import 'package:e_commerce/screens/forms/retrieve/supplierretrievehover.dart';
+import 'package:e_commerce/screens/customerretrivehover.dart';
+import 'package:e_commerce/screens/supplierretrievehover.dart';
 
 import 'package:e_commerce/widgets/customcolorappbar.dart';
 import 'package:flutter/material.dart';

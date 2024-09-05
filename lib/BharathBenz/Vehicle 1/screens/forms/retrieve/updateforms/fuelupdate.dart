@@ -25,11 +25,16 @@ class _UpdateFormState extends State<UpdateForm> {
   late TextEditingController literController;
   late TextEditingController placeController;
   late TextEditingController endKmController;
-
+  late TextEditingController _dropController;
+  List<String> _items = []; // List to hold Firestore data
+  String? _selectedItemvehicle; // Variable to hold the selected item
+  @override
   @override
   void initState() {
+    _fetchItems();
     super.initState();
     // Initialize controllers with data from Firestore
+    _dropController = TextEditingController(text: widget.data['vehiclenumber']);
     dateController = TextEditingController(text: widget.data['date'] ?? '');
     startKmController =
         TextEditingController(text: widget.data['Start KM'] ?? '');
@@ -42,6 +47,7 @@ class _UpdateFormState extends State<UpdateForm> {
   @override
   void dispose() {
     // Dispose controllers to avoid memory leaks
+    _dropController.dispose();
     dateController.dispose();
     startKmController.dispose();
     priceController.dispose();
@@ -56,6 +62,24 @@ class _UpdateFormState extends State<UpdateForm> {
       return DateTime.parse(dateString);
     } catch (e) {
       return null;
+    }
+  }
+
+  Future<void> _fetchItems() async {
+    try {
+      // Fetch data from Firestore (replace 'collectionName' and 'fieldName' with your actual Firestore collection and field)
+      QuerySnapshot snapshot =
+          await FirebaseFirestore.instance.collection('AddVehicles').get();
+
+      // Extract data from documents and convert to a list of strings
+      List<String> items =
+          snapshot.docs.map((doc) => doc['Vehicle Number'].toString()).toList();
+
+      setState(() {
+        _items = items; // Update the state with fetched items
+      });
+    } catch (e) {
+      print('Error fetching data from Firestore: $e'); // Handle errors
     }
   }
 
@@ -78,7 +102,7 @@ class _UpdateFormState extends State<UpdateForm> {
     var w = MediaQuery.sizeOf(context).width;
 
     return Scaffold(
-      appBar: CustomAppBar(title: 'Update Refuel Data', isGoBack: true),
+      appBar: const CustomAppBar(title: 'Update Refuel Data', isGoBack: true),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
@@ -93,6 +117,55 @@ class _UpdateFormState extends State<UpdateForm> {
                 child: Center(
                   child: Column(
                     children: [
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Vehicle Number')),
+                      ),
+                      Container(
+                        width: 320,
+                        child: TextField(
+                          controller: _dropController,
+                          readOnly: true, // Make the text field read-only
+                          decoration: InputDecoration(
+                            //labelText: 'Select Vehicle No',
+                            suffixIcon: DropdownButton<String>(
+                              value: _selectedItemvehicle,
+                              hint: const Text('Select'),
+                              icon: const Icon(Icons.arrow_drop_down),
+                              items: _items.map((String item) {
+                                return DropdownMenuItem<String>(
+                                  value: item,
+                                  child: Text(item),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _selectedItemvehicle =
+                                      newValue; // Update the selected item
+                                  _dropController.text =
+                                      newValue ?? ''; // Update the text field
+                                });
+                              },
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: orange),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: black),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            border: const OutlineInputBorder(
+                                borderSide: BorderSide(color: orange)),
+                          ),
+                        ),
+                      ),
                       Padding(
                         padding: EdgeInsets.only(
                           top: w * 0.03,
@@ -162,7 +235,7 @@ class _UpdateFormState extends State<UpdateForm> {
                         keyboardType: TextInputType.number,
                         prefixicon: const Icon(Icons.share_location_sharp),
                       ),
-                        Padding(
+                      Padding(
                         padding: EdgeInsets.only(
                             top: w * 0.03,
                             right: w * 0.03,
@@ -172,7 +245,7 @@ class _UpdateFormState extends State<UpdateForm> {
                             alignment: Alignment.centerLeft,
                             child: Text('Price')),
                       ),
-                        CustomTextFormField(
+                      CustomTextFormField(
                         width: 320,
                         controller: priceController,
                         hintText: 'Type',
@@ -234,7 +307,7 @@ class _UpdateFormState extends State<UpdateForm> {
                           prefixicon: const Icon(Icons.share_location_sharp),
                         ),
                       ),
-                      
+
                       // Other fields with similar padding and input
                       const SizedBox(height: 20),
                       CustomTextButton(
@@ -243,13 +316,13 @@ class _UpdateFormState extends State<UpdateForm> {
                         background: orange,
                         textColor: white,
                         fontSize: 18,
-                        onTap:                        
-                         () {
+                        onTap: () {
                           // Update Firestore document with new values
                           FirebaseFirestore.instance
                               .collection('bharthbenzrefuel')
                               .doc(widget.docId)
                               .update({
+                            'vehiclenumber': _dropController.text,
                             'date': dateController.text,
                             'Start KM': startKmController.text,
                             'Price': priceController.text,

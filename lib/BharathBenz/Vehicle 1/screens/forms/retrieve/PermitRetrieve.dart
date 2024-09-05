@@ -27,7 +27,7 @@ class Permitretrieve extends StatelessWidget {
 
         return Scaffold(
           appBar: CustomAppBar(
-            title: 'Refuel Data',
+            title: 'Permit Data',
             isGoBack: true,
           ),
           body: ListView(

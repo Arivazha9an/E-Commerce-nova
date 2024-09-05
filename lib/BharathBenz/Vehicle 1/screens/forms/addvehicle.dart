@@ -8,6 +8,7 @@ import 'package:e_commerce/widgets/custombuttom%20outlined.dart';
 import 'package:e_commerce/widgets/custombutton.dart';
 import 'package:e_commerce/widgets/customtextform.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class Addvehicle extends StatefulWidget {
   const Addvehicle({super.key});
@@ -41,31 +42,48 @@ class _AddvehicleState extends State<Addvehicle> {
     }
 
     try {
+      // Check if the vehicle number already exists
+      var querySnapshot = await FirebaseFirestore.instance
+          .collection('AddVehicles')
+          .where('Vehicle Number', isEqualTo: _vehiclenumbercontroller.text)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        // Show error dialog if vehicle number already exists
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Error'),
+            content: const Text('This vehicle number already exists.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+        return;
+      }
+
       // Save data to Firestore
       await FirebaseFirestore.instance.collection('AddVehicles').add({
         'Vehicle Name': _vehiclenamecontroller.text,
         'Vehicle Number': _vehiclenumbercontroller.text,
       });
 
-      // Show success dialog
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Success'),
-          content: const Text('Vehicle added successfully.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) =>
-                        Vehicleselect())); // Close the success dialog
-                // Navigate back to the previous page
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        ),
+      // Show success toast
+      Fluttertoast.showToast(
+        msg: "Vehicle added successfully.",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0,
       );
+
+      // Navigate back to the previous page after a delay
+      Future.delayed(const Duration(seconds: 2), () => Navigator.pop(context));
     } on FirebaseException catch (e) {
       // Handle Firebase errors
       print('Failed with error code: ${e.code}');
@@ -104,6 +122,7 @@ class _AddvehicleState extends State<Addvehicle> {
       );
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

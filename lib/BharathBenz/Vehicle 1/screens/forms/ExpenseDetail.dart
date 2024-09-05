@@ -16,16 +16,49 @@ class BExpensedetail extends StatefulWidget {
 }
 
 class _ExpensedetailState extends State<BExpensedetail> {
-   final TextEditingController _datepickController = TextEditingController();
-DateTime? pickeddate;
-  
+  final TextEditingController _datepickController = TextEditingController();
+  DateTime? pickeddate;
+
   var _loadmancontroller = TextEditingController();
   var _otherscontroller = TextEditingController();
-  var valuecontroller=TextEditingController();
-  String? selectedItem; 
+  var valuecontroller = TextEditingController();
+  String? selectedItem;
+  final TextEditingController _dropController = TextEditingController();
+  List<String> _items = []; // List to hold Firestore data
+  String? _selectedItemvehicle; // Variable to hold the selected item
+  @override
+  void initState() {
+    super.initState();
+    _fetchItems(); // Fetch items when the widget is initialized
+  }
 
-  List<String> items = ['Food', 'Lorry Service', 'Tyre','Fast tag/Toll','Others'];
-    Future<void> _selectDate() async {
+  // Function to fetch data from Firestore
+  Future<void> _fetchItems() async {
+    try {
+      // Fetch data from Firestore (replace 'collectionName' and 'fieldName' with your actual Firestore collection and field)
+      QuerySnapshot snapshot =
+          await FirebaseFirestore.instance.collection('AddVehicles').get();
+
+      // Extract data from documents and convert to a list of strings
+      List<String> items =
+          snapshot.docs.map((doc) => doc['Vehicle Number'].toString()).toList();
+
+      setState(() {
+        _items = items; // Update the state with fetched items
+      });
+    } catch (e) {
+      print('Error fetching data from Firestore: $e'); // Handle errors
+    }
+  }
+
+  List<String> items = [
+    'Food',
+    'Lorry Service',
+    'Tyre',
+    'Fast tag/Toll',
+    'Others'
+  ];
+  Future<void> _selectDate() async {
     DateTime? picked = await showDatePicker(
         context: context,
         initialDate: DateTime.now(),
@@ -34,12 +67,14 @@ DateTime? pickeddate;
     if (picked != null) {
       setState(() {
         _datepickController.text = DateFormat('dd/MM/yyyy').format(picked);
-        pickeddate =  picked;
+        pickeddate = picked;
       });
     }
   }
+
   void _saveData() {
-    if (_datepickController.text.isEmpty ||
+    if (_dropController.text.isEmpty||
+      _datepickController.text.isEmpty ||
         valuecontroller.text.isEmpty ||
         _loadmancontroller.text.isEmpty ||
         _otherscontroller.text.isEmpty) {
@@ -60,7 +95,8 @@ DateTime? pickeddate;
     } else {
       try {
         FirebaseFirestore.instance.collection('bharathbenzexpensedetail').add({
-          'Date01': Timestamp.fromDate(pickeddate!) ,
+          'vehiclenumber':_dropController.text,
+          'Date01': Timestamp.fromDate(pickeddate!),
           'Date': _datepickController.text,
           'ExpenseType': valuecontroller.text,
           'Amount': _loadmancontroller.text,
@@ -74,7 +110,8 @@ DateTime? pickeddate;
   }
 
   void _storeOrUpdateData(String date, String number) async {
-    if (_datepickController.text.isEmpty ||
+    if (_dropController.text.isEmpty ||
+      _datepickController.text.isEmpty ||
         valuecontroller.text.isEmpty ||
         _loadmancontroller.text.isEmpty ||
         _otherscontroller.text.isEmpty) {
@@ -136,7 +173,6 @@ DateTime? pickeddate;
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.sizeOf(context).width;
@@ -155,7 +191,56 @@ DateTime? pickeddate;
                 child: Center(
                   child: Column(
                     children: [
-                                            Padding(
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Vehicle Number')),
+                      ),
+                      Container(
+                        width: 320,
+                        child: TextField(
+                          controller: _dropController,
+                          readOnly: true, // Make the text field read-only
+                          decoration: InputDecoration(
+                            labelText: 'Select Vehicle No',
+                            suffixIcon: DropdownButton<String>(
+                              value: _selectedItemvehicle,
+                              hint: const Text('Select'),
+                              icon: const Icon(Icons.arrow_drop_down),
+                              items: _items.map((String item) {
+                                return DropdownMenuItem<String>(
+                                  value: item,
+                                  child: Text(item),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _selectedItemvehicle =
+                                      newValue; // Update the selected item
+                                  _dropController.text =
+                                      newValue ?? ''; // Update the text field
+                                });
+                              },
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: orange),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: black),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            border: const OutlineInputBorder(
+                                borderSide: BorderSide(color: orange)),
+                          ),
+                        ),
+                      ),
+                      Padding(
                         padding: EdgeInsets.only(
                             top: w * 0.03,
                             right: w * 0.03,
@@ -199,7 +284,6 @@ DateTime? pickeddate;
                                   child: Icon(Icons.calendar_month))),
                         ),
                       ),
-                    
                       Padding(
                         padding: EdgeInsets.only(
                             top: w * 0.03,
@@ -227,39 +311,35 @@ DateTime? pickeddate;
                           controller: valuecontroller,
                           readOnly: true,
                           decoration: InputDecoration(
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: orange),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Colors.red),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              hintText: '',
-                               suffixIcon: DropdownButton<String>(
-             
-              onChanged: (String? newValue) {
-                setState(() {
-                  selectedItem = newValue;
-                  valuecontroller.text=newValue!;
-                });
-              },
-              items: items.map((String item) {
-                return DropdownMenuItem<String>(
-                  value: item,
-                  child: Text(item), 
-
-                );
-              }).toList(), 
-
-            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: orange),
+                              borderRadius: BorderRadius.circular(4),
                             ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.red),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            hintText: '',
+                            suffixIcon: DropdownButton<String>(
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  selectedItem = newValue;
+                                  valuecontroller.text = newValue!;
+                                });
+                              },
+                              items: items.map((String item) {
+                                return DropdownMenuItem<String>(
+                                  value: item,
+                                  child: Text(item),
+                                );
+                              }).toList(),
+                            ),
+                          ),
                         ),
                       ),
-                      
                       Padding(
                         padding: EdgeInsets.only(
                             top: w * 0.03,
