@@ -170,11 +170,11 @@ class _FuelState extends State<BFuel> {
                               },
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: orange),
+                              borderSide: const BorderSide(color: orange),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: black),
+                              borderSide: const BorderSide(color: black),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             border: const OutlineInputBorder(
