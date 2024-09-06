@@ -6,6 +6,7 @@ import 'package:e_commerce/widgets/custombutton.dart';
 import 'package:e_commerce/widgets/customtextformwithicon.dart';
 import 'package:e_commerce/widgets/customtextform.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -17,7 +18,7 @@ class BFuel extends StatefulWidget {
 }
 
 class _FuelState extends State<BFuel> {
-  final TextEditingController _datepickController = TextEditingController();
+   final TextEditingController _datepickController = TextEditingController();
   var _startKmcontroller = TextEditingController();
   var _priceontroller = TextEditingController();
   var _literscontroller = TextEditingController();
@@ -63,7 +64,7 @@ class _FuelState extends State<BFuel> {
 
   @override
   Widget build(BuildContext context) {
-    void _saveData() {
+    void _saveData() async {
       if (_dropController.text.isEmpty ||
           _datepickController.text.isEmpty ||
           _startKmcontroller.text.isEmpty ||
@@ -87,7 +88,7 @@ class _FuelState extends State<BFuel> {
         return;
       } else {
         try {
-          FirebaseFirestore.instance.collection('bharthbenzrefuel').add({
+          await FirebaseFirestore.instance.collection('bharthbenzrefuel').add({
             'vehiclenumber': _dropController.text,
             'date': _datepickController.text,
             'Start KM': _startKmcontroller.text,
@@ -96,9 +97,54 @@ class _FuelState extends State<BFuel> {
             'Place': _placecontroller.text,
             'End Km': _endKMcontroller.text
           });
+          Fluttertoast.showToast(
+            msg: "Successfully Stored.",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+            fontSize: 16.0,
+          );
+
+          // Navigate back to the previous page after a delay
+          Future.delayed(
+              const Duration(seconds: 2), () => Navigator.pop(context));
         } on FirebaseException catch (e) {
+          // Handle Firebase errors
           print('Failed with error code: ${e.code}');
           print(e.message);
+          // Optionally show an error dialog
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Error'),
+              content: const Text('Failed to Store Data. Please try again.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        } catch (e) {
+          // Handle any other errors
+          print('Unexpected error: $e');
+          // Optionally show an error dialog
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Error'),
+              content:
+                  const Text('An unexpected error occurred. Please try again.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
         }
       }
     }

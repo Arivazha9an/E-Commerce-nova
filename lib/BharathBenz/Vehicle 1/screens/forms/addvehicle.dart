@@ -20,6 +20,10 @@ class Addvehicle extends StatefulWidget {
 class _AddvehicleState extends State<Addvehicle> {
   var _vehiclenamecontroller = TextEditingController();
   var _vehiclenumbercontroller = TextEditingController();
+  clear(){
+    _vehiclenamecontroller.clear();
+    _vehiclenumbercontroller.clear();
+  }
 
   void _saveData() async {
     if (_vehiclenamecontroller.text.isEmpty ||
@@ -204,16 +208,13 @@ class _AddvehicleState extends State<Addvehicle> {
                 Padding(
                   padding: EdgeInsets.only(left: w * 0.15),
                   child: CustomTextButtonOut(
-                    title: 'Fetch',
+                    title: 'Clear',
                     width: w * 0.3,
                     background: Colors.transparent,
                     textColor: black,
                     fontSize: 20,
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Pucretrieve()),
-                      );
+                      clear();
                     },
                     color: black,
                   ),

@@ -6,6 +6,7 @@ import 'package:e_commerce/widgets/custombuttom%20outlined.dart';
 import 'package:e_commerce/widgets/custombutton.dart';
 import 'package:e_commerce/widgets/customtextform.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
 class BExpensedetail extends StatefulWidget {
@@ -31,7 +32,15 @@ class _ExpensedetailState extends State<BExpensedetail> {
     super.initState();
     _fetchItems(); // Fetch items when the widget is initialized
   }
+void clear(){
+  valuecontroller.clear();
+  _datepickController.clear();
+  _otherscontroller.clear();
+  _dropController.clear();
+  _loadmancontroller.clear();
+  
 
+}
   // Function to fetch data from Firestore
   Future<void> _fetchItems() async {
     try {
@@ -51,7 +60,7 @@ class _ExpensedetailState extends State<BExpensedetail> {
     }
   }
 
-  List<String> items = [
+  List<String> vehicleitems = [
     'Food',
     'Lorry Service',
     'Tyre',
@@ -73,8 +82,8 @@ class _ExpensedetailState extends State<BExpensedetail> {
   }
 
   void _saveData() {
-    if (_dropController.text.isEmpty||
-      _datepickController.text.isEmpty ||
+    if (_dropController.text.isEmpty ||
+        _datepickController.text.isEmpty ||
         valuecontroller.text.isEmpty ||
         _loadmancontroller.text.isEmpty ||
         _otherscontroller.text.isEmpty) {
@@ -95,23 +104,66 @@ class _ExpensedetailState extends State<BExpensedetail> {
     } else {
       try {
         FirebaseFirestore.instance.collection('bharathbenzexpensedetail').add({
-          'vehiclenumber':_dropController.text,
+          'vehiclenumber': _dropController.text,
           'Date01': Timestamp.fromDate(pickeddate!),
           'Date': _datepickController.text,
           'ExpenseType': valuecontroller.text,
           'Amount': _loadmancontroller.text,
           'Km': _otherscontroller.text
         });
+         Fluttertoast.showToast(
+          msg: "Successfully Stored.",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+          Future.delayed(
+            const Duration(seconds: 2), () => Navigator.pop(context));
       } on FirebaseException catch (e) {
+        // Handle Firebase errors
         print('Failed with error code: ${e.code}');
         print(e.message);
+        // Optionally show an error dialog
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Error'),
+            content: const Text('Failed to Store Data. Please try again.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      } catch (e) {
+        // Handle any other errors
+        print('Unexpected error: $e');
+        // Optionally show an error dialog
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Error'),
+            content:
+                const Text('An unexpected error occurred. Please try again.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
       }
     }
   }
 
   void _storeOrUpdateData(String date, String number) async {
     if (_dropController.text.isEmpty ||
-      _datepickController.text.isEmpty ||
+        _datepickController.text.isEmpty ||
         valuecontroller.text.isEmpty ||
         _loadmancontroller.text.isEmpty ||
         _otherscontroller.text.isEmpty) {
@@ -330,10 +382,10 @@ class _ExpensedetailState extends State<BExpensedetail> {
                                   valuecontroller.text = newValue!;
                                 });
                               },
-                              items: items.map((String item) {
+                              items: vehicleitems.map((String vehicleitems) {
                                 return DropdownMenuItem<String>(
-                                  value: item,
-                                  child: Text(item),
+                                  value: vehicleitems,
+                                  child: Text(vehicleitems),
                                 );
                               }).toList(),
                             ),
@@ -404,17 +456,13 @@ class _ExpensedetailState extends State<BExpensedetail> {
                 Padding(
                   padding: EdgeInsets.only(left: w * 0.15),
                   child: CustomTextButtonOut(
-                    title: 'Fetch',
+                    title: 'Clear',
                     width: w * 0.3,
                     background: Colors.transparent,
                     textColor: black,
                     fontSize: 20,
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const Expenseretreieve()),
-                      );
+                      clear();
                     },
                     color: black,
                   ),

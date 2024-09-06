@@ -7,6 +7,7 @@ import 'package:e_commerce/widgets/custombutton.dart';
 import 'package:e_commerce/widgets/customtextform.dart';
 import 'package:e_commerce/widgets/customtextformwithicon.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
 class BLoadDetails extends StatefulWidget {
@@ -18,7 +19,7 @@ class BLoadDetails extends StatefulWidget {
 
 class _LoadDetailsState extends State<BLoadDetails> {
   final TextEditingController _datepickController = TextEditingController();
-DateTime? pickeddate;
+  DateTime? pickeddate;
   var _startpointcontroller = TextEditingController();
   var _loadpointcontroller = TextEditingController();
   var _droppointcontroller = TextEditingController();
@@ -27,6 +28,27 @@ DateTime? pickeddate;
   var _deliveryamountcontroller = TextEditingController();
   var _customernamecontroller = TextEditingController();
   var _customernocontroller = TextEditingController();
+  final TextEditingController _dropController = TextEditingController();
+  List<String> _items = []; // List to hold Firestore data
+  String? _selectedItemvehicle; // Variable to hold the selected item
+  @override
+  void initState() {
+    super.initState();
+    _fetchItems(); // Fetch items when the widget is initialized
+  }
+
+  void clear() {
+    _datepickController.clear();
+    _startpointcontroller.clear();
+    _loadpointcontroller.clear();
+    _droppointcontroller.clear();
+    _nooftonscontroller.clear();
+    _loadamountcontroller.clear();
+    _deliveryamountcontroller.clear();
+    _customernamecontroller.clear();
+    _customernocontroller.clear();
+    _dropController.clear();
+  }
 
   void _storeOrUpdateData(String date, String number) async {
     if (_startpointcontroller.text.isEmpty ||
@@ -96,33 +118,38 @@ DateTime? pickeddate;
     }
   }
 
+  // Function to fetch data from Firestore
+  Future<void> _fetchItems() async {
+    try {
+      // Fetch data from Firestore (replace 'collectionName' and 'fieldName' with your actual Firestore collection and field)
+      QuerySnapshot snapshot =
+          await FirebaseFirestore.instance.collection('AddVehicles').get();
+
+      // Extract data from documents and convert to a list of strings
+      List<String> items =
+          snapshot.docs.map((doc) => doc['Vehicle Number'].toString()).toList();
+
+      setState(() {
+        _items = items; // Update the state with fetched items
+      });
+    } catch (e) {
+      print('Error fetching data from Firestore: $e'); // Handle errors
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    
-      Future<void> _selectDate() async {
-      DateTime? picked = await showDatePicker(
-          context: context,
-          initialDate: DateTime.now(),
-          firstDate: DateTime(2000),
-          lastDate: DateTime(2099));
-      if (picked != null) {
-        setState(() {
-          _datepickController.text = DateFormat('dd/MM/yyyy').format(picked);
-          pickeddate = picked;
-        });
-      }
-    }
-    
-    void _saveData() {
-      if (_startpointcontroller.text.isEmpty ||
+    void _saveData() async {
+      if (_dropController.text.isEmpty ||
+          _datepickController.text.isEmpty ||
+          _startpointcontroller.text.isEmpty ||
           _loadpointcontroller.text.isEmpty ||
           _droppointcontroller.text.isEmpty ||
           _nooftonscontroller.text.isEmpty ||
           _loadamountcontroller.text.isEmpty ||
           _deliveryamountcontroller.text.isEmpty ||
           _customernamecontroller.text.isEmpty ||
-          _datepickController.text.isEmpty||
+          _datepickController.text.isEmpty ||
           _customernocontroller.text.isEmpty) {
         showDialog(
           context: context,
@@ -140,8 +167,9 @@ DateTime? pickeddate;
         return;
       } else {
         try {
-          FirebaseFirestore.instance.collection('bharathbenzloaddetail').add({
-            'Date01': Timestamp.fromDate(pickeddate!),
+          await FirebaseFirestore.instance.collection('bharathbenzloaddetail').add({
+            'vehiclenumber': _dropController.text,
+            'date': _datepickController.text,
             'Start Point': _startpointcontroller.text,
             'Load Point': _loadpointcontroller.text,
             'Drop Point': _droppointcontroller.text,
@@ -151,35 +179,138 @@ DateTime? pickeddate;
             'Customer Name': _customernamecontroller.text,
             'Customer Number': _customernocontroller.text
           });
+          Fluttertoast.showToast(
+            msg: "Successfully Stored.",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+            fontSize: 16.0,
+          );
+
+          // Navigate back to the previous page after a delay
+          Future.delayed(
+              const Duration(seconds: 2), () => Navigator.pop(context));
         } on FirebaseException catch (e) {
+          // Handle Firebase errors
           print('Failed with error code: ${e.code}');
           print(e.message);
+          // Optionally show an error dialog
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Error'),
+              content: const Text('Failed to Store Data. Please try again.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        } catch (e) {
+          // Handle any other errors
+          print('Unexpected error: $e');
+          // Optionally show an error dialog
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Error'),
+              content:
+                  const Text('An unexpected error occurred. Please try again.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
         }
       }
     }
 
+    Future<void> _selectDate() async {
+      DateTime? picked = await showDatePicker(
+          context: context,
+          initialDate: DateTime.now(),
+          firstDate: DateTime(2000),
+          lastDate: DateTime(2099));
+      if (picked != null) {
+        setState(() {
+          _datepickController.text = DateFormat('dd/MM/yyyy').format(picked);
+        });
+      }
+    }
 
     var w = MediaQuery.sizeOf(context).width;
+
     return Scaffold(
-      appBar: CustomAppBar(title: 'Load Detail'),
+      appBar: const CustomAppBar(title: 'Load Detail'),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
           children: [
-            SizedBox(
-              height: w * 0.041,
-            ),
-           
             Padding(
               padding: EdgeInsets.only(left: w * 0.03, right: w * 0.03),
               child: Container(
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
                     border: Border.all(color: orange, width: w * 0.005)),
                 child: Center(
                   child: Column(
                     children: [
-                                            Padding(
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Vehicle Number')),
+                      ),
+                      Container(
+                        width: 320,
+                        child: TextField(
+                          controller: _dropController,
+                          readOnly: true, // Make the text field read-only
+                          decoration: InputDecoration(
+                            labelText: 'Select Vehicle No',
+                            suffixIcon: DropdownButton<String>(
+                              value: _selectedItemvehicle,
+                              hint: const Text('Select'),
+                              icon: const Icon(Icons.arrow_drop_down),
+                              items: _items.map((String item) {
+                                return DropdownMenuItem<String>(
+                                  value: item,
+                                  child: Text(item),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _selectedItemvehicle =
+                                      newValue; // Update the selected item
+                                  _dropController.text =
+                                      newValue ?? ''; // Update the text field
+                                });
+                              },
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: orange),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: black),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            border: const OutlineInputBorder(
+                                borderSide: BorderSide(color: orange)),
+                          ),
+                        ),
+                      ),
+                      Padding(
                         padding: EdgeInsets.only(
                             top: w * 0.03,
                             right: w * 0.03,
@@ -207,7 +338,7 @@ DateTime? pickeddate;
                           readOnly: true,
                           decoration: InputDecoration(
                               focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: orange),
+                                borderSide: const BorderSide(color: orange),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               enabledBorder: OutlineInputBorder(
@@ -220,7 +351,7 @@ DateTime? pickeddate;
                               hintText: 'Choose Date',
                               prefixIcon: GestureDetector(
                                   onTap: _selectDate,
-                                  child: Icon(Icons.calendar_month))),
+                                  child: const Icon(Icons.calendar_month))),
                         ),
                       ),
                       Padding(
@@ -385,22 +516,20 @@ DateTime? pickeddate;
                       fontSize: 20,
                       onTap: () {
                         _saveData();
-                        _storeOrUpdateData(_datepickController.text,_deliveryamountcontroller.text);
+                        _storeOrUpdateData(_datepickController.text,
+                            _deliveryamountcontroller.text);
                       }),
                 ),
                 Padding(
                   padding: EdgeInsets.only(left: w * 0.15),
                   child: CustomTextButtonOut(
-                    title: 'Fetch',
+                    title: 'Clear',
                     width: w * 0.3,
                     background: Colors.transparent,
                     textColor: black,
                     fontSize: 20,
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Loadretrieve()),
-                      );
+                     clear();
                     },
                     color: black,
                   ),
