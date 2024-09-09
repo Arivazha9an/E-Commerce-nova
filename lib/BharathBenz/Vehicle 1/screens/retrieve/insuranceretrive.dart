@@ -1,10 +1,9 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/retrieve/updateforms/fuelupdate.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/retrieve/updateforms/fuelupdate.dart';
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
-import 'package:e_commerce/widgets/custombutton.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
@@ -14,15 +13,15 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 
-class FuelRetrieve extends StatefulWidget {
-  const FuelRetrieve({super.key});
+class Insuranceretrive extends StatefulWidget {
+  const Insuranceretrive({super.key});
 
   @override
-  _FuelRetrieveState createState() => _FuelRetrieveState();
+  State<Insuranceretrive> createState() => _InsuranceretriveState();
 }
 
-class _FuelRetrieveState extends State<FuelRetrieve> {
-  TextEditingController _startDateController = TextEditingController();
+class _InsuranceretriveState extends State<Insuranceretrive> {
+ TextEditingController _startDateController = TextEditingController();
   TextEditingController _endDateController = TextEditingController();
   DateTime? _startDate;
   DateTime? _endDate;
@@ -96,7 +95,7 @@ class _FuelRetrieveState extends State<FuelRetrieve> {
                 Navigator.of(context).pop(); // Close the dialog
                 try {
                   await FirebaseFirestore.instance
-                      .collection('bharthbenzrefuel')
+                      .collection('bharathbenzinsurance')
                       .doc(docId)
                       .delete();
                 } catch (e) {
@@ -143,7 +142,7 @@ class _FuelRetrieveState extends State<FuelRetrieve> {
 
     // Start with the base query
     Query query = FirebaseFirestore.instance
-        .collection('bharthbenzrefuel')
+        .collection('bharathbenzinsurance')
         .orderBy('date')
         .limit(10);
 
@@ -223,13 +222,14 @@ class _FuelRetrieveState extends State<FuelRetrieve> {
               child: pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
+                  pw.Text('Date:${data['date'] ?? ''}'),
                   pw.Text('Vehicle No: ${data['vehiclenumber'] ?? ''}'),
-                  pw.Text('Date: ${data['date'] ?? ''}'),
-                  pw.Text('Start Km: ${data['Start KM'] ?? ''}'),
-                  pw.Text('Price: ${data['Price'] ?? ''}'),
-                  pw.Text('Liters: ${data['Liter'] ?? ''}'),
-                  pw.Text('Place: ${data['Place'] ?? ''}'),
-                  pw.Text('End KM: ${data['End Km'] ?? ''}'),
+                  pw.Text('Company: ${data['Company'] ?? ''}'),
+                  pw.Text('Policy Type: ${data['Policy Type'] ?? ''}'),
+                  pw.Text('Policy Number: ${data['Policy Number'] ?? ''}'),
+                  pw.Text('Issue: ${data['Issue'] ?? ''}'),
+                  pw.Text('Expires: ${data['Expire'] ?? ''}'),
+                  pw.Text('Insurance Amount: ${data['Insurance Amount'] ?? ''}'),
                   pw.Divider(),
                 ],
               ),
@@ -264,7 +264,7 @@ class _FuelRetrieveState extends State<FuelRetrieve> {
     var w = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Refuel Data', isGoBack: true),
+      appBar: const CustomAppBar(title: 'Insurance Data', isGoBack: true),
       body: Column(
         children: [
           Padding(
@@ -379,20 +379,21 @@ class _FuelRetrieveState extends State<FuelRetrieve> {
                     itemBuilder: (context, i) {
                       Map<String, dynamic> data =
                           documents[i].data() as Map<String, dynamic>;
-                      String vehicleno = data['vehiclenumber'] ?? '';
+                          String vehicleno = data['vehiclenumber'] ?? '';
                       String date = data['date'] ?? '';
-                      String startKm = data['Start KM'] ?? '';
-                      String price = data['Price'] ?? '';
-                      String liter = data['Liter'] ?? '';
-                      String place = data['Place'] ?? '';
-                      String endKm = data['End Km'] ?? '';
+                      String company = data['Company'] ?? '';
+                      String policytype = data['Policy Type'] ?? '';
+                      String policyNo = data['Policy Number'] ?? '';
+                      String issue = data['Issue'] ?? '';
+                      String expires = data['Expire'] ?? '';
+                      String insuranceAmount = data['Insurance Amount'] ?? '';
                       String docId = documents[i].id;
 
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Container(
                           width: 100,
-                          height: 210,
+                          height: 230,
                           decoration: BoxDecoration(
                               borderRadius:
                                   const BorderRadius.all(Radius.circular(10)),
@@ -416,34 +417,40 @@ class _FuelRetrieveState extends State<FuelRetrieve> {
                                     Text(date),
                                   ],
                                 ),
-                                Row(
+                                 Row(
                                   children: [
-                                    const Text('Start Km: '),
-                                    Text(startKm),
+                                    const Text('Company  = '),
+                                    Text(company),
                                   ],
                                 ),
                                 Row(
                                   children: [
-                                    const Text('Price: '),
-                                    Text(price),
+                                    const Text('Policy Type  = '),
+                                    Text(policytype),
                                   ],
                                 ),
                                 Row(
                                   children: [
-                                    const Text('Liters: '),
-                                    Text(liter),
+                                    const Text('Policy No  = '),
+                                    Text(policyNo),
                                   ],
                                 ),
                                 Row(
                                   children: [
-                                    const Text('Place: '),
-                                    Text(place),
+                                    Text('Issue = '),
+                                    Text(issue),
                                   ],
                                 ),
                                 Row(
                                   children: [
-                                    const Text('End Km: '),
-                                    Text(endKm),
+                                    Text('Expires = '),
+                                    Text(expires),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Text('Insurance Amount = '),
+                                    Text(insuranceAmount),
                                   ],
                                 ),
                                 const Spacer(),

@@ -78,7 +78,7 @@ class _UpdateFormState extends State<UpdateFormService> {
     var w = MediaQuery.sizeOf(context).width;
 
     return Scaffold(
-      appBar: CustomAppBar(title: 'Update Refuel Data', isGoBack: true),
+      appBar: CustomAppBar(title: 'Update Service Data', isGoBack: true),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(

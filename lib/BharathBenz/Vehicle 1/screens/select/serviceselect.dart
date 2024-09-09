@@ -2,8 +2,8 @@ import 'dart:developer';
 
 import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/addvehicle.dart';
 import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/refuel.dart';
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/retrieve/fuelretrieve.dart';
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/retrieve/serviceretrieve.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/retrieve/fuelretrieve.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/retrieve/serviceretrieve.dart';
 import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/servics.dart';
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/widgets/customappbar.dart';

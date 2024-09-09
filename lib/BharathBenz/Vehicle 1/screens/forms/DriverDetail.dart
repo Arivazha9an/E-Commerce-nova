@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/retrieve/driverretrieve.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/retrieve/driverretrieve.dart';
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:e_commerce/widgets/custombuttom%20outlined.dart';
@@ -78,12 +78,13 @@ class _driverDetailState extends State<BDriverDetail> {
   Future<void> _fetchItems() async {
     try {
       // Fetch data from Firestore (replace 'collectionName' and 'fieldName' with your actual Firestore collection and field)
-      QuerySnapshot snapshot =
-          await FirebaseFirestore.instance.collection('AddVehicles').get();
+       QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('bharathbenzvehicledetail')
+          .get();
 
       // Extract data from documents and convert to a list of strings
       List<String> items =
-          snapshot.docs.map((doc) => doc['Vehicle Number'].toString()).toList();
+          snapshot.docs.map((doc) => doc['vehicle Number'].toString()).toList();
 
       setState(() {
         _items = items; // Update the state with fetched items

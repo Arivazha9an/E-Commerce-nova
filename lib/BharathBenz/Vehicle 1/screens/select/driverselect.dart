@@ -2,8 +2,8 @@ import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/DriverDetail.da
 import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/LoadDetails.dart';
 import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/PUCdetail.dart';
 import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/VehicleDetails.dart';
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/retrieve/driverretrieve.dart';
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/retrieve/vehicleretrieve.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/retrieve/driverretrieve.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/retrieve/vehicleretrieve.dart';
 import 'package:e_commerce/constants/colors.dart';
 
 import 'package:e_commerce/widgets/customappbar.dart';

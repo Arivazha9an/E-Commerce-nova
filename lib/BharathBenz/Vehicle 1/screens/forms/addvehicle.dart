@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/retrieve/PUCretrieve.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/retrieve/PUCretrieve.dart';
 import 'package:e_commerce/BharathBenz/Vehicle%201/screens/select/vehicleselect.dart';
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/screens/forms/VehicleDetails.dart';
@@ -25,7 +25,7 @@ class _AddvehicleState extends State<Addvehicle> {
     _vehiclenumbercontroller.clear();
   }
 
-  void _saveData() async {
+ void _saveData() async {
     if (_vehiclenamecontroller.text.isEmpty ||
         _vehiclenumbercontroller.text.isEmpty) {
       // Show error dialog if fields are empty
@@ -46,11 +46,15 @@ class _AddvehicleState extends State<Addvehicle> {
     }
 
     try {
-      // Check if the vehicle number already exists
+      print(
+          'Checking if vehicle number exists: ${_vehiclenumbercontroller.text}');
+
       var querySnapshot = await FirebaseFirestore.instance
-          .collection('AddVehicles')
-          .where('Vehicle Number', isEqualTo: _vehiclenumbercontroller.text)
+          .collection('bharathbenzvehicledetail')
+          .where('vehicle Number', isEqualTo: _vehiclenumbercontroller.text)
           .get();
+
+      print('Query Snapshot: ${querySnapshot.docs.length} documents found.');
 
       if (querySnapshot.docs.isNotEmpty) {
         // Show error dialog if vehicle number already exists
@@ -68,26 +72,26 @@ class _AddvehicleState extends State<Addvehicle> {
           ),
         );
         return;
+      } else {
+        await FirebaseFirestore.instance.collection('AddVehicles').add({
+          'Vehicle Name': _vehiclenamecontroller.text,
+          'Vehicle Number': _vehiclenumbercontroller.text,
+        });
+
+        // Show success toast
+        Fluttertoast.showToast(
+          msg: "Vehicle added successfully.",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+
+        // Navigate back to the previous page after a delay
+        Future.delayed(
+            const Duration(seconds: 2), () => Navigator.pop(context));
       }
-
-      // Save data to Firestore
-      await FirebaseFirestore.instance.collection('AddVehicles').add({
-        'Vehicle Name': _vehiclenamecontroller.text,
-        'Vehicle Number': _vehiclenumbercontroller.text,
-      });
-
-      // Show success toast
-      Fluttertoast.showToast(
-        msg: "Vehicle added successfully.",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
-
-      // Navigate back to the previous page after a delay
-      Future.delayed(const Duration(seconds: 2), () => Navigator.pop(context));
     } on FirebaseException catch (e) {
       // Handle Firebase errors
       print('Failed with error code: ${e.code}');
@@ -126,6 +130,7 @@ class _AddvehicleState extends State<Addvehicle> {
       );
     }
   }
+
 
 
   @override
