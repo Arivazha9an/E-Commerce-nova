@@ -7,47 +7,53 @@ import 'package:e_commerce/widgets/customtextformwithicon.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class UpdateFormService extends StatefulWidget {
+class UpdateForm extends StatefulWidget {
   final String docId;
   final Map<String, dynamic> data;
 
-  const UpdateFormService({super.key, required this.docId, required this.data});
+  const UpdateForm({super.key, required this.docId, required this.data});
 
   @override
-  State<UpdateFormService> createState() => _UpdateFormState();
+  State<UpdateForm> createState() => _UpdateFormState();
 }
 
-class _UpdateFormState extends State<UpdateFormService> {
+class _UpdateFormState extends State<UpdateForm> {
   // Define the controllers at the class level
   late TextEditingController dateController;
-  late TextEditingController serviceTypeController;
-  late TextEditingController servicePlaceController;
-  late TextEditingController contactController;
-  late TextEditingController amountController;
-  late TextEditingController KmridingController;
-
+  late TextEditingController startKmController;
+  late TextEditingController priceController;
+  late TextEditingController literController;
+  late TextEditingController placeController;
+  late TextEditingController endKmController;
+  late TextEditingController _dropController;
+  List<String> _items = []; // List to hold Firestore data
+  String? _selectedItemvehicle; // Variable to hold the selected item
+  @override
   @override
   void initState() {
+    _fetchItems();
     super.initState();
     // Initialize controllers with data from Firestore
+    _dropController = TextEditingController(text: widget.data['vehiclenumber']);
     dateController = TextEditingController(text: widget.data['date'] ?? '');
-    serviceTypeController =
-        TextEditingController(text: widget.data['Service'] ?? '');
-    servicePlaceController = TextEditingController(text: widget.data['Service Place'] ?? '');
-    contactController = TextEditingController(text: widget.data['Contact'] ?? '');
-    amountController = TextEditingController(text: widget.data['Amount'] ?? '');
-    KmridingController = TextEditingController(text: widget.data['KM Riding'] ?? '');
+    startKmController =
+        TextEditingController(text: widget.data['Start KM'] ?? '');
+    priceController = TextEditingController(text: widget.data['Price'] ?? '');
+    literController = TextEditingController(text: widget.data['Liter'] ?? '');
+    placeController = TextEditingController(text: widget.data['Place'] ?? '');
+    endKmController = TextEditingController(text: widget.data['End Km'] ?? '');
   }
 
   @override
   void dispose() {
     // Dispose controllers to avoid memory leaks
+    _dropController.dispose();
     dateController.dispose();
-    serviceTypeController.dispose();
-    servicePlaceController.dispose();
-    contactController.dispose();
-    amountController.dispose();
-    KmridingController.dispose();
+    startKmController.dispose();
+    priceController.dispose();
+    literController.dispose();
+    placeController.dispose();
+    endKmController.dispose();
     super.dispose();
   }
 
@@ -56,6 +62,25 @@ class _UpdateFormState extends State<UpdateFormService> {
       return DateTime.parse(dateString);
     } catch (e) {
       return null;
+    }
+  }
+
+  Future<void> _fetchItems() async {
+    try {
+      // Fetch data from Firestore (replace 'collectionName' and 'fieldName' with your actual Firestore collection and field)
+        QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('bharathbenzvehicledetail')
+          .get();
+
+      // Extract data from documents and convert to a list of strings
+      List<String> items =
+          snapshot.docs.map((doc) => doc['vehicle Number'].toString()).toList();
+
+      setState(() {
+        _items = items; // Update the state with fetched items
+      });
+    } catch (e) {
+      print('Error fetching data from Firestore: $e'); // Handle errors
     }
   }
 
@@ -68,7 +93,7 @@ class _UpdateFormState extends State<UpdateFormService> {
     );
     if (picked != null) {
       setState(() {
-        dateController.text = DateFormat('yyyy-MM-dd').format(picked);
+        dateController.text = DateFormat('dd/MM/yyyy').format(picked);
       });
     }
   }
@@ -78,7 +103,7 @@ class _UpdateFormState extends State<UpdateFormService> {
     var w = MediaQuery.sizeOf(context).width;
 
     return Scaffold(
-      appBar: CustomAppBar(title: 'Update Service Data', isGoBack: true),
+      appBar: const CustomAppBar(title: 'Update Refuel Data', isGoBack: true),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
@@ -93,6 +118,55 @@ class _UpdateFormState extends State<UpdateFormService> {
                 child: Center(
                   child: Column(
                     children: [
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Vehicle Number')),
+                      ),
+                      Container(
+                        width: 320,
+                        child: TextField(
+                          controller: _dropController,
+                          readOnly: true, // Make the text field read-only
+                          decoration: InputDecoration(
+                            //labelText: 'Select Vehicle No',
+                            suffixIcon: DropdownButton<String>(
+                              value: _selectedItemvehicle,
+                              hint: const Text('Select'),
+                              icon: const Icon(Icons.arrow_drop_down),
+                              items: _items.map((String item) {
+                                return DropdownMenuItem<String>(
+                                  value: item,
+                                  child: Text(item),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _selectedItemvehicle =
+                                      newValue; // Update the selected item
+                                  _dropController.text =
+                                      newValue ?? ''; // Update the text field
+                                });
+                              },
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: orange),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: black),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            border: const OutlineInputBorder(
+                                borderSide: BorderSide(color: orange)),
+                          ),
+                        ),
+                      ),
                       Padding(
                         padding: EdgeInsets.only(
                           top: w * 0.03,
@@ -151,12 +225,12 @@ class _UpdateFormState extends State<UpdateFormService> {
                         ),
                         child: const Align(
                           alignment: Alignment.centerLeft,
-                          child: Text('Service Type'),
+                          child: Text('Start Km'),
                         ),
                       ),
                       CustomTextFormFieldIcon(
                         width: 320,
-                        controller: serviceTypeController,
+                        controller: startKmController,
                         hintText: 'Type',
                         labeltext: '',
                         keyboardType: TextInputType.number,
@@ -170,11 +244,11 @@ class _UpdateFormState extends State<UpdateFormService> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Service Place')),
+                            child: Text('Price')),
                       ),
                       CustomTextFormField(
                         width: 320,
-                        controller: servicePlaceController,
+                        controller: priceController,
                         hintText: 'Type',
                         labeltext: 'Type',
                         keyboardType: TextInputType.number,
@@ -187,11 +261,11 @@ class _UpdateFormState extends State<UpdateFormService> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Contact')),
+                            child: Text('Liters')),
                       ),
                       CustomTextFormField(
                         width: 320,
-                        controller:contactController,
+                        controller: literController,
                         hintText: 'Type',
                         labeltext: 'Type',
                         keyboardType: TextInputType.number,
@@ -204,11 +278,11 @@ class _UpdateFormState extends State<UpdateFormService> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Amount')),
+                            child: Text('Place')),
                       ),
                       CustomTextFormField(
                         width: 320,
-                        controller: amountController,
+                        controller: placeController,
                         hintText: 'Type',
                         labeltext: 'Type',
                         keyboardType: TextInputType.name,
@@ -221,13 +295,13 @@ class _UpdateFormState extends State<UpdateFormService> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Km Riding')),
+                            child: Text('End Km')),
                       ),
                       Padding(
                         padding: EdgeInsets.only(bottom: w * 0.044),
                         child: CustomTextFormFieldIcon(
                           width: 320,
-                          controller:KmridingController,
+                          controller: endKmController,
                           hintText: 'Type',
                           labeltext: '',
                           keyboardType: TextInputType.number,
@@ -239,22 +313,23 @@ class _UpdateFormState extends State<UpdateFormService> {
                       const SizedBox(height: 20),
                       CustomTextButton(
                         width: 150,
-                        title: 'Save Changes',
+                        title: 'Update',
                         background: orange,
                         textColor: white,
                         fontSize: 18,
                         onTap: () {
                           // Update Firestore document with new values
                           FirebaseFirestore.instance
-                              .collection('bharathbenzservices')
+                              .collection('bharthbenzrefuel')
                               .doc(widget.docId)
                               .update({
+                            'vehiclenumber': _dropController.text,
                             'date': dateController.text,
-                            'Service': serviceTypeController.text,
-                            'Service Place': servicePlaceController.text,
-                            'Contact':contactController.text,
-                            'Amount': amountController.text,
-                            'KM Riding': KmridingController.text,
+                            'Start KM': startKmController.text,
+                            'Price': priceController.text,
+                            'Liter': literController.text,
+                            'Place': placeController.text,
+                            'End Km': endKmController.text,
                           }).then((_) {
                             Navigator.pop(context); // Go back after updating
                           });

@@ -7,24 +7,23 @@ import 'package:e_commerce/widgets/customtextformwithicon.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class UpdateForm extends StatefulWidget {
+class UpdateFormPUC extends StatefulWidget {
   final String docId;
   final Map<String, dynamic> data;
 
-  const UpdateForm({super.key, required this.docId, required this.data});
+  const UpdateFormPUC({super.key, required this.docId, required this.data});
 
   @override
-  State<UpdateForm> createState() => _UpdateFormState();
+  State<UpdateFormPUC> createState() => _UpdateFormState();
 }
 
-class _UpdateFormState extends State<UpdateForm> {
+class _UpdateFormState extends State<UpdateFormPUC> {
   // Define the controllers at the class level
   late TextEditingController dateController;
-  late TextEditingController startKmController;
-  late TextEditingController priceController;
-  late TextEditingController literController;
-  late TextEditingController placeController;
-  late TextEditingController endKmController;
+  late TextEditingController  _pucnocontroller;
+  late TextEditingController _issuecontroller;
+  late TextEditingController _expirycontroller;
+  late TextEditingController _amountcontroller;
   late TextEditingController _dropController;
   List<String> _items = []; // List to hold Firestore data
   String? _selectedItemvehicle; // Variable to hold the selected item
@@ -36,12 +35,12 @@ class _UpdateFormState extends State<UpdateForm> {
     // Initialize controllers with data from Firestore
     _dropController = TextEditingController(text: widget.data['vehiclenumber']);
     dateController = TextEditingController(text: widget.data['date'] ?? '');
-    startKmController =
-        TextEditingController(text: widget.data['Start KM'] ?? '');
-    priceController = TextEditingController(text: widget.data['Price'] ?? '');
-    literController = TextEditingController(text: widget.data['Liter'] ?? '');
-    placeController = TextEditingController(text: widget.data['Place'] ?? '');
-    endKmController = TextEditingController(text: widget.data['End Km'] ?? '');
+    _pucnocontroller =
+        TextEditingController(text: widget.data['PUC Number'] ?? '');
+    _issuecontroller = TextEditingController(text: widget.data['Expiry'] ?? '');
+    _expirycontroller = TextEditingController(text: widget.data['Issue'] ?? '');
+    _amountcontroller = TextEditingController(text: widget.data['Amount'] ?? '');
+    
   }
 
   @override
@@ -49,11 +48,11 @@ class _UpdateFormState extends State<UpdateForm> {
     // Dispose controllers to avoid memory leaks
     _dropController.dispose();
     dateController.dispose();
-    startKmController.dispose();
-    priceController.dispose();
-    literController.dispose();
-    placeController.dispose();
-    endKmController.dispose();
+    _pucnocontroller.dispose();
+    _issuecontroller.dispose();
+    _expirycontroller.dispose();
+    _amountcontroller.dispose();
+   
     super.dispose();
   }
 
@@ -68,7 +67,7 @@ class _UpdateFormState extends State<UpdateForm> {
   Future<void> _fetchItems() async {
     try {
       // Fetch data from Firestore (replace 'collectionName' and 'fieldName' with your actual Firestore collection and field)
-        QuerySnapshot snapshot = await FirebaseFirestore.instance
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('bharathbenzvehicledetail')
           .get();
 
@@ -93,7 +92,7 @@ class _UpdateFormState extends State<UpdateForm> {
     );
     if (picked != null) {
       setState(() {
-        dateController.text = DateFormat('yyyy-MM-dd').format(picked);
+        dateController.text = DateFormat('dd/MM/yyyy').format(picked);
       });
     }
   }
@@ -103,7 +102,7 @@ class _UpdateFormState extends State<UpdateForm> {
     var w = MediaQuery.sizeOf(context).width;
 
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Update Refuel Data', isGoBack: true),
+      appBar: const CustomAppBar(title: 'Update PUC Data', isGoBack: true),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
@@ -118,7 +117,7 @@ class _UpdateFormState extends State<UpdateForm> {
                 child: Center(
                   child: Column(
                     children: [
-                      Padding(
+                     Padding(
                         padding: EdgeInsets.only(
                             top: w * 0.03,
                             right: w * 0.03,
@@ -134,7 +133,7 @@ class _UpdateFormState extends State<UpdateForm> {
                           controller: _dropController,
                           readOnly: true, // Make the text field read-only
                           decoration: InputDecoration(
-                            //labelText: 'Select Vehicle No',
+                            labelText: 'Select Vehicle No',
                             suffixIcon: DropdownButton<String>(
                               value: _selectedItemvehicle,
                               hint: const Text('Select'),
@@ -169,15 +168,13 @@ class _UpdateFormState extends State<UpdateForm> {
                       ),
                       Padding(
                         padding: EdgeInsets.only(
-                          top: w * 0.03,
-                          right: w * 0.03,
-                          left: w * 0.025,
-                          bottom: w * 0.02,
-                        ),
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
                         child: const Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text('Date'),
-                        ),
+                            alignment: Alignment.centerLeft,
+                            child: Text('Date')),
                       ),
                       Container(
                         width: 320,
@@ -189,52 +186,46 @@ class _UpdateFormState extends State<UpdateForm> {
                               blurRadius: 18,
                               spreadRadius: 0,
                               color: Color(0x17000000),
-                            ),
+                            )
                           ],
                         ),
                         child: TextFormField(
                           controller: dateController,
                           readOnly: true,
                           decoration: InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: orange),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            errorBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.red),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            hintText: 'Choose Date',
-                            prefixIcon: GestureDetector(
-                              onTap: _selectDate,
-                              child: const Icon(Icons.calendar_month),
-                            ),
-                          ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: orange),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: Colors.red),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              hintText: 'Choose Date',
+                              prefixIcon: GestureDetector(
+                                  onTap: _selectDate,
+                                  child: const Icon(Icons.calendar_month))),
                         ),
                       ),
-                      // Other input fields go here
                       Padding(
                         padding: EdgeInsets.only(
-                          top: w * 0.03,
-                          right: w * 0.03,
-                          left: w * 0.025,
-                          bottom: w * 0.02,
-                        ),
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
                         child: const Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text('Start Km'),
-                        ),
+                            alignment: Alignment.centerLeft,
+                            child: Text('PUC No')),
                       ),
-                      CustomTextFormFieldIcon(
+                      CustomTextFormField(
                         width: 320,
-                        controller: startKmController,
-                        hintText: 'Type',
+                        controller: _pucnocontroller,
+                        hintText: 'type',
                         labeltext: '',
                         keyboardType: TextInputType.number,
-                        prefixicon: const Icon(Icons.share_location_sharp),
                       ),
                       Padding(
                         padding: EdgeInsets.only(
@@ -244,47 +235,13 @@ class _UpdateFormState extends State<UpdateForm> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Price')),
+                            child: Text('issue')),
                       ),
                       CustomTextFormField(
                         width: 320,
-                        controller: priceController,
+                        controller: _issuecontroller,
                         hintText: 'Type',
-                        labeltext: 'Type',
-                        keyboardType: TextInputType.number,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Liters')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: literController,
-                        hintText: 'Type',
-                        labeltext: 'Type',
-                        keyboardType: TextInputType.number,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Place')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: placeController,
-                        hintText: 'Type',
-                        labeltext: 'Type',
+                        labeltext: '',
                         keyboardType: TextInputType.name,
                       ),
                       Padding(
@@ -295,41 +252,60 @@ class _UpdateFormState extends State<UpdateForm> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('End Km')),
+                            child: Text('Expiry')),
+                      ),
+                      CustomTextFormField(
+                        width: 320,
+                        controller: _expirycontroller,
+                        hintText: 'Type',
+                        labeltext: '',
+                        keyboardType: TextInputType.number,
                       ),
                       Padding(
-                        padding: EdgeInsets.only(bottom: w * 0.044),
-                        child: CustomTextFormFieldIcon(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Amount')),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(bottom: w * 0.04),
+                        child: CustomTextFormField(
                           width: 320,
-                          controller: endKmController,
+                          controller: _amountcontroller,
                           hintText: 'Type',
                           labeltext: '',
                           keyboardType: TextInputType.number,
-                          prefixicon: const Icon(Icons.share_location_sharp),
                         ),
                       ),
-
+                    ],
+                  ),
+                ),
+              ),
+            ),
                       // Other fields with similar padding and input
                       const SizedBox(height: 20),
                       CustomTextButton(
                         width: 150,
-                        title: 'Save Changes',
+                        title: 'Update',
                         background: orange,
                         textColor: white,
                         fontSize: 18,
                         onTap: () {
                           // Update Firestore document with new values
                           FirebaseFirestore.instance
-                              .collection('bharthbenzrefuel')
+                              .collection('bharathbenzpuc')
                               .doc(widget.docId)
                               .update({
-                            'vehiclenumber': _dropController.text,
-                            'date': dateController.text,
-                            'Start KM': startKmController.text,
-                            'Price': priceController.text,
-                            'Liter': literController.text,
-                            'Place': placeController.text,
-                            'End Km': endKmController.text,
+                              'vehiclenumber': _dropController.text,
+            'date': dateController.text,
+            'PUC Number': _pucnocontroller.text,
+            'Expiry': _expirycontroller.text,
+            'Issue': _issuecontroller.text,
+            'Amount': _amountcontroller.text
                           }).then((_) {
                             Navigator.pop(context); // Go back after updating
                           });
@@ -338,11 +314,7 @@ class _UpdateFormState extends State<UpdateForm> {
                     ],
                   ),
                 ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+              );
+        
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/retrieve/updateforms/fuelupdate.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/updateforms/fuelupdate.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/updateforms/updatedriver.dart';
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:flutter/material.dart';
@@ -60,12 +61,13 @@ class _DriverretrieveState extends State<Driverretrieve> {
   Future<void> _fetchItems() async {
     try {
       // Fetch data from Firestore (replace 'collectionName' and 'fieldName' with your actual Firestore collection and field)
-      QuerySnapshot snapshot =
-          await FirebaseFirestore.instance.collection('AddVehicles').get();
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('bharathbenzvehicledetail')
+          .get();
 
       // Extract data from documents and convert to a list of strings
       List<String> items =
-          snapshot.docs.map((doc) => doc['Vehicle Number'].toString()).toList();
+          snapshot.docs.map((doc) => doc['vehicle Number'].toString()).toList();
 
       setState(() {
         _items = items; // Update the state with fetched items
@@ -206,46 +208,37 @@ class _DriverretrieveState extends State<Driverretrieve> {
     }
   }
 
-  // Generate PDF document from the data
   Future<File> _generatePdf(List<DocumentSnapshot> documents) async {
     final pdf = pw.Document();
 
+    // Fetch images asynchronously before creating the PDF
+    List<Map<String, dynamic>> dataWithImages = await Future.wait(
+      documents.map((doc) async {
+        final data = doc.data() as Map<String, dynamic>;
+        final netImage = await networkImage(data['Image URL']);
+        return {
+          'data': data,
+          'netImage': netImage,
+        };
+      }).toList(),
+    );
+
+    // Add all document data to a single page
     pdf.addPage(
       pw.Page(
-        build: (pw.Context context) => pw.ListView.builder(
-          itemCount: documents.length,
-          itemBuilder: (context, index) {
-            final data = documents[index].data() as Map<String, dynamic>;
-
-            return pw.Container(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Column(
-                crossAxisAlignment: pw.CrossAxisAlignment.start,
-                children: [
-                  // pw.Container(
-                  //   width: 60, // Diameter of the circle
-                  //   height: 60,
-                  //   decoration: pw.BoxDecoration(
-                  //     shape: pw.BoxShape.circle,
-                  //     image: pw.DecorationImage(
-                  //       image: data['Image URL'],
-                  //       fit: pw.BoxFit.cover,
-                  //     ),
-                  //   ),
-                  // ),
-                  pw.Text('Vehicle No: ${data['vehiclenumber'] ?? ''}'),
-                  pw.Text('Name: ${data['Name'] ?? ''}'),
-                  pw.Text('Place: ${data['Place'] ?? ''}'),
-                  pw.Text('Blood Group: ${data['Blooad Group'] ?? ''}'),
-                  pw.Text('Liters: ${data['Liter'] ?? ''}'),
-                  pw.Text('Place: ${data['Place'] ?? ''}'),
-                  pw.Text('End KM: ${data['End Km'] ?? ''}'),
-                  pw.Divider(),
-                ],
-              ),
-            );
-          },
-        ),
+        build: (pw.Context context) {
+          return pw.Container(
+            padding: const pw.EdgeInsets.all(8),
+            child: pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                // Loop through each document and display data
+                for (var item in dataWithImages)
+                  _buildDataSection(item['data'], item['netImage']),
+              ],
+            ),
+          );
+        },
       ),
     );
 
@@ -267,6 +260,41 @@ class _DriverretrieveState extends State<Driverretrieve> {
     await file.writeAsBytes(bytes);
 
     return file;
+  }
+
+  pw.Widget _buildDataSection(
+      Map<String, dynamic> data, pw.ImageProvider netImage) {
+    // Build the section with data
+    return pw.Column(children: [
+      pw.Row(
+        children: [
+          pw.ClipOval(
+            child: pw.Container(
+              width: 60, // Set the desired diameter of the circle
+              height: 60,
+              child: pw.Image(
+                netImage,
+                fit: pw.BoxFit.cover, // Ensures the image covers the circle
+              ),
+            ),
+          ),
+          pw.SizedBox(width: 40),
+          pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text('Vehicle No: ${data['vehiclenumber'] ?? ''}'),
+              pw.Text('Name: ${data['Name'] ?? ''}'),
+              pw.Text('Place: ${data['Place'] ?? ''}'),
+              pw.Text('Blood Group: ${data['Blooad Group'] ?? ''}'),
+              pw.Text('Liters: ${data['Liter'] ?? ''}'),
+              pw.Text('End KM: ${data['End Km'] ?? ''}'),
+            ],
+          ),
+        ],
+      ),
+      pw.SizedBox(height: 20),
+      pw.Divider()
+    ]);
   }
 
   @override
@@ -450,7 +478,7 @@ class _DriverretrieveState extends State<Driverretrieve> {
                                               context,
                                               MaterialPageRoute(
                                                 builder: (context) =>
-                                                    UpdateForm(
+                                                    UpdateFormDriver(
                                                   docId: docId,
                                                   data: data,
                                                 ),

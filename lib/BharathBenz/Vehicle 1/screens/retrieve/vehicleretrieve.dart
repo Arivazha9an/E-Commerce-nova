@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/retrieve/updateforms/fuelupdate.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/updateforms/fuelupdate.dart';
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +12,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
+
+import '../updateforms/vehicleupdate.dart';
 
 class Vehicleretrieve extends StatefulWidget {
   const Vehicleretrieve({super.key});
@@ -328,7 +330,7 @@ class _VehicleretrieveState extends State<Vehicleretrieve> {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => UpdateForm(
+                                            builder: (context) => UpdateFormVehicle(
                                               docId: docId,
                                               data: data,
                                             ),
