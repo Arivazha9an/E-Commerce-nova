@@ -29,6 +29,9 @@ class _UpdateFormState extends State<UpdateFormLoad> {
    late TextEditingController _customernamecontroller;
   late TextEditingController _customernocontroller;
   late TextEditingController _dropController;
+   late String date;
+  late String amount;
+
   List<String> _items = []; // List to hold Firestore data
   String? _selectedItemvehicle; // Variable to hold the selected item
   @override
@@ -36,6 +39,8 @@ class _UpdateFormState extends State<UpdateFormLoad> {
   void initState() {
     _fetchItems();
     super.initState();
+    date = widget.data['date'] ?? '';
+    amount = widget.data['Delivery Amount'] ?? '';
     // Initialize controllers with data from Firestore
     _dropController = TextEditingController(text: widget.data['vehiclenumber']);
     dateController = TextEditingController(text: widget.data['date'] ?? '');
@@ -104,6 +109,111 @@ class _UpdateFormState extends State<UpdateFormLoad> {
       setState(() {
         dateController.text = DateFormat('dd/MM/yyyy').format(picked);
       });
+    }
+  }
+
+   Future<void> _storeOrUpdateData(String date, String number) async {
+    if (_dropController.text.isEmpty ||
+    dateController.text.isEmpty ||
+     _startpointcontroller.text.isEmpty||
+    _loadpointcontroller.text.isEmpty||
+    _droppointcontroller.text.isEmpty||
+   _nooftonscontroller.text.isEmpty ||
+    _loadamountcontroller.text.isEmpty ||
+     _deliveryamountcontroller.text.isEmpty||
+    _customernamecontroller.text.isEmpty||
+    _customernocontroller.text.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Error'),
+          content: const Text('Please fill all fields.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+      return;
+    } else {
+      try {
+        // Reference to the Firestore collection
+        final collectionRef = FirebaseFirestore.instance
+            .collection('CalendarAppointmentCollectionIncome');
+
+        // Convert the number from String to int, ensuring no null or invalid conversion
+        int parsedNumber = int.tryParse(number) ?? 0;
+
+        // Query to check if a document with the same date exists
+        final querySnapshot =
+            await collectionRef.where('StartTime', isEqualTo: date).get();
+
+        if (querySnapshot.docs.isNotEmpty) {
+          // Document exists, update the number
+          final docRef = querySnapshot.docs.first.reference;
+          // Retrieve the existing number, ensuring it's treated as int
+          final existingNumberString =
+              (querySnapshot.docs.first.data()['Subject'] ?? 0) as String;
+          int existingNumber = int.tryParse(existingNumberString) ?? 0;
+
+          // Sum the existing number with the new number
+          final newNumber = existingNumber + parsedNumber;
+
+          // Update the document with the new summed number
+          await docRef.update({'Subject': newNumber.toString()});
+          print('Document updated: $date with new number: $newNumber');
+        } else {
+          // Document does not exist, create a new one
+          await collectionRef
+              .add({'StartTime': date, 'Subject': parsedNumber.toString()});
+          print(
+              'New document created: $date with number: ${parsedNumber.toString()}');
+        }
+      } catch (e) {
+        // Handle errors
+        print('Error: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update data: $e')),
+        );
+      }
+    }
+  }
+
+  // expense logic for calender
+  Future<void> updateOrDeleteByDate(String date, String value) async {
+    // Reference to Firestore collection
+    CollectionReference collection = FirebaseFirestore.instance
+        .collection('CalendarAppointmentCollectionIncome');
+
+    try {
+      // Query Firestore for a document with the matching date
+      QuerySnapshot querySnapshot =
+          await collection.where('StartTime', isEqualTo: date).get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        // Document exists, get the first matching document
+        DocumentSnapshot doc = querySnapshot.docs.first;
+        int currentBalance = int.tryParse(doc['Subject'] ?? '0') ?? 0;
+        int subtractionValue = int.tryParse(value) ?? 0;
+
+        // Calculate the new balance
+        int newBalance = currentBalance - subtractionValue;
+
+        if (newBalance <= 0) {
+          // If the new balance is zero or less, delete the document
+          await doc.reference.delete();
+          print('Document deleted as balance reached zero.');
+        } else {
+          // Otherwise, update the document with the new balance
+          await doc.reference.update({'Subject': newBalance.toString()});
+          print('Document updated with new balance: $newBalance');
+        }
+      }
+    } catch (e) {
+      // Handle errors (e.g., network issues, permission errors)
+      print('Error: $e');
     }
   }
 
@@ -376,8 +486,22 @@ class _UpdateFormState extends State<UpdateFormLoad> {
                         background: orange,
                         textColor: white,
                         fontSize: 18,
-                        onTap: () {
-                          
+                        onTap: () async {
+                if (date.isNotEmpty && amount.isNotEmpty) {
+                  // Correctly call the function
+                  await _storeOrUpdateData(
+                      dateController.text, _deliveryamountcontroller.text);
+                } else {
+                  print('Error: Date or Amount is missing or not a string.');
+                  // Handle the missing or incorrect type data
+                }
+                if (date.isNotEmpty && amount.isNotEmpty) {
+                  // Correctly call the function
+                  await updateOrDeleteByDate(date, amount);
+                } else {
+                  print('Error: Date or Amount is missing or not a string.');
+                  // Handle the missing or incorrect type data
+                }
                           // Update Firestore document with new values
                           FirebaseFirestore.instance
                               .collection('bharathbenzloaddetail')

@@ -3,7 +3,6 @@ import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:e_commerce/widgets/custombutton.dart';
 import 'package:e_commerce/widgets/customtextform.dart';
-import 'package:e_commerce/widgets/customtextformwithicon.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 

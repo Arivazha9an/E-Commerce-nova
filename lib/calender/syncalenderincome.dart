@@ -20,7 +20,7 @@ class LoadDataFromFireStoreState extends State<LoadDataFromFireStoreIncome> {
   @override
   void initState() {
     getDataFromFireStore().then((results) {
-      SchedulerBinding.instance!.addPostFrameCallback((timeStamp) {
+      SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
         setState(() {});
       });
     });

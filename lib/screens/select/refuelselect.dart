@@ -1,17 +1,19 @@
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/addvehicle.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/refuel.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/retrieve/fuelretrieve.dart';
 import 'package:e_commerce/constants/colors.dart';
+import 'package:e_commerce/screens/forms/refuel.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:e_commerce/widgets/custombutton.dart';
 import 'package:flutter/material.dart';
 
-class Vehicleselect extends StatefulWidget {
-  const Vehicleselect({super.key});
+class TFuelselect extends StatefulWidget {
+  const TFuelselect({super.key});
 
   @override
-  State<Vehicleselect> createState() => _VehicleselectState();
+  State<TFuelselect> createState() => _VehicleselectState();
 }
 
-class _VehicleselectState extends State<Vehicleselect> {
+class _VehicleselectState extends State<TFuelselect> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,7 +33,7 @@ class _VehicleselectState extends State<Vehicleselect> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const Addvehicle()),
+                    MaterialPageRoute(builder: (context) => const Fuel()),
                   );
                 },
               ),
@@ -52,7 +54,8 @@ class _VehicleselectState extends State<Vehicleselect> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const Addvehicle()),
+                    MaterialPageRoute(
+                        builder: (context) => const FuelRetrieve()),
                   );
                 },
               ),

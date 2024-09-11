@@ -1,4 +1,4 @@
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/addvehicle.dart';
+
 import 'package:e_commerce/BharathBenz/Vehicle%201/screens/select/Insuranceselect.dart';
 import 'package:e_commerce/BharathBenz/Vehicle%201/screens/select/Loadselect.dart';
 import 'package:e_commerce/BharathBenz/Vehicle%201/screens/select/PUCSelect.dart';
@@ -8,18 +8,11 @@ import 'package:e_commerce/BharathBenz/Vehicle%201/screens/select/driverselect.d
 import 'package:e_commerce/BharathBenz/Vehicle%201/screens/select/expenseSelect.dart';
 import 'package:e_commerce/BharathBenz/Vehicle%201/screens/select/serviceselect.dart';
 import 'package:e_commerce/BharathBenz/Vehicle%201/screens/select/vehicledetailselect.dart';
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/select/vehicleselect.dart';
+
 
 import 'package:e_commerce/constants/colors.dart';
-import 'package:e_commerce/screens/forms/Permit.dart';
+
 import 'package:flutter/material.dart';
-import '../screens/forms/DriverDetail.dart';
-import '../screens/forms/ExpenseDetail.dart';
-import '../screens/forms/LoadDetails.dart';
-import '../screens/forms/PUCdetail.dart';
-import '../screens/forms/Permit.dart';
-import '../screens/forms/VehicleDetails.dart';
-import '../screens/forms/insurancedetail.dart';
 
 class BGrideview extends StatefulWidget {
   const BGrideview({super.key});
@@ -338,38 +331,7 @@ class _BGrideviewState extends State<BGrideview> {
                         ))),
                   ),
                 ),
-                InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const Vehicleselect()),
-                    );
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 21),
-                    child: Container(
-                      height: 100,
-                      width: 155,
-                      decoration: const BoxDecoration(
-                        color: black,
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
-                        image: DecorationImage(
-                          image: AssetImage("assets/images/add.png"),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      // child: const Center(
-                      //     child: Text(
-                      //   'Add Vehicle',
-                      //   style: TextStyle(
-                      //       color: white,
-                      //       fontSize: 24,
-                      //       fontWeight: FontWeight.bold),
-                      // ))
-                    ),
-                  ),
-                ),
+             
               ],
             )
           ],

@@ -1,7 +1,6 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/updateforms/loadupdate.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/updateforms/updatedriver.dart';
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:flutter/material.dart';
@@ -11,16 +10,17 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:printing/printing.dart';
 import 'package:share_plus/share_plus.dart';
 
-class Loadretrieve extends StatefulWidget {
-  const Loadretrieve({super.key});
+class Driverretrieve2 extends StatefulWidget {
+  const Driverretrieve2({super.key});
 
   @override
-  State<Loadretrieve> createState() => _LoadretrieveState();
+  State<Driverretrieve2> createState() => _Driverretrieve2State();
 }
 
-class _LoadretrieveState extends State<Loadretrieve> {
+class _Driverretrieve2State extends State<Driverretrieve2> {
   TextEditingController _startDateController = TextEditingController();
   TextEditingController _endDateController = TextEditingController();
   DateTime? _startDate;
@@ -54,6 +54,7 @@ class _LoadretrieveState extends State<Loadretrieve> {
     _pageController.dispose();
     super.dispose();
   }
+
   Future<void> _fetchItems() async {
     try {
       // Fetch data from Firestore (replace 'collectionName' and 'fieldName' with your actual Firestore collection and field)
@@ -94,7 +95,7 @@ class _LoadretrieveState extends State<Loadretrieve> {
                 Navigator.of(context).pop(); // Close the dialog
                 try {
                   await FirebaseFirestore.instance
-                      .collection('bharathbenzloaddetail')
+                      .collection('tuarusdriverdetail')
                       .doc(docId)
                       .delete();
                 } catch (e) {
@@ -140,10 +141,8 @@ class _LoadretrieveState extends State<Loadretrieve> {
     });
 
     // Start with the base query
-    Query query = FirebaseFirestore.instance
-        .collection('bharathbenzloaddetail')
-        .orderBy('date')
-        .limit(10);
+    Query query =
+        FirebaseFirestore.instance.collection('tuarusdriverdetail').limit(10);
 
     // Apply date filters if selected
     if (_startDate != null) {
@@ -205,38 +204,37 @@ class _LoadretrieveState extends State<Loadretrieve> {
     }
   }
 
-  // Generate PDF document from the data
   Future<File> _generatePdf(List<DocumentSnapshot> documents) async {
     final pdf = pw.Document();
 
+    // Fetch images asynchronously before creating the PDF
+    List<Map<String, dynamic>> dataWithImages = await Future.wait(
+      documents.map((doc) async {
+        final data = doc.data() as Map<String, dynamic>;
+        final netImage = await networkImage(data['Image URL']);
+        return {
+          'data': data,
+          'netImage': netImage,
+        };
+      }).toList(),
+    );
+
+    // Add all document data to a single page
     pdf.addPage(
       pw.Page(
-        build: (pw.Context context) => pw.ListView.builder(
-          itemCount: documents.length,
-          itemBuilder: (context, index) {
-            final data = documents[index].data() as Map<String, dynamic>;
-
-            return pw.Container(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Column(
-                crossAxisAlignment: pw.CrossAxisAlignment.start,
-                children: [
-                  pw.Text('Vehicle No: ${data['vehiclenumber'] ?? ''}'),
-                  pw.Text('Date: ${data['date'] ?? ''}'),
-                  pw.Text('Start Point: ${data['Start Point'] ?? ''}'),
-                  pw.Text('Load Point: ${data['Load Point'] ?? ''}'),
-                  pw.Text('Drop Point: ${data['Drop Point'] ?? ''}'),
-                  pw.Text('No of Tons: ${data['No Of Tons / Units'] ?? ''}'),
-                  pw.Text('Load amount: ${data['Load Amount'] ?? ''}'),
-                  pw.Text('Delivey Amount: ${data['Delivery Amount'] ?? ''}'),
-                  pw.Text('Customer Name: ${data['Customer Name'] ?? ''}'),
-                  pw.Text('Customer Number: ${data['Customer Number'] ?? ''}'),
-                  pw.Divider(),
-                ],
-              ),
-            );
-          },
-        ),
+        build: (pw.Context context) {
+          return pw.Container(
+            padding: const pw.EdgeInsets.all(8),
+            child: pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                // Loop through each document and display data
+                for (var item in dataWithImages)
+                  _buildDataSection(item['data'], item['netImage']),
+              ],
+            ),
+          );
+        },
       ),
     );
 
@@ -260,60 +258,53 @@ class _LoadretrieveState extends State<Loadretrieve> {
     return file;
   }
 
+  pw.Widget _buildDataSection(
+      Map<String, dynamic> data, pw.ImageProvider netImage) {
+    // Build the section with data
+    return pw.Column(children: [
+      pw.Row(
+        children: [
+          pw.ClipOval(
+            child: pw.Container(
+              width: 60, // Set the desired diameter of the circle
+              height: 60,
+              child: pw.Image(
+                netImage,
+                fit: pw.BoxFit.cover, // Ensures the image covers the circle
+              ),
+            ),
+          ),
+          pw.SizedBox(width: 40),
+          pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text('Vehicle No: ${data['vehiclenumber'] ?? ''}'),
+              pw.Text('Name: ${data['Name'] ?? ''}'),
+              pw.Text('Place: ${data['Place'] ?? ''}'),
+              pw.Text('Blood Group: ${data['Blooad Group'] ?? ''}'),
+              pw.Text('Liters: ${data['Liter'] ?? ''}'),
+              pw.Text('End KM: ${data['End Km'] ?? ''}'),
+            ],
+          ),
+        ],
+      ),
+      pw.SizedBox(height: 20),
+      pw.Divider()
+    ]);
+  }
+
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Refuel Data', isGoBack: true),
+      appBar: const CustomAppBar(title: 'Driver Data', isGoBack: true),
       body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(13.0),
             child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _startDateController,
-                    readOnly: true,
-                    decoration: InputDecoration(
-                      labelText: 'Start Date',
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.calendar_today),
-                        onPressed: () =>
-                            _selectDate(_startDateController, _startDate),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10.0),
-                Expanded(
-                  child: TextField(
-                    controller: _endDateController,
-                    readOnly: true,
-                    decoration: InputDecoration(
-                      labelText: 'End Date',
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.calendar_today),
-                        onPressed: () =>
-                            _selectDate(_endDateController, _endDate),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 5.0),
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      _pageData.clear();
-                      _hasMoreData = true;
-                      _currentPage = 0;
-                      _fetchData(0); // Fetch first page
-                    });
-                  },
-                  icon: const Icon(Icons.refresh_rounded),
-                ),
-              ],
+              children: [],
             ),
           ),
           Padding(
@@ -345,23 +336,40 @@ class _LoadretrieveState extends State<Loadretrieve> {
                     });
                   },
                 ),
-                IconButton(
-                  icon: Icon(Icons.close_rounded),
-                  onPressed: () {
-                    setState(() {
-                      _startDate = null; // Clear the start date filter
-                      _endDate = null; // Clear the end date filter
-                      _selectedItemvehicle = null; // Clear the vehicle filter
-                      _startDateController
-                          .clear(); // Clear the start date TextField
-                      _endDateController
-                          .clear(); // Clear the end date TextField
-                      _pageData.clear(); // Clear existing paginated data
-                      _hasMoreData = true; // Reset the flag to fetch more data
-                      _currentPage = 0; // Reset to the first page
-                      _fetchData(0); // Fetch data without filters
-                    });
-                  },
+                Row(
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        setState(() {
+                          _pageData.clear();
+                          _hasMoreData = true;
+                          _currentPage = 0;
+                          _fetchData(0); // Fetch first page
+                        });
+                      },
+                      icon: const Icon(Icons.refresh_rounded),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close_rounded),
+                      onPressed: () {
+                        setState(() {
+                          _startDate = null; // Clear the start date filter
+                          _endDate = null; // Clear the end date filter
+                          _selectedItemvehicle =
+                              null; // Clear the vehicle filter
+                          _startDateController
+                              .clear(); // Clear the start date TextField
+                          _endDateController
+                              .clear(); // Clear the end date TextField
+                          _pageData.clear(); // Clear existing paginated data
+                          _hasMoreData =
+                              true; // Reset the flag to fetch more data
+                          _currentPage = 0; // Reset to the first page
+                          _fetchData(0); // Fetch data without filters
+                        });
+                      },
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -381,22 +389,19 @@ class _LoadretrieveState extends State<Loadretrieve> {
                       Map<String, dynamic> data =
                           documents[i].data() as Map<String, dynamic>;
                       String vehicleno = data['vehiclenumber'] ?? '';
-                      String date = data['date'] ?? '';
-                  String startPoint = data['Start Point'] ?? '';
-                      String loadPoint = data['Load Point'] ?? '';
-                      String dropPoint = data['Drop Point'] ?? '';
-                      String tons = data['No Of Tons / Units'] ?? '';
-                      String loadAmount = data['Load Amount'] ?? '';
-                      String deliveryAmount = data['Delivery Amount'] ?? '';
-                      String customerName = data['Customer Name'] ?? '';
-                      String customerNo = data['Customer Number'] ?? '';
+                      String name = data['Name'] ?? '';
+                      String place = data['Place'] ?? '';
+                      String bloodGroup = data['Blooad Group'] ?? '';
+                      String photo = data['Image URL'] ?? '';
+                      String expires = data['Expires'] ?? '';
+                      String insuranceAmount = data['Insurance Amount'] ?? '';
                       String docId = documents[i].id;
-
+                      networkImage(data['Image URL']);
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Container(
                           width: 100,
-                          height: 270,
+                          height: 210,
                           decoration: BoxDecoration(
                               borderRadius:
                                   const BorderRadius.all(Radius.circular(10)),
@@ -404,121 +409,117 @@ class _LoadretrieveState extends State<Loadretrieve> {
                                   Border.all(color: orange, width: w * 0.005)),
                           child: Padding(
                             padding: const EdgeInsets.only(
-                                left: 40, right: 20, top: 10),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                                left: 10, right: 20, top: 10),
+                            child: Row(
                               children: [
-                                Row(
+                                Column(
                                   children: [
-                                    const Text('Vehicle No: '),
-                                    Text(vehicleno),
+                                    const SizedBox(
+                                      height: 20,
+                                    ),
+                                    CircleAvatar(
+                                      backgroundImage: NetworkImage(photo),
+                                      radius: 45,
+                                    )
                                   ],
                                 ),
-                                Row(
-                                  children: [
-                                    const Text('Date: '),
-                                    Text(date),
-                                  ],
+                                const SizedBox(
+                                  width: 25,
                                 ),
-                               Row(
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('Start Point  = '),
-                                    Text(startPoint),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Text('Load Point  = '),
-                                    Text(loadPoint),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Text('Drop Point = '),
-                                    Text(dropPoint),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Text('No os Tons= '),
-                                    Text(tons),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Text('Load Amount = '),
-                                    Text(loadAmount),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Text('Delivery Amount = '),
-                                    Text(deliveryAmount),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Text('Customer Name = '),
-                                    Text(customerName),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Text('Customer No= '),
-                                    Text(customerNo),
-                                  ],
-                                ),
-                                const Spacer(),
-                                Row(
-                                  children: [
-                                    IconButton(
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => UpdateFormLoad(
-                                              docId: docId,
-                                              data: data,
+                                    Row(
+                                      children: [
+                                        const Text('Vehicle No: '),
+                                        Text(vehicleno),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        const Text('Name  = '),
+                                        Text(name),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        const Text('Place  = '),
+                                        Text(place),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        const Text('Blood Group  = '),
+                                        Text(bloodGroup),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        const Text('Expires = '),
+                                        Text(expires),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        const Text('Insurance Amount = '),
+                                        Text(insuranceAmount),
+                                      ],
+                                    ),
+                                    const Spacer(),
+                                    Row(
+                                      children: [
+                                        IconButton(
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    UpdateFormDriver(
+                                                  docId: docId,
+                                                  data: data,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          icon: Container(
+                                            height: 35,
+                                            width: 35,
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(40),
+                                                color: orange,
+                                                border:
+                                                    Border.all(color: orange)),
+                                            child: const Icon(
+                                              Icons.edit,
+                                              color: white,
+                                              // size: 30,
                                             ),
                                           ),
-                                        );
-                                      },
-                                      icon: Container(
-                                        height: 35,
-                                        width: 35,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(40),
-                                            color: orange,
-                                            border: Border.all(color: orange)),
-                                        child: const Icon(
-                                          Icons.edit,
-                                          color: white,
-                                          // size: 30,
                                         ),
-                                      ),
+                                        IconButton(
+                                          onPressed: () {
+                                            _showDeleteConfirmationDialog(
+                                                context, docId);
+                                          },
+                                          icon: Container(
+                                            height: 35,
+                                            width: 35,
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(40),
+                                                color: Colors.red,
+                                                border: Border.all(
+                                                    color: Colors.red)),
+                                            child: const Icon(
+                                              Icons.delete,
+                                              color: white,
+                                              // size: 30,
+                                            ),
+                                          ),
+                                        )
+                                      ],
                                     ),
-                                    IconButton(
-                                      onPressed: () {
-                                        _showDeleteConfirmationDialog(
-                                            context, docId);
-                                      },
-                                      icon: Container(
-                                        height: 35,
-                                        width: 35,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(40),
-                                            color: Colors.red,
-                                            border:
-                                                Border.all(color: Colors.red)),
-                                        child: const Icon(
-                                          Icons.delete,
-                                          color: white,
-                                          // size: 30,
-                                        ),
-                                      ),
-                                    )
                                   ],
                                 ),
                               ],
@@ -585,7 +586,7 @@ class _LoadretrieveState extends State<Loadretrieve> {
                               center: const Offset(0, 0),
                             ),
                           );
-                                                } catch (e) {
+                        } catch (e) {
                           print('Error sharing PDF: $e');
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerce/constants/colors.dart';
-import 'package:e_commerce/screens/forms/retrieve/fuelretrieve.dart';
+import 'package:e_commerce/screens/retrieve/fuelretrieve.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:e_commerce/widgets/custombuttom%20outlined.dart';
 import 'package:e_commerce/widgets/custombutton.dart';
@@ -8,6 +8,7 @@ import 'package:e_commerce/widgets/customtextformwithicon.dart';
 import 'package:e_commerce/widgets/customtextform.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
 class Fuel extends StatefulWidget {
@@ -18,16 +19,56 @@ class Fuel extends StatefulWidget {
 }
 
 class _FuelState extends State<Fuel> {
-  final TextEditingController _datepickController = TextEditingController();
+   final TextEditingController _datepickController = TextEditingController();
   var _startKmcontroller = TextEditingController();
   var _priceontroller = TextEditingController();
   var _literscontroller = TextEditingController();
   var _placecontroller = TextEditingController();
   var _endKMcontroller = TextEditingController();
+  final TextEditingController _dropController = TextEditingController();
+  List<String> _items = []; // List to hold Firestore data
+  String? _selectedItemvehicle; // Variable to hold the selected item
+  @override
+  void initState() {
+    super.initState();
+    _fetchItems(); // Fetch items when the widget is initialized
+  }
+
+  void clear() {
+    _datepickController.clear();
+    _startKmcontroller.clear();
+    _priceontroller.clear();
+    _literscontroller.clear();
+    _placecontroller.clear();
+    _endKMcontroller.clear();
+    _dropController.clear();
+  }
+
+  // Function to fetch data from Firestore
+  Future<void> _fetchItems() async {
+    try {
+      // Fetch data from Firestore (replace 'collectionName' and 'fieldName' with your actual Firestore collection and field)
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('bharathbenzvehicledetail')
+          .get();
+
+      // Extract data from documents and convert to a list of strings
+      List<String> items =
+          snapshot.docs.map((doc) => doc['vehicle Number'].toString()).toList();
+
+      setState(() {
+        _items = items; // Update the state with fetched items
+      });
+    } catch (e) {
+      print('Error fetching data from Firestore: $e'); // Handle errors
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    void _saveData() {
-      if (_datepickController.text.isEmpty ||
+    void _saveData() async {
+      if (_dropController.text.isEmpty ||
+          _datepickController.text.isEmpty ||
           _startKmcontroller.text.isEmpty ||
           _priceontroller.text.isEmpty ||
           _literscontroller.text.isEmpty ||
@@ -49,7 +90,8 @@ class _FuelState extends State<Fuel> {
         return;
       } else {
         try {
-          FirebaseFirestore.instance.collection('tauruszrefuel').add({
+          await FirebaseFirestore.instance.collection('tauruszrefuel').add({
+            'vehiclenumber': _dropController.text,
             'date': _datepickController.text,
             'Start KM': _startKmcontroller.text,
             'Price': _priceontroller.text,
@@ -57,9 +99,54 @@ class _FuelState extends State<Fuel> {
             'Place': _placecontroller.text,
             'End Km': _endKMcontroller.text
           });
+          Fluttertoast.showToast(
+            msg: "Successfully Stored.",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+            fontSize: 16.0,
+          );
+
+          // Navigate back to the previous page after a delay
+          Future.delayed(
+              const Duration(seconds: 2), () => Navigator.pop(context));
         } on FirebaseException catch (e) {
+          // Handle Firebase errors
           print('Failed with error code: ${e.code}');
           print(e.message);
+          // Optionally show an error dialog
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Error'),
+              content: const Text('Failed to Store Data. Please try again.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        } catch (e) {
+          // Handle any other errors
+          print('Unexpected error: $e');
+          // Optionally show an error dialog
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Error'),
+              content:
+                  const Text('An unexpected error occurred. Please try again.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
         }
       }
     }
@@ -72,7 +159,7 @@ class _FuelState extends State<Fuel> {
           lastDate: DateTime(2099));
       if (picked != null) {
         setState(() {
-          _datepickController.text = DateFormat('yyyy-MM-dd').format(picked);
+          _datepickController.text = DateFormat('dd/MM/yyyy').format(picked);
         });
       }
     }
@@ -80,7 +167,7 @@ class _FuelState extends State<Fuel> {
     var w = MediaQuery.sizeOf(context).width;
 
     return Scaffold(
-      appBar: CustomAppBar(title: 'Refuel Detail'),
+      appBar: const CustomAppBar(title: 'Refuel Detail'),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
@@ -89,11 +176,60 @@ class _FuelState extends State<Fuel> {
               padding: EdgeInsets.only(left: w * 0.03, right: w * 0.03),
               child: Container(
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
                     border: Border.all(color: orange, width: w * 0.005)),
                 child: Center(
                   child: Column(
                     children: [
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Vehicle Number')),
+                      ),
+                      Container(
+                        width: 320,
+                        child: TextField(
+                          controller: _dropController,
+                          readOnly: true, // Make the text field read-only
+                          decoration: InputDecoration(
+                            labelText: 'Select Vehicle No',
+                            suffixIcon: DropdownButton<String>(
+                              value: _selectedItemvehicle,
+                              hint: const Text('Select'),
+                              icon: const Icon(Icons.arrow_drop_down),
+                              items: _items.map((String item) {
+                                return DropdownMenuItem<String>(
+                                  value: item,
+                                  child: Text(item),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _selectedItemvehicle =
+                                      newValue; // Update the selected item
+                                  _dropController.text =
+                                      newValue ?? ''; // Update the text field
+                                });
+                              },
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: orange),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: black),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            border: const OutlineInputBorder(
+                                borderSide: BorderSide(color: orange)),
+                          ),
+                        ),
+                      ),
                       Padding(
                         padding: EdgeInsets.only(
                             top: w * 0.03,
@@ -122,7 +258,7 @@ class _FuelState extends State<Fuel> {
                           readOnly: true,
                           decoration: InputDecoration(
                               focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: orange),
+                                borderSide: const BorderSide(color: orange),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               enabledBorder: OutlineInputBorder(
@@ -135,7 +271,7 @@ class _FuelState extends State<Fuel> {
                               hintText: 'Choose Date',
                               prefixIcon: GestureDetector(
                                   onTap: _selectDate,
-                                  child: Icon(Icons.calendar_month))),
+                                  child: const Icon(Icons.calendar_month))),
                         ),
                       ),
                       Padding(
@@ -154,7 +290,7 @@ class _FuelState extends State<Fuel> {
                         hintText: 'Type',
                         labeltext: '',
                         keyboardType: TextInputType.number,
-                        prefixicon: Icon(Icons.share_location_sharp),
+                        prefixicon: const Icon(Icons.share_location_sharp),
                       ),
                       Padding(
                         padding: EdgeInsets.only(
@@ -213,7 +349,7 @@ class _FuelState extends State<Fuel> {
                             right: w * 0.03,
                             left: w * 0.025,
                             bottom: w * 0.02),
-                        child: Align(
+                        child: const Align(
                             alignment: Alignment.centerLeft,
                             child: Text('End Km')),
                       ),
@@ -225,7 +361,7 @@ class _FuelState extends State<Fuel> {
                           hintText: 'Type',
                           labeltext: '',
                           keyboardType: TextInputType.number,
-                          prefixicon: Icon(Icons.share_location_sharp),
+                          prefixicon: const Icon(Icons.share_location_sharp),
                         ),
                       ),
                     ],
@@ -250,22 +386,16 @@ class _FuelState extends State<Fuel> {
                         _saveData();
                       }),
                 ),
-               Padding(
+                Padding(
                   padding: EdgeInsets.only(left: w * 0.15),
                   child: CustomTextButtonOut(
-                    title: 'Fetch',
+                    title: 'Clear',
                     width: w * 0.3,
                     background: Colors.transparent,
                     textColor: black,
                     fontSize: 20,
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const Fuelretrieve2()),
-                      );
-
-
+                      clear();
                     },
                     color: black,
                   ),

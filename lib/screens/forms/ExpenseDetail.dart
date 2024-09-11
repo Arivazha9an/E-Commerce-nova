@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerce/constants/colors.dart';
-import 'package:e_commerce/screens/forms/retrieve/ExpenseRetreive.dart';
+import 'package:e_commerce/screens/retrieve/ExpenseRetreive.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:e_commerce/widgets/custombuttom%20outlined.dart';
 import 'package:e_commerce/widgets/custombutton.dart';
 import 'package:e_commerce/widgets/customtextform.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
 class Expensedetail extends StatefulWidget {
@@ -17,14 +18,57 @@ class Expensedetail extends StatefulWidget {
 
 class _ExpensedetailState extends State<Expensedetail> {
   final TextEditingController _datepickController = TextEditingController();
-DateTime? pickeddate;
+  DateTime? pickeddate;
+
   var _loadmancontroller = TextEditingController();
   var _otherscontroller = TextEditingController();
   var valuecontroller = TextEditingController();
   String? selectedItem;
+  final TextEditingController _dropController = TextEditingController();
+  List<String> _items = []; // List to hold Firestore data
+  String? _selectedItemvehicle; // Variable to hold the selected item
+  @override
+  void initState() {
+    super.initState();
+    _fetchItems(); // Fetch items when the widget is initialized
+  }
 
-  List<String> items = ['Food', 'Lorry Service', 'Tyre', 'Fast tag/Toll','Others'];
-     Future<void> _selectDate() async {
+  void clear() {
+    valuecontroller.clear();
+    _datepickController.clear();
+    _otherscontroller.clear();
+    _dropController.clear();
+    _loadmancontroller.clear();
+  }
+
+  // Function to fetch data from Firestore
+  Future<void> _fetchItems() async {
+    try {
+      // Fetch data from Firestore (replace 'collectionName' and 'fieldName' with your actual Firestore collection and field)
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('bharathbenzvehicledetail')
+          .get();
+
+      // Extract data from documents and convert to a list of strings
+      List<String> items =
+          snapshot.docs.map((doc) => doc['vehicle Number'].toString()).toList();
+
+      setState(() {
+        _items = items; // Update the state with fetched items
+      });
+    } catch (e) {
+      print('Error fetching data from Firestore: $e'); // Handle errors
+    }
+  }
+
+  List<String> vehicleitems = [
+    'Food',
+    'Lorry Service',
+    'Tyre',
+    'Fast tag/Toll',
+    'Others'
+  ];
+  Future<void> _selectDate() async {
     DateTime? picked = await showDatePicker(
         context: context,
         initialDate: DateTime.now(),
@@ -37,8 +81,10 @@ DateTime? pickeddate;
       });
     }
   }
+
   void _saveData() {
-    if (_datepickController.text.isEmpty ||
+    if (_dropController.text.isEmpty ||
+        _datepickController.text.isEmpty ||
         valuecontroller.text.isEmpty ||
         _loadmancontroller.text.isEmpty ||
         _otherscontroller.text.isEmpty) {
@@ -59,20 +105,65 @@ DateTime? pickeddate;
     } else {
       try {
         FirebaseFirestore.instance.collection('taurusexpensedetail').add({
-         'Date01': Timestamp.fromDate(pickeddate!),
-         'Date':_datepickController.text,
+          'vehiclenumber': _dropController.text,
+          'Date': _datepickController.text,
           'ExpenseType': valuecontroller.text,
           'Amount': _loadmancontroller.text,
           'Km': _otherscontroller.text
         });
+        Fluttertoast.showToast(
+          msg: "Successfully Stored.",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+        Future.delayed(
+            const Duration(seconds: 2), () => Navigator.pop(context));
       } on FirebaseException catch (e) {
+        // Handle Firebase errors
         print('Failed with error code: ${e.code}');
         print(e.message);
+        // Optionally show an error dialog
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Error'),
+            content: const Text('Failed to Store Data. Please try again.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      } catch (e) {
+        // Handle any other errors
+        print('Unexpected error: $e');
+        // Optionally show an error dialog
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Error'),
+            content:
+                const Text('An unexpected error occurred. Please try again.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
       }
     }
   }
+
   void _storeOrUpdateData(String date, String number) async {
-       if (_datepickController.text.isEmpty ||
+    if (_dropController.text.isEmpty ||
+        _datepickController.text.isEmpty ||
         valuecontroller.text.isEmpty ||
         _loadmancontroller.text.isEmpty ||
         _otherscontroller.text.isEmpty) {
@@ -90,53 +181,51 @@ DateTime? pickeddate;
         ),
       );
       return;
-    }
-    else {
-    try {
-      // Reference to the Firestore collection
-      final collectionRef =
-          FirebaseFirestore.instance.collection('CalendarAppointmentCollectionExpense');
+    } else {
+      try {
+        // Reference to the Firestore collection
+        final collectionRef = FirebaseFirestore.instance
+            .collection('CalendarAppointmentCollectionExpense');
 
-      // Convert the number from String to int, ensuring no null or invalid conversion
-      int parsedNumber = int.tryParse(number) ?? 0;
+        // Convert the number from String to int, ensuring no null or invalid conversion
+        int parsedNumber = int.tryParse(number) ?? 0;
 
-      // Query to check if a document with the same date exists
-      final querySnapshot =
-          await collectionRef.where('StartTime', isEqualTo: date).get();
+        // Query to check if a document with the same date exists
+        final querySnapshot =
+            await collectionRef.where('StartTime', isEqualTo: date).get();
 
-      if (querySnapshot.docs.isNotEmpty) {
-        // Document exists, update the number
-        final docRef = querySnapshot.docs.first.reference;
-        // Retrieve the existing number, ensuring it's treated as int
-        final existingNumberString =
-            (querySnapshot.docs.first.data()['Subject'] ?? 0) as String;
-            int existingNumber = int.tryParse(existingNumberString) ?? 0;
+        if (querySnapshot.docs.isNotEmpty) {
+          // Document exists, update the number
+          final docRef = querySnapshot.docs.first.reference;
+          // Retrieve the existing number, ensuring it's treated as int
+          final existingNumberString =
+              (querySnapshot.docs.first.data()['Subject'] ?? 0) as String;
+          int existingNumber = int.tryParse(existingNumberString) ?? 0;
 
-        // Sum the existing number with the new number
-        final newNumber = existingNumber + parsedNumber;
+          // Sum the existing number with the new number
+          final newNumber = existingNumber + parsedNumber;
 
-        // Update the document with the new summed number
-        await docRef.update({'Subject': newNumber.toString()});
-        print('Document updated: $date with new number: $newNumber');
-      
-      } else {
-        // Document does not exist, create a new one
-        await collectionRef.add({'StartTime': date, 'Subject': parsedNumber.toString()});
-        print('New document created: $date with number: ${parsedNumber.toString()}');
-      
+          // Update the document with the new summed number
+          await docRef.update({'Subject': newNumber.toString()});
+          print('Document updated: $date with new number: $newNumber');
+        } else {
+          // Document does not exist, create a new one
+          await collectionRef
+              .add({'StartTime': date, 'Subject': parsedNumber.toString()});
+          print(
+              'New document created: $date with number: ${parsedNumber.toString()}');
+        }
+      } catch (e) {
+        // Handle errors
+        print('Error: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update data: $e')),
+        );
       }
-    } catch (e) {
-      // Handle errors
-      print('Error: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update data: $e')),
-      );
-    }
     }
   }
 
-
- @override
+  @override
   Widget build(BuildContext context) {
     var w = MediaQuery.sizeOf(context).width;
     return Scaffold(
@@ -154,7 +243,56 @@ DateTime? pickeddate;
                 child: Center(
                   child: Column(
                     children: [
-                                            Padding(
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Vehicle Number')),
+                      ),
+                      Container(
+                        width: 320,
+                        child: TextField(
+                          controller: _dropController,
+                          readOnly: true, // Make the text field read-only
+                          decoration: InputDecoration(
+                            labelText: 'Select Vehicle No',
+                            suffixIcon: DropdownButton<String>(
+                              value: _selectedItemvehicle,
+                              hint: const Text('Select'),
+                              icon: const Icon(Icons.arrow_drop_down),
+                              items: _items.map((String item) {
+                                return DropdownMenuItem<String>(
+                                  value: item,
+                                  child: Text(item),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _selectedItemvehicle =
+                                      newValue; // Update the selected item
+                                  _dropController.text =
+                                      newValue ?? ''; // Update the text field
+                                });
+                              },
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: orange),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: black),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            border: const OutlineInputBorder(
+                                borderSide: BorderSide(color: orange)),
+                          ),
+                        ),
+                      ),
+                      Padding(
                         padding: EdgeInsets.only(
                             top: w * 0.03,
                             right: w * 0.03,
@@ -198,7 +336,6 @@ DateTime? pickeddate;
                                   child: Icon(Icons.calendar_month))),
                         ),
                       ),
-                    
                       Padding(
                         padding: EdgeInsets.only(
                             top: w * 0.03,
@@ -226,39 +363,35 @@ DateTime? pickeddate;
                           controller: valuecontroller,
                           readOnly: true,
                           decoration: InputDecoration(
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: orange),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Colors.red),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              hintText: '',
-                               suffixIcon: DropdownButton<String>(
-             
-              onChanged: (String? newValue) {
-                setState(() {
-                  selectedItem = newValue;
-                  valuecontroller.text=newValue!;
-                });
-              },
-              items: items.map((String item) {
-                return DropdownMenuItem<String>(
-                  value: item,
-                  child: Text(item), 
-
-                );
-              }).toList(), 
-
-            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: orange),
+                              borderRadius: BorderRadius.circular(4),
                             ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.red),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            hintText: '',
+                            suffixIcon: DropdownButton<String>(
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  selectedItem = newValue;
+                                  valuecontroller.text = newValue!;
+                                });
+                              },
+                              items: vehicleitems.map((String vehicleitems) {
+                                return DropdownMenuItem<String>(
+                                  value: vehicleitems,
+                                  child: Text(vehicleitems),
+                                );
+                              }).toList(),
+                            ),
+                          ),
                         ),
                       ),
-                      
                       Padding(
                         padding: EdgeInsets.only(
                             top: w * 0.03,
@@ -302,7 +435,8 @@ DateTime? pickeddate;
               ),
             ),
             SizedBox(
-              height: w * 0.07,),
+              height: w * 0.07,
+            ),
             Row(
               children: [
                 Padding(
@@ -315,24 +449,20 @@ DateTime? pickeddate;
                       fontSize: 20,
                       onTap: () {
                         _saveData();
-                        _storeOrUpdateData(_datepickController.text,_loadmancontroller.text);
+                        _storeOrUpdateData(
+                            _datepickController.text, _loadmancontroller.text);
                       }),
                 ),
                 Padding(
                   padding: EdgeInsets.only(left: w * 0.15),
                   child: CustomTextButtonOut(
-                    title: 'Fetch',
+                    title: 'Clear',
                     width: w * 0.3,
                     background: Colors.transparent,
                     textColor: black,
                     fontSize: 20,
                     onTap: () {
-                       Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const Expenseretreieve2()),
-                      );
-
+                      clear();
                     },
                     color: black,
                   ),

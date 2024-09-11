@@ -1,11 +1,7 @@
 
 import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/LoadDetails.dart';
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/PUCdetail.dart';
-
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/retrieve/PUCretrieve.dart';
 import 'package:e_commerce/BharathBenz/Vehicle%201/screens/retrieve/loadretrieve.dart';
 import 'package:e_commerce/constants/colors.dart';
-
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:e_commerce/widgets/custombutton.dart';
 import 'package:flutter/material.dart';

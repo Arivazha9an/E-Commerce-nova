@@ -21,17 +21,16 @@ class _UpdateFormState extends State<UpdateFormExpense> {
   late TextEditingController _datepickController;
   late TextEditingController _loadmancontroller;
   late TextEditingController _otherscontroller;
-  late TextEditingController valuecontroller; 
+  late TextEditingController valuecontroller;
   late TextEditingController _dropController;
-  late Text date;
-  late Text amount;
- 
+  late String date;
+  late String amount;
+
   String? selectedItem;
   List<String> _items = []; // List to hold Firestore data
   String? _selectedItemvehicle; // Variable to hold the selected item
   @override
   @override
-  
   void initState() {
     _fetchItems();
     super.initState();
@@ -39,16 +38,16 @@ class _UpdateFormState extends State<UpdateFormExpense> {
     _dropController = TextEditingController(text: widget.data['vehiclenumber']);
     _datepickController =
         TextEditingController(text: widget.data['Date'] ?? '');
-         var date = widget.data['Date'] ?? '';
+    date = widget.data['Date'] ?? '';
+    amount = widget.data['Amount'] ?? '';
     _loadmancontroller =
         TextEditingController(text: widget.data['Amount'] ?? '');
-         var amount = widget.data['Amount'] ?? '';
-    _otherscontroller =
-        TextEditingController(text: widget.data['Km'] ?? '');
+
+    _otherscontroller = TextEditingController(text: widget.data['Km'] ?? '');
     valuecontroller =
         TextEditingController(text: widget.data['ExpenseType'] ?? '');
-    
   }
+
   List<String> vehicleitems = [
     'Food',
     'Lorry Service',
@@ -59,11 +58,11 @@ class _UpdateFormState extends State<UpdateFormExpense> {
   @override
   void dispose() {
     // Dispose controllers to avoid memory leaks
-    valuecontroller.clear();
-    _datepickController.clear();
-    _otherscontroller.clear();
-    _dropController.clear();
-    _loadmancontroller.clear();
+    valuecontroller.dispose();
+    _datepickController.dispose();
+    _otherscontroller.dispose();
+    _dropController.dispose();
+    _loadmancontroller.dispose();
     super.dispose();
   }
 
@@ -110,8 +109,7 @@ class _UpdateFormState extends State<UpdateFormExpense> {
 
   //Storing the data for calender function
 
-
-    void _storeOrUpdateData(String date, String number) async {
+ Future <void> _storeOrUpdateData(String date, String number) async {
     if (_dropController.text.isEmpty ||
         _datepickController.text.isEmpty ||
         valuecontroller.text.isEmpty ||
@@ -175,12 +173,11 @@ class _UpdateFormState extends State<UpdateFormExpense> {
     }
   }
 
-
   // expense logic for calender
   Future<void> updateOrDeleteByDate(String date, String value) async {
     // Reference to Firestore collection
-    CollectionReference collection =
-        FirebaseFirestore.instance.collection('CalendarAppointmentCollectionExpense');
+    CollectionReference collection = FirebaseFirestore.instance
+        .collection('CalendarAppointmentCollectionExpense');
 
     try {
       // Query Firestore for a document with the matching date
@@ -190,11 +187,11 @@ class _UpdateFormState extends State<UpdateFormExpense> {
       if (querySnapshot.docs.isNotEmpty) {
         // Document exists, get the first matching document
         DocumentSnapshot doc = querySnapshot.docs.first;
-          double currentBalance = double.tryParse(doc['balance'] ?? '0') ?? 0;
-        double subtractionValue = double.tryParse(value) ?? 0;
+        int currentBalance = int.tryParse(doc['Subject'] ?? '0') ?? 0;
+        int subtractionValue = int.tryParse(value) ?? 0;
 
         // Calculate the new balance
-        double newBalance = currentBalance - subtractionValue;
+       int newBalance = currentBalance - subtractionValue;
 
         if (newBalance <= 0) {
           // If the new balance is zero or less, delete the document
@@ -202,10 +199,10 @@ class _UpdateFormState extends State<UpdateFormExpense> {
           print('Document deleted as balance reached zero.');
         } else {
           // Otherwise, update the document with the new balance
-          await doc.reference.update({'Subject': newBalance});
+          await doc.reference.update({'Subject': newBalance.toString()});
           print('Document updated with new balance: $newBalance');
         }
-      } 
+      }
     } catch (e) {
       // Handle errors (e.g., network issues, permission errors)
       print('Error: $e');
@@ -215,7 +212,6 @@ class _UpdateFormState extends State<UpdateFormExpense> {
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.sizeOf(context).width;
-
     return Scaffold(
       appBar: const CustomAppBar(title: 'Update Expense Data', isGoBack: true),
       body: SingleChildScrollView(
@@ -232,7 +228,7 @@ class _UpdateFormState extends State<UpdateFormExpense> {
                 child: Center(
                   child: Column(
                     children: [
-                     Padding(
+                      Padding(
                         padding: EdgeInsets.only(
                             top: w * 0.03,
                             right: w * 0.03,
@@ -423,35 +419,48 @@ class _UpdateFormState extends State<UpdateFormExpense> {
                 ),
               ),
             ),
-                      // Other fields with similar padding and input
-                      const SizedBox(height: 20),
-                      CustomTextButton(
-                        width: 150,
-                        title: 'Update',
-                        background: orange,
-                        textColor: white,
-                        fontSize: 18,
-                        onTap: () {
-                          updateOrDeleteByDate(date.toString(),amount.toString());
-                          // Update Firestore document with new values
-                          FirebaseFirestore.instance
-                              .collection('bharathbenzexpensedetail')
-                              .doc(widget.docId)
-                              .update({
-                            'vehiclenumber': _dropController.text,
+            // Other fields with similar padding and input
+            const SizedBox(height: 20),
+            CustomTextButton(
+              width: 150,
+              title: 'Update',
+              background: orange,
+              textColor: white,
+              fontSize: 18,
+              onTap: () async{
+                if (date.isNotEmpty && amount.isNotEmpty) {
+                  // Correctly call the function
+                 await _storeOrUpdateData(_datepickController.text, _loadmancontroller.text);
+                } else {
+                  print('Error: Date or Amount is missing or not a string.');
+                  // Handle the missing or incorrect type data
+                }
+                    if (date.isNotEmpty && amount.isNotEmpty) {
+                  // Correctly call the function
+                await  updateOrDeleteByDate(date, amount);
+                } else {
+                  print('Error: Date or Amount is missing or not a string.');
+                  // Handle the missing or incorrect type data
+                }
+                
+                // Update Firestore document with new values
+                FirebaseFirestore.instance
+                    .collection('bharathbenzexpensedetail')
+                    .doc(widget.docId)
+                    .update({
+                  'vehiclenumber': _dropController.text,
                   'Date': _datepickController.text,
                   'ExpenseType': valuecontroller.text,
                   'Amount': _loadmancontroller.text,
                   'Km': _otherscontroller.text
-                          }).then((_) {
-                            Navigator.pop(context); // Go back after updating
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              );
-     
-}
+                }).then((_) {
+                  Navigator.pop(context); // Go back after updating
+                });
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

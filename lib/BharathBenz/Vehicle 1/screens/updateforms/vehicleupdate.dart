@@ -3,9 +3,7 @@ import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:e_commerce/widgets/custombutton.dart';
 import 'package:e_commerce/widgets/customtextform.dart';
-import 'package:e_commerce/widgets/customtextformwithicon.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class UpdateFormVehicle extends StatefulWidget {
   final String docId;
@@ -26,8 +24,8 @@ class _UpdateFormState extends State<UpdateFormVehicle> {
   late TextEditingController _lorrycontroller;
   late TextEditingController _modelcontroller;
   late TextEditingController _buildyearcontroller;
-  List<String> _items = []; // List to hold Firestore data
-  String? _selectedItemvehicle; // Variable to hold the selected item
+// List to hold Firestore data
+// Variable to hold the selected item
   @override
   @override
   void initState() {

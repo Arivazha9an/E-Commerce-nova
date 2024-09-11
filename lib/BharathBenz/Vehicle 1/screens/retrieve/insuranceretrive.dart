@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/updateforms/fuelupdate.dart';
 import 'package:e_commerce/BharathBenz/Vehicle%201/screens/updateforms/updateinsurance.dart';
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
@@ -27,7 +26,6 @@ class _InsuranceretriveState extends State<Insuranceretrive> {
   DateTime? _startDate;
   DateTime? _endDate;
   int _currentPage = 0;
-  List<DocumentSnapshot> _documents = [];
   Map<int, List<DocumentSnapshot>> _pageData = {};
   bool _isLoading = false;
   bool _hasMoreData = true;
@@ -565,18 +563,14 @@ class _InsuranceretriveState extends State<Insuranceretrive> {
                         try {
                           final file =
                               await _generatePdf(_pageData[_currentPage]!);
-                          if (file != null) {
-                            await Share.shareXFiles(
-                              [XFile(file.path)],
-                              sharePositionOrigin: Rect.fromCircle(
-                                radius: w * 0.25,
-                                center: const Offset(0, 0),
-                              ),
-                            );
-                          } else {
-                            Fluttertoast.showToast(msg: "Failed to share");
-                          }
-                        } catch (e) {
+                          await Share.shareXFiles(
+                            [XFile(file.path)],
+                            sharePositionOrigin: Rect.fromCircle(
+                              radius: w * 0.25,
+                              center: const Offset(0, 0),
+                            ),
+                          );
+                                                } catch (e) {
                           print('Error sharing PDF: $e');
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(

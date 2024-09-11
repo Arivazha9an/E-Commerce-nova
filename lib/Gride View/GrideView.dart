@@ -8,6 +8,15 @@ import 'package:e_commerce/screens/forms/VehicleDetails.dart';
 import 'package:e_commerce/screens/forms/insurancedetail.dart';
 import 'package:e_commerce/screens/forms/refuel.dart';
 import 'package:e_commerce/screens/forms/servics.dart';
+import 'package:e_commerce/screens/select/driverselect.dart';
+import 'package:e_commerce/screens/select/expenseselect.dart';
+import 'package:e_commerce/screens/select/insuranceselect.dart';
+import 'package:e_commerce/screens/select/loadselect.dart';
+import 'package:e_commerce/screens/select/permitselect.dart';
+import 'package:e_commerce/screens/select/pucselect.dart';
+import 'package:e_commerce/screens/select/refuelselect.dart';
+import 'package:e_commerce/screens/select/serviceselect.dart';
+import 'package:e_commerce/screens/select/vehicleselect.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:flutter/material.dart';
 
@@ -32,7 +41,8 @@ class Grideview extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => Fuel()),
+                      MaterialPageRoute(
+                          builder: (context) => const TFuelselect()),
                     );
                   },
                   child: Container(
@@ -59,7 +69,8 @@ class Grideview extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const Services()),
+                      MaterialPageRoute(
+                          builder: (context) => const TServiceselect()),
                     );
                   },
                   child: Container(
@@ -94,7 +105,8 @@ class Grideview extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const Expensedetail()),
+                      MaterialPageRoute(
+                          builder: (context) => const TExpenseselect()),
                     );
                   },
                   child: Container(
@@ -121,7 +133,8 @@ class Grideview extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const Insurancedetail()),
+                      MaterialPageRoute(
+                          builder: (context) => const TInsuranceselect()),
                     );
                   },
                   child: Container(
@@ -156,34 +169,38 @@ class Grideview extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) =>const  Permit()),
+                      MaterialPageRoute(
+                          builder: (context) => const TPermitselect()),
                     );
                   },
                   child: Container(
-                      height: 100,
-                      width: 155,
-                      decoration: const BoxDecoration(
-                        color: black,
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
-                        image: DecorationImage(
-                          image: AssetImage("assets/images/permit.jpg"),
-                          fit: BoxFit.cover,
-                        ),
+                    height: 100,
+                    width: 155,
+                    decoration: const BoxDecoration(
+                      color: black,
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                      image: DecorationImage(
+                        image: AssetImage("assets/images/permit.jpg"),
+                        fit: BoxFit.cover,
                       ),
-                      child: const Center(
-                          child: Text(
+                    ),
+                    child: const Center(
+                      child: Text(
                         'Permit',
                         style: TextStyle(
                             color: white,
                             fontSize: 24,
                             fontWeight: FontWeight.bold),
-                      ),),),
+                      ),
+                    ),
+                  ),
                 ),
                 InkWell(
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) =>const PUCDetail()),
+                      MaterialPageRoute(
+                          builder: (context) => const TPucselect()),
                     );
                   },
                   child: Container(
@@ -220,7 +237,8 @@ class Grideview extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const LoadDetails()),
+                      MaterialPageRoute(
+                          builder: (context) => const TLoadselect()),
                     );
                   },
                   child: Container(
@@ -247,7 +265,8 @@ class Grideview extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const  VehicleDetails()),
+                      MaterialPageRoute(
+                          builder: (context) => const TVehicledetailselect()),
                     );
                   },
                   child: Container(
@@ -281,7 +300,8 @@ class Grideview extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const DriverDetail()),
+                      MaterialPageRoute(
+                          builder: (context) => const TDriverselect()),
                     );
                   },
                   child: Padding(

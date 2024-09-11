@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/updateforms/fuelupdate.dart';
 import 'package:e_commerce/BharathBenz/Vehicle%201/screens/updateforms/updatedriver.dart';
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
@@ -13,7 +12,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:printing/printing.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+
 
 class Driverretrieve extends StatefulWidget {
   const Driverretrieve({super.key});
@@ -28,7 +27,6 @@ class _DriverretrieveState extends State<Driverretrieve> {
   DateTime? _startDate;
   DateTime? _endDate;
   int _currentPage = 0;
-  List<DocumentSnapshot> _documents = [];
   Map<int, List<DocumentSnapshot>> _pageData = {};
   bool _isLoading = false;
   bool _hasMoreData = true;
@@ -302,7 +300,7 @@ class _DriverretrieveState extends State<Driverretrieve> {
     var w = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Refuel Data', isGoBack: true),
+      appBar: const CustomAppBar(title: 'Driver Data', isGoBack: true),
       body: Column(
         children: [
           Padding(
@@ -400,7 +398,7 @@ class _DriverretrieveState extends State<Driverretrieve> {
                       String expires = data['Expires'] ?? '';
                       String insuranceAmount = data['Insurance Amount'] ?? '';
                       String docId = documents[i].id;
-                      final img = networkImage(data['Image URL']);
+                      networkImage(data['Image URL']);
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Container(
@@ -583,18 +581,14 @@ class _DriverretrieveState extends State<Driverretrieve> {
                         try {
                           final file =
                               await _generatePdf(_pageData[_currentPage]!);
-                          if (file != null) {
-                            await Share.shareXFiles(
-                              [XFile(file.path)],
-                              sharePositionOrigin: Rect.fromCircle(
-                                radius: w * 0.25,
-                                center: const Offset(0, 0),
-                              ),
-                            );
-                          } else {
-                            Fluttertoast.showToast(msg: "Failed to share");
-                          }
-                        } catch (e) {
+                          await Share.shareXFiles(
+                            [XFile(file.path)],
+                            sharePositionOrigin: Rect.fromCircle(
+                              radius: w * 0.25,
+                              center: const Offset(0, 0),
+                            ),
+                          );
+                                                } catch (e) {
                           print('Error sharing PDF: $e');
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(

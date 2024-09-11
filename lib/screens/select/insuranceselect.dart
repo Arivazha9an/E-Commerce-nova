@@ -1,18 +1,19 @@
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/DriverDetail.dart';
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/retrieve/driverretrieve.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/insurancedetail.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/retrieve/insuranceretrive.dart';
 import 'package:e_commerce/constants/colors.dart';
+import 'package:e_commerce/screens/forms/insurancedetail.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:e_commerce/widgets/custombutton.dart';
 import 'package:flutter/material.dart';
 
-class Driverselect extends StatefulWidget {
-  const  Driverselect({super.key});
+class TInsuranceselect extends StatefulWidget {
+  const TInsuranceselect({super.key});
 
   @override
-  State<Driverselect> createState() => _VehicleselectState();
+  State<TInsuranceselect> createState() => _VehicleselectState();
 }
 
-class _VehicleselectState extends State<Driverselect> {
+class _VehicleselectState extends State<TInsuranceselect> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,7 +34,7 @@ class _VehicleselectState extends State<Driverselect> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const BDriverDetail()),
+                        builder: (context) => const Insurancedetail()),
                   );
                 },
               ),
@@ -54,7 +55,8 @@ class _VehicleselectState extends State<Driverselect> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => Driverretrieve()),
+                    MaterialPageRoute(
+                        builder: (context) => const Insuranceretrive()),
                   );
                 },
               ),

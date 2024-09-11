@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/retrieve/vehicleretrieve.dart';
+
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:e_commerce/widgets/custombuttom%20outlined.dart';
@@ -23,8 +23,8 @@ class _VehicleDetailsState extends State<BVehicleDetails> {
   var _modelcontroller = TextEditingController();
   var _buildyearcontroller = TextEditingController();
   final TextEditingController _dropController = TextEditingController();
-  List<String> _items = []; // List to hold Firestore data
-  String? _selectedItemvehicle; // Variable to hold the selected item
+// List to hold Firestore data
+// Variable to hold the selected item
   @override
   void initState() {
     super.initState();
@@ -50,11 +50,10 @@ class _VehicleDetailsState extends State<BVehicleDetails> {
           .get();
 
       // Extract data from documents and convert to a list of strings
-      List<String> items =
-          snapshot.docs.map((doc) => doc['vehicle Number'].toString()).toList();
+      snapshot.docs.map((doc) => doc['vehicle Number'].toString()).toList();
 
       setState(() {
-        _items = items; // Update the state with fetched items
+// Update the state with fetched items
       });
     } catch (e) {
       print('Error fetching data from Firestore: $e'); // Handle errors

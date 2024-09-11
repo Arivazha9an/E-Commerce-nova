@@ -1,19 +1,12 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerce/BharathBenz/Vehicle%201/screens/updateforms/updateservice.dart';
-
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
-
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/updateforms/fuelupdate.dart';
-
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:permission_handler/permission_handler.dart';
@@ -31,7 +24,6 @@ class _ServiceretrieveState extends State<Serviceretrieve> {
   DateTime? _startDate;
   DateTime? _endDate;
   int _currentPage = 0;
-  List<DocumentSnapshot> _documents = [];
   Map<int, List<DocumentSnapshot>> _pageData = {};
   bool _isLoading = false;
   bool _hasMoreData = true;
@@ -561,18 +553,14 @@ class _ServiceretrieveState extends State<Serviceretrieve> {
                         try {
                           final file =
                               await _generatePdf(_pageData[_currentPage]!);
-                          if (file != null) {
-                            await Share.shareXFiles(
-                              [XFile(file.path)],
-                              sharePositionOrigin: Rect.fromCircle(
-                                radius: w * 0.25,
-                                center: const Offset(0, 0),
-                              ),
-                            );
-                          } else {
-                            Fluttertoast.showToast(msg: "Failed to share");
-                          }
-                        } catch (e) {
+                          await Share.shareXFiles(
+                            [XFile(file.path)],
+                            sharePositionOrigin: Rect.fromCircle(
+                              radius: w * 0.25,
+                              center: const Offset(0, 0),
+                            ),
+                          );
+                                                } catch (e) {
                           print('Error sharing PDF: $e');
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
