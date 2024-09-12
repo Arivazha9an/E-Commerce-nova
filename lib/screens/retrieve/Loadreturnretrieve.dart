@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/updateforms/vehicleupdate.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/updateforms/loadupdate.dart';
 import 'package:e_commerce/constants/colors.dart';
-import 'package:e_commerce/screens/update/vehicleupdate.dart';
+import 'package:e_commerce/screens/update/returnupdate.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -14,26 +14,31 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 
-class Vehicleretrieve2 extends StatefulWidget {
-  const Vehicleretrieve2({super.key});
+class Loadreturnretrieve extends StatefulWidget {
+  const Loadreturnretrieve({super.key});
 
   @override
-  State<Vehicleretrieve2> createState() => _Vehicleretrieve2State();
+  State<Loadreturnretrieve> createState() => _LoadretrieveState();
 }
 
-class _Vehicleretrieve2State extends State<Vehicleretrieve2> {
+class _LoadretrieveState extends State<Loadreturnretrieve> {
   TextEditingController _startDateController = TextEditingController();
   TextEditingController _endDateController = TextEditingController();
+  DateTime? _startDate;
+  DateTime? _endDate;
   int _currentPage = 0;
   Map<int, List<DocumentSnapshot>> _pageData = {};
   bool _isLoading = false;
   bool _hasMoreData = true;
   late PageController _pageController;
-// List to hold Firestore data
+  final TextEditingController _dropController = TextEditingController();
+  List<String> _items = []; // List to hold Firestore data
+  String? _selectedItemvehicle;
 
   @override
   void initState() {
     super.initState();
+    _fetchItems();
     _fetchData(0);
     _pageController = PageController();
     _pageController.addListener(() {
@@ -49,6 +54,26 @@ class _Vehicleretrieve2State extends State<Vehicleretrieve2> {
     _endDateController.dispose();
     _pageController.dispose();
     super.dispose();
+  }
+
+  // Function to fetch data from Firestore
+  Future<void> _fetchItems() async {
+    try {
+      // Fetch data from Firestore (replace 'collectionName' and 'fieldName' with your actual Firestore collection and field)
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('taurusvehicledetail')
+          .get();
+
+      // Extract data from documents and convert to a list of strings
+      List<String> items =
+          snapshot.docs.map((doc) => doc['vehicle Number'].toString()).toList();
+
+      setState(() {
+        _items = items; // Update the state with fetched items
+      });
+    } catch (e) {
+      print('Error fetching data from Firestore: $e'); // Handle errors
+    }
   }
 
   Future<void> _showDeleteConfirmationDialog(
@@ -72,7 +97,7 @@ class _Vehicleretrieve2State extends State<Vehicleretrieve2> {
                 Navigator.of(context).pop(); // Close the dialog
                 try {
                   await FirebaseFirestore.instance
-                      .collection('taurusvehicledetail')
+                      .collection('taurusreturn')
                       .doc(docId)
                       .delete();
                 } catch (e) {
@@ -102,7 +127,10 @@ class _Vehicleretrieve2State extends State<Vehicleretrieve2> {
       setState(() {
         controller.text = DateFormat('dd/MM/yyyy').format(picked);
         if (controller == _startDateController) {
-        } else if (controller == _endDateController) {}
+          _startDate = picked;
+        } else if (controller == _endDateController) {
+          _endDate = picked;
+        }
       });
     }
   }
@@ -115,8 +143,25 @@ class _Vehicleretrieve2State extends State<Vehicleretrieve2> {
     });
 
     // Start with the base query
-    Query query =
-        FirebaseFirestore.instance.collection('taurusvehicledetail').limit(10);
+    Query query = FirebaseFirestore.instance
+        .collection('taurusreturn')
+        .orderBy('date')
+        .limit(10);
+
+    // Apply date filters if selected
+    if (_startDate != null) {
+      query = query.where('date',
+          isGreaterThanOrEqualTo: DateFormat('dd/MM/yyyy').format(_startDate!));
+    }
+    if (_endDate != null) {
+      query = query.where('date',
+          isLessThanOrEqualTo: DateFormat('dd/MM/yyyy').format(_endDate!));
+    }
+
+    // Filter by the selected vehicle number if one is selected
+    if (_selectedItemvehicle != null && _selectedItemvehicle!.isNotEmpty) {
+      query = query.where('vehiclenumber', isEqualTo: _selectedItemvehicle);
+    }
 
     // Paginate the results
     if (pageIndex > 0 && _pageData.containsKey(pageIndex - 1)) {
@@ -179,13 +224,16 @@ class _Vehicleretrieve2State extends State<Vehicleretrieve2> {
               child: pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  pw.Text('Vehicle Reg No: ${data['vehicle Number'] ?? ''}'),
-                  pw.Text(
-                      'Vehicle Condition: ${data['Vehicle Condition'] ?? ''}'),
-                  pw.Text('Brand: ${data['Brand'] ?? ''}'),
-                  pw.Text('Lorry: ${data['Lorry'] ?? ''}'),
-                  pw.Text('Model: ${data['Model'] ?? ''}'),
-                  pw.Text('Build Year: ${data['Build Year'] ?? ''}'),
+                  pw.Text('Vehicle No: ${data['vehiclenumber'] ?? ''}'),
+                  pw.Text('Date: ${data['date'] ?? ''}'),
+                  pw.Text('Start Point: ${data['Start Point'] ?? ''}'),
+                  pw.Text('Load Point: ${data['Load Point'] ?? ''}'),
+                  pw.Text('Drop Point: ${data['Drop Point'] ?? ''}'),
+                  pw.Text('No of Tons: ${data['No Of Tons / Units'] ?? ''}'),
+                  pw.Text('Load amount: ${data['Load Amount'] ?? ''}'),
+                  pw.Text('Delivey Amount: ${data['Delivery Amount'] ?? ''}'),
+                  pw.Text('Customer Name: ${data['Customer Name'] ?? ''}'),
+                  pw.Text('Customer Number: ${data['Customer Number'] ?? ''}'),
                   pw.Divider(),
                 ],
               ),
@@ -211,7 +259,6 @@ class _Vehicleretrieve2State extends State<Vehicleretrieve2> {
     // Save the PDF to the device
     final file = File(path);
     await file.writeAsBytes(bytes);
-
     return file;
   }
 
@@ -220,25 +267,108 @@ class _Vehicleretrieve2State extends State<Vehicleretrieve2> {
     var w = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Vehicle  Data', isGoBack: true),
+      appBar: const CustomAppBar(title: 'Load Return', isGoBack: true),
       body: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              IconButton(
-                onPressed: () {
-                  setState(() {
-                    _pageData.clear();
-                    _hasMoreData = true;
-                    _currentPage = 0;
-                    _fetchData(0); // Fetch first page
-                  });
-                },
-                icon: const Icon(Icons.refresh_rounded),
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.all(13.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _startDateController,
+                    readOnly: true,
+                    decoration: InputDecoration(
+                      labelText: 'Start Date',
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.calendar_today),
+                        onPressed: () =>
+                            _selectDate(_startDateController, _startDate),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10.0),
+                Expanded(
+                  child: TextField(
+                    controller: _endDateController,
+                    readOnly: true,
+                    decoration: InputDecoration(
+                      labelText: 'End Date',
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.calendar_today),
+                        onPressed: () =>
+                            _selectDate(_endDateController, _endDate),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 5.0),
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _pageData.clear();
+                      _hasMoreData = true;
+                      _currentPage = 0;
+                      _fetchData(0); // Fetch first page
+                    });
+                  },
+                  icon: const Icon(Icons.refresh_rounded),
+                ),
+              ],
+            ),
           ),
+          Padding(
+            padding:
+                const EdgeInsets.only(right: 15, left: 15, top: 0, bottom: 5),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                DropdownButton<String>(
+                  value: _selectedItemvehicle,
+                  hint: const Text('Vehicle Number'),
+                  icon: const Icon(Icons.arrow_drop_down),
+                  items: _items.map((String item) {
+                    return DropdownMenuItem<String>(
+                      value: item,
+                      child: Text(item),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedItemvehicle =
+                          newValue; // Update the selected item
+                      _dropController.text =
+                          newValue ?? ''; // Update the text field
+                      _pageData.clear(); // Clear existing data
+                      _hasMoreData = true; // Reset data fetching state
+                      _currentPage = 0; // Reset to the first page
+                      _fetchData(0); // Fetch data for the first page
+                    });
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.close_rounded),
+                  onPressed: () {
+                    setState(() {
+                      _startDate = null; // Clear the start date filter
+                      _endDate = null; // Clear the end date filter
+                      _selectedItemvehicle = null; // Clear the vehicle filter
+                      _startDateController
+                          .clear(); // Clear the start date TextField
+                      _endDateController
+                          .clear(); // Clear the end date TextField
+                      _pageData.clear(); // Clear existing paginated data
+                      _hasMoreData = true; // Reset the flag to fetch more data
+                      _currentPage = 0; // Reset to the first page
+                      _fetchData(0); // Fetch data without filters
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
+
           Expanded(
             child: PageView.builder(
               controller: _pageController,
@@ -252,19 +382,23 @@ class _Vehicleretrieve2State extends State<Vehicleretrieve2> {
                     itemBuilder: (context, i) {
                       Map<String, dynamic> data =
                           documents[i].data() as Map<String, dynamic>;
-                      String registrationNo = data['vehicle Number'] ?? '';
-                      String vehicleCondition = data['Vehicle Condition'] ?? '';
-                      String brand = data['Brand'] ?? '';
-                      String lorry = data['Lorry'] ?? '';
-                      String model = data['Model'] ?? '';
-                      String buildYear = data['Build Year'] ?? '';
+                      String vehicleno = data['vehiclenumber'] ?? '';
+                      String date = data['date'] ?? '';
+                      String startPoint = data['Start Point'] ?? '';
+                      String loadPoint = data['Load Point'] ?? '';
+                      String dropPoint = data['Drop Point'] ?? '';
+                      String tons = data['No Of Tons / Units'] ?? '';
+                      String loadAmount = data['Load Amount'] ?? '';
+                      String deliveryAmount = data['Delivery Amount'] ?? '';
+                      String customerName = data['Customer Name'] ?? '';
+                      String customerNo = data['Customer Number'] ?? '';
                       String docId = documents[i].id;
 
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Container(
                           width: 100,
-                          height: 210,
+                          height: 270,
                           decoration: BoxDecoration(
                               borderRadius:
                                   const BorderRadius.all(Radius.circular(10)),
@@ -278,38 +412,62 @@ class _Vehicleretrieve2State extends State<Vehicleretrieve2> {
                               children: [
                                 Row(
                                   children: [
-                                    Text('vehicle Condition = '),
-                                    Text(vehicleCondition),
+                                    const Text('Vehicle No: '),
+                                    Text(vehicleno),
                                   ],
                                 ),
                                 Row(
                                   children: [
-                                    Text('Registration No  = '),
-                                    Text(registrationNo),
+                                    const Text('Date: '),
+                                    Text(date),
                                   ],
                                 ),
                                 Row(
                                   children: [
-                                    Text('Brand = '),
-                                    Text(brand),
+                                    Text('Start Point  = '),
+                                    Text(startPoint),
                                   ],
                                 ),
                                 Row(
                                   children: [
-                                    Text('Lorry= '),
-                                    Text(lorry),
+                                    Text('Load Point  = '),
+                                    Text(loadPoint),
                                   ],
                                 ),
                                 Row(
                                   children: [
-                                    Text('Model = '),
-                                    Text(model),
+                                    Text('Drop Point = '),
+                                    Text(dropPoint),
                                   ],
                                 ),
                                 Row(
                                   children: [
-                                    Text('build Year = '),
-                                    Text(buildYear),
+                                    Text('No os Tons= '),
+                                    Text(tons),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Text('Load Amount = '),
+                                    Text(loadAmount),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Text('Delivery Amount = '),
+                                    Text(deliveryAmount),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Text('Customer Name = '),
+                                    Text(customerName),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Text('Customer No= '),
+                                    Text(customerNo),
                                   ],
                                 ),
                                 const Spacer(),
@@ -321,7 +479,7 @@ class _Vehicleretrieve2State extends State<Vehicleretrieve2> {
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) =>
-                                                UpdateFormVehicleT(
+                                                Returnupdate(
                                               docId: docId,
                                               data: data,
                                             ),

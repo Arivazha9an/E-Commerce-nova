@@ -2,6 +2,7 @@ import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/Permit.dart';
 import 'package:e_commerce/BharathBenz/Vehicle%201/screens/retrieve/PermitRetrieve.dart';
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/screens/forms/Permit.dart';
+import 'package:e_commerce/screens/retrieve/PermitRetrieve.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:e_commerce/widgets/custombutton.dart';
 import 'package:flutter/material.dart';
@@ -55,7 +56,7 @@ class _VehicleselectState extends State<TPermitselect> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const Permitretrieve()),
+                        builder: (context) => const Permitretrieve2()),
                   );
                 },
               ),

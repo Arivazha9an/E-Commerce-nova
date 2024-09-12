@@ -1,6 +1,7 @@
 import 'package:e_commerce/BharathBenz/Vehicle%201/screens/retrieve/vehicleretrieve.dart';
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/screens/forms/VehicleDetails.dart';
+import 'package:e_commerce/screens/retrieve/vehicleretrieve.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:e_commerce/widgets/custombutton.dart';
 import 'package:flutter/material.dart';
@@ -54,7 +55,7 @@ class _VehicleselectState extends State<TVehicledetailselect> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => Vehicleretrieve()),
+                    MaterialPageRoute(builder: (context) => Vehicleretrieve2()),
                   );
                 },
               ),

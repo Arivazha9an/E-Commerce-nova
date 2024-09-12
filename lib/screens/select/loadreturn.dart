@@ -1,19 +1,19 @@
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/retrieve/serviceretrieve.dart';
 import 'package:e_commerce/constants/colors.dart';
-import 'package:e_commerce/screens/forms/servics.dart';
-import 'package:e_commerce/screens/retrieve/serviceretrieve.dart';
+import 'package:e_commerce/screens/forms/loadreturn.dart';
+import 'package:e_commerce/screens/retrieve/Loadreturnretrieve.dart';
+
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:e_commerce/widgets/custombutton.dart';
 import 'package:flutter/material.dart';
 
-class TServiceselect extends StatefulWidget {
-  const TServiceselect({super.key});
+class Loadreturnselect extends StatefulWidget {
+  const Loadreturnselect({super.key});
 
   @override
-  State<TServiceselect> createState() => _VehicleselectState();
+  State<Loadreturnselect> createState() => _VehicleselectState();
 }
 
-class _VehicleselectState extends State<TServiceselect> {
+class _VehicleselectState extends State<Loadreturnselect> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,7 +33,8 @@ class _VehicleselectState extends State<TServiceselect> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const Services()),
+                    MaterialPageRoute(
+                        builder: (context) => const Loadreturn()),
                   );
                 },
               ),
@@ -54,8 +55,7 @@ class _VehicleselectState extends State<TServiceselect> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                        builder: (context) => const Serviceretrieve2()),
+                    MaterialPageRoute(builder: (context) => Loadreturnretrieve()),
                   );
                 },
               ),

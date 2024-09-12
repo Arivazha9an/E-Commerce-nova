@@ -1,23 +1,23 @@
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/retrieve/serviceretrieve.dart';
 import 'package:e_commerce/constants/colors.dart';
-import 'package:e_commerce/screens/forms/servics.dart';
-import 'package:e_commerce/screens/retrieve/serviceretrieve.dart';
+import 'package:e_commerce/screens/forms/loaddipatch.dart';
+import 'package:e_commerce/screens/retrieve/loaddispatchretrieve.dart';
+
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:e_commerce/widgets/custombutton.dart';
 import 'package:flutter/material.dart';
 
-class TServiceselect extends StatefulWidget {
-  const TServiceselect({super.key});
+class Loaddispatchselect extends StatefulWidget {
+  const Loaddispatchselect({super.key});
 
   @override
-  State<TServiceselect> createState() => _VehicleselectState();
+  State<Loaddispatchselect> createState() => _VehicleselectState();
 }
 
-class _VehicleselectState extends State<TServiceselect> {
+class _VehicleselectState extends State<Loaddispatchselect> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Select'),
+      appBar: const CustomAppBar(title: 'Load Dispatch'),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -33,7 +33,8 @@ class _VehicleselectState extends State<TServiceselect> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const Services()),
+                    MaterialPageRoute(
+                        builder: (context) => const Loaddispatch()),
                   );
                 },
               ),
@@ -54,8 +55,7 @@ class _VehicleselectState extends State<TServiceselect> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                        builder: (context) => const Serviceretrieve2()),
+                    MaterialPageRoute(builder: (context) => Loaddispatchretrieve()),
                   );
                 },
               ),

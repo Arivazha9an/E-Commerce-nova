@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerce/BharathBenz/Vehicle%201/screens/updateforms/updatedriver.dart';
 import 'package:e_commerce/constants/colors.dart';
+import 'package:e_commerce/screens/update/updatedriver.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -55,11 +56,12 @@ class _Driverretrieve2State extends State<Driverretrieve2> {
     super.dispose();
   }
 
+  // Function to fetch data from Firestore
   Future<void> _fetchItems() async {
     try {
       // Fetch data from Firestore (replace 'collectionName' and 'fieldName' with your actual Firestore collection and field)
       QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('bharathbenzvehicledetail')
+          .collection('taurusvehicledetail')
           .get();
 
       // Extract data from documents and convert to a list of strings
@@ -474,7 +476,7 @@ class _Driverretrieve2State extends State<Driverretrieve2> {
                                               context,
                                               MaterialPageRoute(
                                                 builder: (context) =>
-                                                    UpdateFormDriver(
+                                                    UpdateFormDriverT(
                                                   docId: docId,
                                                   data: data,
                                                 ),

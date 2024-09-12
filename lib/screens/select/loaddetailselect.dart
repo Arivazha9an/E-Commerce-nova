@@ -1,19 +1,19 @@
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/LoadDetails.dart';
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/retrieve/loadretrieve.dart';
 import 'package:e_commerce/constants/colors.dart';
-import 'package:e_commerce/screens/forms/LoadDetails.dart';
+
+import 'package:e_commerce/screens/select/loaddispatch.dart';
+import 'package:e_commerce/screens/select/loadreturn.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
-import 'package:e_commerce/widgets/custombutton.dart';
+import 'package:e_commerce/widgets/custombuttom%20outlined.dart';
 import 'package:flutter/material.dart';
 
-class TLoadselect extends StatefulWidget {
-  const TLoadselect({super.key});
+class Loaddetailselect extends StatefulWidget {
+  const Loaddetailselect({super.key});
 
   @override
-  State<TLoadselect> createState() => _VehicleselectState();
+  State<Loaddetailselect> createState() => _VehicleselectState();
 }
 
-class _VehicleselectState extends State<TLoadselect> {
+class _VehicleselectState extends State<Loaddetailselect> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,19 +24,19 @@ class _VehicleselectState extends State<TLoadselect> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CustomTextButton(
-                title: 'Store',
-                background: green,
-                textColor: white,
-                fontSize: 18,
+              CustomTextButtonOut(
                 width: 200,
+                title: 'Load Dispatch',
+                background: white,
+                textColor: black,
+                fontSize: 18,
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                        builder: (context) => const LoadDetails()),
+                    MaterialPageRoute(builder: (context) => Loaddispatchselect()),
                   );
                 },
+                color: orange,
               ),
             ],
           ),
@@ -46,18 +46,19 @@ class _VehicleselectState extends State<TLoadselect> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CustomTextButton(
+              CustomTextButtonOut(
                 width: 200,
-                title: 'View',
-                background: orange,
-                textColor: white,
+                title: 'Load Return',
+                background: white,
+                textColor: black,
                 fontSize: 18,
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => Loadretrieve()),
+                    MaterialPageRoute(builder: (context) => Loadreturnselect()),
                   );
                 },
+                color: orange,
               ),
             ],
           )

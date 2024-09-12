@@ -1,52 +1,84 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerce/constants/colors.dart';
-import 'package:e_commerce/screens/retrieve/ExpenseRetreive.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
-import 'package:e_commerce/widgets/custombuttom%20outlined.dart';
 import 'package:e_commerce/widgets/custombutton.dart';
 import 'package:e_commerce/widgets/customtextform.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
-class Expensedetail extends StatefulWidget {
-  const Expensedetail({super.key});
+class UpdateFormExpenseT extends StatefulWidget {
+  final String docId;
+  final Map<String, dynamic> data;
+
+  const UpdateFormExpenseT({super.key, required this.docId, required this.data});
 
   @override
-  State<Expensedetail> createState() => _ExpensedetailState();
+  State<UpdateFormExpenseT> createState() => _UpdateFormState();
 }
 
-class _ExpensedetailState extends State<Expensedetail> {
-  final TextEditingController _datepickController = TextEditingController();
-  DateTime? pickeddate;
+class _UpdateFormState extends State<UpdateFormExpenseT> {
+  // Define the controllers at the class level
+  late TextEditingController _datepickController;
+  late TextEditingController _loadmancontroller;
+  late TextEditingController _otherscontroller;
+  late TextEditingController valuecontroller;
+  late TextEditingController _dropController;
+  late String date;
+  late String amount;
 
-  var _loadmancontroller = TextEditingController();
-  var _otherscontroller = TextEditingController();
-  var valuecontroller = TextEditingController();
   String? selectedItem;
-  final TextEditingController _dropController = TextEditingController();
   List<String> _items = []; // List to hold Firestore data
   String? _selectedItemvehicle; // Variable to hold the selected item
   @override
+  @override
   void initState() {
+    _fetchItems();
     super.initState();
-    _fetchItems(); // Fetch items when the widget is initialized
+    // Initialize controllers with data from Firestore
+    _dropController = TextEditingController(text: widget.data['vehiclenumber']);
+    _datepickController =
+        TextEditingController(text: widget.data['Date'] ?? '');
+    date = widget.data['Date'] ?? '';
+    amount = widget.data['Amount'] ?? '';
+    _loadmancontroller =
+        TextEditingController(text: widget.data['Amount'] ?? '');
+
+    _otherscontroller = TextEditingController(text: widget.data['Km'] ?? '');
+    valuecontroller =
+        TextEditingController(text: widget.data['ExpenseType'] ?? '');
   }
 
-  void clear() {
-    valuecontroller.clear();
-    _datepickController.clear();
-    _otherscontroller.clear();
-    _dropController.clear();
-    _loadmancontroller.clear();
+  List<String> vehicleitems = [
+    'Food',
+    'Lorry Service',
+    'Tyre',
+    'Fast tag/Toll',
+    'Others'
+  ];
+  @override
+  void dispose() {
+    // Dispose controllers to avoid memory leaks
+    valuecontroller.dispose();
+    _datepickController.dispose();
+    _otherscontroller.dispose();
+    _dropController.dispose();
+    _loadmancontroller.dispose();
+    super.dispose();
   }
 
-  // Function to fetch data from Firestore
+  DateTime? _parseDate(String dateString) {
+    try {
+      return DateTime.parse(dateString);
+    } catch (e) {
+      return null;
+    }
+  }
+
   Future<void> _fetchItems() async {
     try {
       // Fetch data from Firestore (replace 'collectionName' and 'fieldName' with your actual Firestore collection and field)
       QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('taurusvehicledetail')
+          .collection('bharathbenzvehicledetail')
           .get();
 
       // Extract data from documents and convert to a list of strings
@@ -61,107 +93,23 @@ class _ExpensedetailState extends State<Expensedetail> {
     }
   }
 
-  List<String> vehicleitems = [
-    'Food',
-    'Lorry Service',
-    'Tyre',
-    'Fast tag/Toll',
-    'Others'
-  ];
   Future<void> _selectDate() async {
     DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(2000),
-        lastDate: DateTime(2099));
+      context: context,
+      initialDate: _parseDate(_datepickController.text) ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
     if (picked != null) {
       setState(() {
         _datepickController.text = DateFormat('dd/MM/yyyy').format(picked);
-        pickeddate = picked;
       });
     }
   }
 
-  void _saveData() {
-    if (_dropController.text.isEmpty ||
-        _datepickController.text.isEmpty ||
-        valuecontroller.text.isEmpty ||
-        _loadmancontroller.text.isEmpty ||
-        _otherscontroller.text.isEmpty) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Error'),
-          content: const Text('Please fill all fields.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
-      return;
-    } else {
-      try {
-        FirebaseFirestore.instance.collection('taurusexpensedetail').add({
-          'vehiclenumber': _dropController.text,
-          'Date': _datepickController.text,
-          'ExpenseType': valuecontroller.text,
-          'Amount': _loadmancontroller.text,
-          'Km': _otherscontroller.text
-        });
-        Fluttertoast.showToast(
-          msg: "Successfully Stored.",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
-        Future.delayed(
-            const Duration(seconds: 2), () => Navigator.pop(context));
-      } on FirebaseException catch (e) {
-        // Handle Firebase errors
-        print('Failed with error code: ${e.code}');
-        print(e.message);
-        // Optionally show an error dialog
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Error'),
-            content: const Text('Failed to Store Data. Please try again.'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
-        );
-      } catch (e) {
-        // Handle any other errors
-        print('Unexpected error: $e');
-        // Optionally show an error dialog
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Error'),
-            content:
-                const Text('An unexpected error occurred. Please try again.'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
-        );
-      }
-    }
-  }
+  //Storing the data for calender function
 
-  void _storeOrUpdateData(String date, String number) async {
+  Future<void> _storeOrUpdateData(String date, String number) async {
     if (_dropController.text.isEmpty ||
         _datepickController.text.isEmpty ||
         valuecontroller.text.isEmpty ||
@@ -225,11 +173,47 @@ class _ExpensedetailState extends State<Expensedetail> {
     }
   }
 
+  // expense logic for calender
+  Future<void> updateOrDeleteByDate(String date, String value) async {
+    // Reference to Firestore collection
+    CollectionReference collection = FirebaseFirestore.instance
+        .collection('CalendarAppointmentCollectionExpense');
+
+    try {
+      // Query Firestore for a document with the matching date
+      QuerySnapshot querySnapshot =
+          await collection.where('StartTime', isEqualTo: date).get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        // Document exists, get the first matching document
+        DocumentSnapshot doc = querySnapshot.docs.first;
+        int currentBalance = int.tryParse(doc['Subject'] ?? '0') ?? 0;
+        int subtractionValue = int.tryParse(value) ?? 0;
+
+        // Calculate the new balance
+        int newBalance = currentBalance - subtractionValue;
+
+        if (newBalance <= 0) {
+          // If the new balance is zero or less, delete the document
+          await doc.reference.delete();
+          print('Document deleted as balance reached zero.');
+        } else {
+          // Otherwise, update the document with the new balance
+          await doc.reference.update({'Subject': newBalance.toString()});
+          print('Document updated with new balance: $newBalance');
+        }
+      }
+    } catch (e) {
+      // Handle errors (e.g., network issues, permission errors)
+      print('Error: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.sizeOf(context).width;
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Expense Detail'),
+      appBar: const CustomAppBar(title: 'Update Expense Data', isGoBack: true),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
@@ -238,8 +222,9 @@ class _ExpensedetailState extends State<Expensedetail> {
               padding: EdgeInsets.only(left: w * 0.03, right: w * 0.03),
               child: Container(
                 decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(10)),
-                    border: Border.all(color: orange, width: w * 0.005)),
+                  borderRadius: const BorderRadius.all(Radius.circular(10)),
+                  border: Border.all(color: orange, width: w * 0.005),
+                ),
                 child: Center(
                   child: Column(
                     children: [
@@ -434,41 +419,46 @@ class _ExpensedetailState extends State<Expensedetail> {
                 ),
               ),
             ),
-            SizedBox(
-              height: w * 0.07,
+            // Other fields with similar padding and input
+            const SizedBox(height: 20),
+            CustomTextButton(
+              width: 150,
+              title: 'Update',
+              background: orange,
+              textColor: white,
+              fontSize: 18,
+              onTap: () async {
+                if (date.isNotEmpty && amount.isNotEmpty) {
+                  // Correctly call the function
+                  await _storeOrUpdateData(
+                      _datepickController.text, _loadmancontroller.text);
+                } else {
+                  print('Error: Date or Amount is missing or not a string.');
+                  // Handle the missing or incorrect type data
+                }
+                if (date.isNotEmpty && amount.isNotEmpty) {
+                  // Correctly call the function
+                  await updateOrDeleteByDate(date, amount);
+                } else {
+                  print('Error: Date or Amount is missing or not a string.');
+                  // Handle the missing or incorrect type data
+                }
+
+                // Update Firestore document with new values
+                FirebaseFirestore.instance
+                    .collection('taurusexpensedetail')
+                    .doc(widget.docId)
+                    .update({
+                  'vehiclenumber': _dropController.text,
+                  'Date': _datepickController.text,
+                  'ExpenseType': valuecontroller.text,
+                  'Amount': _loadmancontroller.text,
+                  'Km': _otherscontroller.text
+                }).then((_) {
+                  Navigator.pop(context); // Go back after updating
+                });
+              },
             ),
-            Row(
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(left: w * 0.1),
-                  child: CustomTextButton(
-                      title: 'Save',
-                      width: w * 0.3,
-                      background: orange,
-                      textColor: white,
-                      fontSize: 20,
-                      onTap: () {
-                        _saveData();
-                        _storeOrUpdateData(
-                            _datepickController.text, _loadmancontroller.text);
-                      }),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(left: w * 0.15),
-                  child: CustomTextButtonOut(
-                    title: 'Clear',
-                    width: w * 0.3,
-                    background: Colors.transparent,
-                    textColor: black,
-                    fontSize: 20,
-                    onTap: () {
-                      clear();
-                    },
-                    color: black,
-                  ),
-                )
-              ],
-            )
           ],
         ),
       ),

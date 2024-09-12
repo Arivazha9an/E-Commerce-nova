@@ -45,7 +45,7 @@ class _PUCDetailState extends State<PUCDetail> {
     try {
       // Fetch data from Firestore (replace 'collectionName' and 'fieldName' with your actual Firestore collection and field)
       QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('bharathbenzvehicledetail')
+          .collection('taurusvehicledetail')
           .get();
 
       // Extract data from documents and convert to a list of strings

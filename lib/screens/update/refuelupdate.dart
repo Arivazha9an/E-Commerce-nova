@@ -1,55 +1,75 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerce/constants/colors.dart';
-import 'package:e_commerce/screens/retrieve/fuelretrieve.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
-import 'package:e_commerce/widgets/custombuttom%20outlined.dart';
 import 'package:e_commerce/widgets/custombutton.dart';
-import 'package:e_commerce/widgets/customtextformwithicon.dart';
 import 'package:e_commerce/widgets/customtextform.dart';
+import 'package:e_commerce/widgets/customtextformwithicon.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
-class Fuel extends StatefulWidget {
-  const Fuel({super.key});
+class UpdateFormT extends StatefulWidget {
+  final String docId;
+  final Map<String, dynamic> data;
+
+  const UpdateFormT({super.key, required this.docId, required this.data});
 
   @override
-  State<Fuel> createState() => _FuelState();
+  State<UpdateFormT> createState() => _UpdateFormState();
 }
 
-class _FuelState extends State<Fuel> {
-   final TextEditingController _datepickController = TextEditingController();
-  var _startKmcontroller = TextEditingController();
-  var _priceontroller = TextEditingController();
-  var _literscontroller = TextEditingController();
-  var _placecontroller = TextEditingController();
-  var _endKMcontroller = TextEditingController();
-  final TextEditingController _dropController = TextEditingController();
+class _UpdateFormState extends State<UpdateFormT> {
+  // Define the controllers at the class level
+  late TextEditingController dateController;
+  late TextEditingController startKmController;
+  late TextEditingController priceController;
+  late TextEditingController literController;
+  late TextEditingController placeController;
+  late TextEditingController endKmController;
+  late TextEditingController _dropController;
   List<String> _items = []; // List to hold Firestore data
   String? _selectedItemvehicle; // Variable to hold the selected item
   @override
+  @override
   void initState() {
+    _fetchItems();
     super.initState();
-    _fetchItems(); // Fetch items when the widget is initialized
+    // Initialize controllers with data from Firestore
+    _dropController = TextEditingController(text: widget.data['vehiclenumber']);
+    dateController = TextEditingController(text: widget.data['date'] ?? '');
+    startKmController =
+        TextEditingController(text: widget.data['Start KM'] ?? '');
+    priceController = TextEditingController(text: widget.data['Price'] ?? '');
+    literController = TextEditingController(text: widget.data['Liter'] ?? '');
+    placeController = TextEditingController(text: widget.data['Place'] ?? '');
+    endKmController = TextEditingController(text: widget.data['End Km'] ?? '');
   }
 
-  void clear() {
-    _datepickController.clear();
-    _startKmcontroller.clear();
-    _priceontroller.clear();
-    _literscontroller.clear();
-    _placecontroller.clear();
-    _endKMcontroller.clear();
-    _dropController.clear();
+  @override
+  void dispose() {
+    // Dispose controllers to avoid memory leaks
+    _dropController.dispose();
+    dateController.dispose();
+    startKmController.dispose();
+    priceController.dispose();
+    literController.dispose();
+    placeController.dispose();
+    endKmController.dispose();
+    super.dispose();
   }
 
-  // Function to fetch data from Firestore
+  DateTime? _parseDate(String dateString) {
+    try {
+      return DateTime.parse(dateString);
+    } catch (e) {
+      return null;
+    }
+  }
+
   Future<void> _fetchItems() async {
     try {
       // Fetch data from Firestore (replace 'collectionName' and 'fieldName' with your actual Firestore collection and field)
       QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('taurusvehicledetail')
+          .collection('bharathbenzvehicledetail')
           .get();
 
       // Extract data from documents and convert to a list of strings
@@ -64,110 +84,26 @@ class _FuelState extends State<Fuel> {
     }
   }
 
+  Future<void> _selectDate() async {
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _parseDate(dateController.text) ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null) {
+      setState(() {
+        dateController.text = DateFormat('dd/MM/yyyy').format(picked);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    void _saveData() async {
-      if (_dropController.text.isEmpty ||
-          _datepickController.text.isEmpty ||
-          _startKmcontroller.text.isEmpty ||
-          _priceontroller.text.isEmpty ||
-          _literscontroller.text.isEmpty ||
-          _placecontroller.text.isEmpty ||
-          _endKMcontroller.text.isEmpty) {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Error'),
-            content: const Text('Please fill all fields.'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
-        );
-        return;
-      } else {
-        try {
-          await FirebaseFirestore.instance.collection('tauruszrefuel').add({
-            'vehiclenumber': _dropController.text,
-            'date': _datepickController.text,
-            'Start KM': _startKmcontroller.text,
-            'Price': _priceontroller.text,
-            'Liter': _literscontroller.text,
-            'Place': _placecontroller.text,
-            'End Km': _endKMcontroller.text
-          });
-          Fluttertoast.showToast(
-            msg: "Successfully Stored.",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            backgroundColor: Colors.green,
-            textColor: Colors.white,
-            fontSize: 16.0,
-          );
-
-          // Navigate back to the previous page after a delay
-          Future.delayed(
-              const Duration(seconds: 2), () => Navigator.pop(context));
-        } on FirebaseException catch (e) {
-          // Handle Firebase errors
-          print('Failed with error code: ${e.code}');
-          print(e.message);
-          // Optionally show an error dialog
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('Error'),
-              content: const Text('Failed to Store Data. Please try again.'),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('OK'),
-                ),
-              ],
-            ),
-          );
-        } catch (e) {
-          // Handle any other errors
-          print('Unexpected error: $e');
-          // Optionally show an error dialog
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('Error'),
-              content:
-                  const Text('An unexpected error occurred. Please try again.'),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('OK'),
-                ),
-              ],
-            ),
-          );
-        }
-      }
-    }
-
-    Future<void> _selectDate() async {
-      DateTime? picked = await showDatePicker(
-          context: context,
-          initialDate: DateTime.now(),
-          firstDate: DateTime(2000),
-          lastDate: DateTime(2099));
-      if (picked != null) {
-        setState(() {
-          _datepickController.text = DateFormat('dd/MM/yyyy').format(picked);
-        });
-      }
-    }
-
     var w = MediaQuery.sizeOf(context).width;
 
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Refuel Detail'),
+      appBar: const CustomAppBar(title: 'Update Refuel Data', isGoBack: true),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
@@ -176,8 +112,9 @@ class _FuelState extends State<Fuel> {
               padding: EdgeInsets.only(left: w * 0.03, right: w * 0.03),
               child: Container(
                 decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(10)),
-                    border: Border.all(color: orange, width: w * 0.005)),
+                  borderRadius: const BorderRadius.all(Radius.circular(10)),
+                  border: Border.all(color: orange, width: w * 0.005),
+                ),
                 child: Center(
                   child: Column(
                     children: [
@@ -197,7 +134,7 @@ class _FuelState extends State<Fuel> {
                           controller: _dropController,
                           readOnly: true, // Make the text field read-only
                           decoration: InputDecoration(
-                            labelText: 'Select Vehicle No',
+                            //labelText: 'Select Vehicle No',
                             suffixIcon: DropdownButton<String>(
                               value: _selectedItemvehicle,
                               hint: const Text('Select'),
@@ -232,13 +169,15 @@ class _FuelState extends State<Fuel> {
                       ),
                       Padding(
                         padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
+                          top: w * 0.03,
+                          right: w * 0.03,
+                          left: w * 0.025,
+                          bottom: w * 0.02,
+                        ),
                         child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Date')),
+                          alignment: Alignment.centerLeft,
+                          child: Text('Date'),
+                        ),
                       ),
                       Container(
                         width: 320,
@@ -250,43 +189,48 @@ class _FuelState extends State<Fuel> {
                               blurRadius: 18,
                               spreadRadius: 0,
                               color: Color(0x17000000),
-                            )
+                            ),
                           ],
                         ),
                         child: TextFormField(
-                          controller: _datepickController,
+                          controller: dateController,
                           readOnly: true,
                           decoration: InputDecoration(
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: orange),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Colors.red),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              hintText: 'Choose Date',
-                              prefixIcon: GestureDetector(
-                                  onTap: _selectDate,
-                                  child: const Icon(Icons.calendar_month))),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: orange),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.red),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            hintText: 'Choose Date',
+                            prefixIcon: GestureDetector(
+                              onTap: _selectDate,
+                              child: const Icon(Icons.calendar_month),
+                            ),
+                          ),
                         ),
                       ),
+                      // Other input fields go here
                       Padding(
                         padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
+                          top: w * 0.03,
+                          right: w * 0.03,
+                          left: w * 0.025,
+                          bottom: w * 0.02,
+                        ),
                         child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Start Km')),
+                          alignment: Alignment.centerLeft,
+                          child: Text('Start Km'),
+                        ),
                       ),
                       CustomTextFormFieldIcon(
                         width: 320,
-                        controller: _startKmcontroller,
+                        controller: startKmController,
                         hintText: 'Type',
                         labeltext: '',
                         keyboardType: TextInputType.number,
@@ -304,7 +248,7 @@ class _FuelState extends State<Fuel> {
                       ),
                       CustomTextFormField(
                         width: 320,
-                        controller: _priceontroller,
+                        controller: priceController,
                         hintText: 'Type',
                         labeltext: 'Type',
                         keyboardType: TextInputType.number,
@@ -321,7 +265,7 @@ class _FuelState extends State<Fuel> {
                       ),
                       CustomTextFormField(
                         width: 320,
-                        controller: _literscontroller,
+                        controller: literController,
                         hintText: 'Type',
                         labeltext: 'Type',
                         keyboardType: TextInputType.number,
@@ -338,7 +282,7 @@ class _FuelState extends State<Fuel> {
                       ),
                       CustomTextFormField(
                         width: 320,
-                        controller: _placecontroller,
+                        controller: placeController,
                         hintText: 'Type',
                         labeltext: 'Type',
                         keyboardType: TextInputType.name,
@@ -357,51 +301,45 @@ class _FuelState extends State<Fuel> {
                         padding: EdgeInsets.only(bottom: w * 0.044),
                         child: CustomTextFormFieldIcon(
                           width: 320,
-                          controller: _endKMcontroller,
+                          controller: endKmController,
                           hintText: 'Type',
                           labeltext: '',
                           keyboardType: TextInputType.number,
                           prefixicon: const Icon(Icons.share_location_sharp),
                         ),
                       ),
+
+                      // Other fields with similar padding and input
+                      const SizedBox(height: 20),
+                      CustomTextButton(
+                        width: 150,
+                        title: 'Update',
+                        background: orange,
+                        textColor: white,
+                        fontSize: 18,
+                        onTap: () {
+                          // Update Firestore document with new values
+                          FirebaseFirestore.instance
+                              .collection('tauruszrefuel')
+                              .doc(widget.docId)
+                              .update({
+                            'vehiclenumber': _dropController.text,
+                            'date': dateController.text,
+                            'Start KM': startKmController.text,
+                            'Price': priceController.text,
+                            'Liter': literController.text,
+                            'Place': placeController.text,
+                            'End Km': endKmController.text,
+                          }).then((_) {
+                            Navigator.pop(context); // Go back after updating
+                          });
+                        },
+                      ),
                     ],
                   ),
                 ),
               ),
             ),
-            SizedBox(
-              height: w * 0.07,
-            ),
-            Row(
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(left: w * 0.1),
-                  child: CustomTextButton(
-                      title: 'Save',
-                      width: w * 0.3,
-                      background: orange,
-                      textColor: white,
-                      fontSize: 20,
-                      onTap: () {
-                        _saveData();
-                      }),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(left: w * 0.15),
-                  child: CustomTextButtonOut(
-                    title: 'Clear',
-                    width: w * 0.3,
-                    background: Colors.transparent,
-                    textColor: black,
-                    fontSize: 20,
-                    onTap: () {
-                      clear();
-                    },
-                    color: black,
-                  ),
-                )
-              ],
-            )
           ],
         ),
       ),

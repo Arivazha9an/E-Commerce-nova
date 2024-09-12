@@ -1,30 +1,33 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:e_commerce/constants/colors.dart';
-import 'package:e_commerce/screens/retrieve/fuelretrieve.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:e_commerce/widgets/custombuttom%20outlined.dart';
 import 'package:e_commerce/widgets/custombutton.dart';
-import 'package:e_commerce/widgets/customtextformwithicon.dart';
 import 'package:e_commerce/widgets/customtextform.dart';
+import 'package:e_commerce/widgets/customtextformwithicon.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
-class Fuel extends StatefulWidget {
-  const Fuel({super.key});
+class Loaddispatch extends StatefulWidget {
+  const Loaddispatch({super.key});
 
   @override
-  State<Fuel> createState() => _FuelState();
+  State<Loaddispatch> createState() => _LoadDetailsState();
 }
 
-class _FuelState extends State<Fuel> {
-   final TextEditingController _datepickController = TextEditingController();
-  var _startKmcontroller = TextEditingController();
-  var _priceontroller = TextEditingController();
-  var _literscontroller = TextEditingController();
-  var _placecontroller = TextEditingController();
-  var _endKMcontroller = TextEditingController();
+class _LoadDetailsState extends State<Loaddispatch> {
+  final TextEditingController _datepickController = TextEditingController();
+  DateTime? pickeddate;
+  var _startpointcontroller = TextEditingController();
+  var _loadpointcontroller = TextEditingController();
+  var _droppointcontroller = TextEditingController();
+  var _nooftonscontroller = TextEditingController();
+  var _loadamountcontroller = TextEditingController();
+  var _deliveryamountcontroller = TextEditingController();
+  var _customernamecontroller = TextEditingController();
+  var _customernocontroller = TextEditingController();
   final TextEditingController _dropController = TextEditingController();
   List<String> _items = []; // List to hold Firestore data
   String? _selectedItemvehicle; // Variable to hold the selected item
@@ -36,15 +39,85 @@ class _FuelState extends State<Fuel> {
 
   void clear() {
     _datepickController.clear();
-    _startKmcontroller.clear();
-    _priceontroller.clear();
-    _literscontroller.clear();
-    _placecontroller.clear();
-    _endKMcontroller.clear();
+    _startpointcontroller.clear();
+    _loadpointcontroller.clear();
+    _droppointcontroller.clear();
+    _nooftonscontroller.clear();
+    _loadamountcontroller.clear();
+    _deliveryamountcontroller.clear();
+    _customernamecontroller.clear();
+    _customernocontroller.clear();
     _dropController.clear();
   }
 
-  // Function to fetch data from Firestore
+  void _storeOrUpdateData(String date, String number) async {
+    if (_startpointcontroller.text.isEmpty ||
+        _loadpointcontroller.text.isEmpty ||
+        _droppointcontroller.text.isEmpty ||
+        _nooftonscontroller.text.isEmpty ||
+        _loadamountcontroller.text.isEmpty ||
+        _deliveryamountcontroller.text.isEmpty ||
+        _customernamecontroller.text.isEmpty ||
+        _datepickController.text.isEmpty ||
+        _customernocontroller.text.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Error'),
+          content: const Text('Please fill all fields.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+      return;
+    } else {
+      try {
+        // Reference to the Firestore collection
+        final collectionRef = FirebaseFirestore.instance
+            .collection('CalendarAppointmentCollectionIncome');
+
+        // Convert the number from String to int, ensuring no null or invalid conversion
+        int parsedNumber = int.tryParse(number) ?? 0;
+
+        // Query to check if a document with the same date exists
+        final querySnapshot =
+            await collectionRef.where('StartTime', isEqualTo: date).get();
+
+        if (querySnapshot.docs.isNotEmpty) {
+          // Document exists, update the number
+          final docRef = querySnapshot.docs.first.reference;
+          // Retrieve the existing number, ensuring it's treated as int
+          final existingNumberString =
+              (querySnapshot.docs.first.data()['Subject'] ?? 0) as String;
+          int existingNumber = int.tryParse(existingNumberString) ?? 0;
+
+          // Sum the existing number with the new number
+          final newNumber = existingNumber + parsedNumber;
+
+          // Update the document with the new summed number
+          await docRef.update({'Subject': newNumber.toString()});
+          print('Document updated: $date with new number: $newNumber');
+        } else {
+          // Document does not exist, create a new one
+          await collectionRef
+              .add({'StartTime': date, 'Subject': parsedNumber.toString()});
+          print(
+              'New document created: $date with number: ${parsedNumber.toString()}');
+        }
+      } catch (e) {
+        // Handle errors
+        print('Error: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update data: $e')),
+        );
+      }
+    }
+  }
+
   Future<void> _fetchItems() async {
     try {
       // Fetch data from Firestore (replace 'collectionName' and 'fieldName' with your actual Firestore collection and field)
@@ -69,11 +142,15 @@ class _FuelState extends State<Fuel> {
     void _saveData() async {
       if (_dropController.text.isEmpty ||
           _datepickController.text.isEmpty ||
-          _startKmcontroller.text.isEmpty ||
-          _priceontroller.text.isEmpty ||
-          _literscontroller.text.isEmpty ||
-          _placecontroller.text.isEmpty ||
-          _endKMcontroller.text.isEmpty) {
+          _startpointcontroller.text.isEmpty ||
+          _loadpointcontroller.text.isEmpty ||
+          _droppointcontroller.text.isEmpty ||
+          _nooftonscontroller.text.isEmpty ||
+          _loadamountcontroller.text.isEmpty ||
+          _deliveryamountcontroller.text.isEmpty ||
+          _customernamecontroller.text.isEmpty ||
+          _datepickController.text.isEmpty ||
+          _customernocontroller.text.isEmpty) {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -90,14 +167,19 @@ class _FuelState extends State<Fuel> {
         return;
       } else {
         try {
-          await FirebaseFirestore.instance.collection('tauruszrefuel').add({
+          await FirebaseFirestore.instance
+              .collection('taurusdispatch')
+              .add({
             'vehiclenumber': _dropController.text,
             'date': _datepickController.text,
-            'Start KM': _startKmcontroller.text,
-            'Price': _priceontroller.text,
-            'Liter': _literscontroller.text,
-            'Place': _placecontroller.text,
-            'End Km': _endKMcontroller.text
+            'Start Point': _startpointcontroller.text,
+            'Load Point': _loadpointcontroller.text,
+            'Drop Point': _droppointcontroller.text,
+            'No Of Tons / Units': _nooftonscontroller.text,
+            'Load Amount': _loadamountcontroller.text,
+            'Delivery Amount': _deliveryamountcontroller.text,
+            'Customer Name': _customernamecontroller.text,
+            'Customer Number': _customernocontroller.text
           });
           Fluttertoast.showToast(
             msg: "Successfully Stored.",
@@ -167,7 +249,7 @@ class _FuelState extends State<Fuel> {
     var w = MediaQuery.sizeOf(context).width;
 
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Refuel Detail'),
+      appBar: const CustomAppBar(title: 'Load Dispatch'),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
@@ -282,15 +364,85 @@ class _FuelState extends State<Fuel> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Start Km')),
+                            child: Text('Start Point')),
                       ),
                       CustomTextFormFieldIcon(
                         width: 320,
-                        controller: _startKmcontroller,
+                        controller: _startpointcontroller,
+                        hintText: 'City/Location',
+                        labeltext: '',
+                        keyboardType: TextInputType.name,
+                        prefixicon: Icon(Icons.share_location_sharp),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Load Point')),
+                      ),
+                      CustomTextFormFieldIcon(
+                        width: 320,
+                        controller: _loadpointcontroller,
+                        hintText: 'Type',
+                        labeltext: '',
+                        keyboardType: TextInputType.name,
+                        prefixicon: Icon(Icons.share_location_sharp),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Drop Point')),
+                      ),
+                      CustomTextFormFieldIcon(
+                        width: 320,
+                        controller: _droppointcontroller,
+                        hintText: 'Type',
+                        labeltext: 'Type',
+                        keyboardType: TextInputType.name,
+                        prefixicon: Icon(Icons.share_location_sharp),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('No of Tons / Units')),
+                      ),
+                      CustomTextFormField(
+                        width: 320,
+                        controller: _nooftonscontroller,
+                        hintText: 'ItemWeight in Tons',
+                        labeltext: '',
+                        keyboardType: TextInputType.number,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Load Amount')),
+                      ),
+                      CustomTextFormField(
+                        width: 320,
+                        controller: _loadamountcontroller,
                         hintText: 'Type',
                         labeltext: '',
                         keyboardType: TextInputType.number,
-                        prefixicon: const Icon(Icons.share_location_sharp),
                       ),
                       Padding(
                         padding: EdgeInsets.only(
@@ -300,13 +452,13 @@ class _FuelState extends State<Fuel> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Price')),
+                            child: Text('Delivery Amount')),
                       ),
                       CustomTextFormField(
                         width: 320,
-                        controller: _priceontroller,
+                        controller: _deliveryamountcontroller,
                         hintText: 'Type',
-                        labeltext: 'Type',
+                        labeltext: '',
                         keyboardType: TextInputType.number,
                       ),
                       Padding(
@@ -317,30 +469,13 @@ class _FuelState extends State<Fuel> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('Liters')),
+                            child: Text('Customer Name')),
                       ),
                       CustomTextFormField(
                         width: 320,
-                        controller: _literscontroller,
+                        controller: _customernamecontroller,
                         hintText: 'Type',
-                        labeltext: 'Type',
-                        keyboardType: TextInputType.number,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Place')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _placecontroller,
-                        hintText: 'Type',
-                        labeltext: 'Type',
+                        labeltext: '',
                         keyboardType: TextInputType.name,
                       ),
                       Padding(
@@ -351,17 +486,16 @@ class _FuelState extends State<Fuel> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
-                            child: Text('End Km')),
+                            child: Text('Customer No')),
                       ),
                       Padding(
                         padding: EdgeInsets.only(bottom: w * 0.044),
-                        child: CustomTextFormFieldIcon(
+                        child: CustomTextFormField(
                           width: 320,
-                          controller: _endKMcontroller,
+                          controller: _customernocontroller,
                           hintText: 'Type',
                           labeltext: '',
                           keyboardType: TextInputType.number,
-                          prefixicon: const Icon(Icons.share_location_sharp),
                         ),
                       ),
                     ],
@@ -384,6 +518,8 @@ class _FuelState extends State<Fuel> {
                       fontSize: 20,
                       onTap: () {
                         _saveData();
+                        _storeOrUpdateData(_datepickController.text,
+                            _deliveryamountcontroller.text);
                       }),
                 ),
                 Padding(

@@ -2,6 +2,7 @@ import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/PUCdetail.dart'
 import 'package:e_commerce/BharathBenz/Vehicle%201/screens/retrieve/PUCretrieve.dart';
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/screens/forms/PUCdetail.dart';
+import 'package:e_commerce/screens/retrieve/PUCretrieve.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:e_commerce/widgets/custombutton.dart';
 import 'package:flutter/material.dart';
@@ -54,7 +55,7 @@ class _VehicleselectState extends State<TPucselect> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => Pucretrieve()),
+                    MaterialPageRoute(builder: (context) => Pucretrieve2()),
                   );
                 },
               ),

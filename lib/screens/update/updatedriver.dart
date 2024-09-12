@@ -8,22 +8,20 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-
-class UpdateFormDriver extends StatefulWidget {
+class UpdateFormDriverT extends StatefulWidget {
   final String docId;
   final Map<String, dynamic> data;
 
-  const UpdateFormDriver({super.key, required this.docId, required this.data});
+  const UpdateFormDriverT({super.key, required this.docId, required this.data});
 
   @override
-  State<UpdateFormDriver> createState() => _UpdateFormState();
+  State<UpdateFormDriverT> createState() => _UpdateFormState();
 }
 
-class _UpdateFormState extends State<UpdateFormDriver> {
+class _UpdateFormState extends State<UpdateFormDriverT> {
   // Define the controllers at the class level
-// Define the controllers at the class level
   late TextEditingController _namecontroller;
-  var _imgnamecontroller = TextEditingController();
+    var _imgnamecontroller =  TextEditingController();
   late TextEditingController _placecontroller;
   late TextEditingController _bloddgroupcontroller;
   late TextEditingController _expirecontroller;
@@ -40,7 +38,7 @@ class _UpdateFormState extends State<UpdateFormDriver> {
     _fetchItems();
     super.initState();
     // Initialize controllers with data from Firestore
-    _namecontroller = TextEditingController(text: widget.data['Name'] ?? '');
+    _namecontroller = TextEditingController(text: widget.data['Name'] ?? '');   
     _placecontroller = TextEditingController(text: widget.data['Place'] ?? '');
     _bloddgroupcontroller =
         TextEditingController(text: widget.data['Blood Group'] ?? '');
@@ -84,7 +82,7 @@ class _UpdateFormState extends State<UpdateFormDriver> {
     try {
       firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
           .ref()
-          .child('bharathbenz_driver')
+          .child('taurus_driver')
           .child('${DateTime.now().millisecondsSinceEpoch}.jpg');
       firebase_storage.UploadTask uploadTask = ref.putFile(imageFile);
       firebase_storage.TaskSnapshot snapshot =
@@ -99,7 +97,7 @@ class _UpdateFormState extends State<UpdateFormDriver> {
   Future<void> updateFirestoreWithImageUrl(String imageUrl) async {
     try {
       await FirebaseFirestore.instance
-          .collection('bharathbenzdriverdetail')
+          .collection('tuarusdriverdetail')
           .doc(widget.docId)
           .update({
         'vehiclenumber': _dropController.text,
@@ -365,3 +363,5 @@ class _UpdateFormState extends State<UpdateFormDriver> {
     );
   }
 }
+
+

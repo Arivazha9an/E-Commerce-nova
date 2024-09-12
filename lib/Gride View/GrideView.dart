@@ -1,17 +1,8 @@
 import 'package:e_commerce/constants/colors.dart';
-import 'package:e_commerce/screens/forms/DriverDetail.dart';
-import 'package:e_commerce/screens/forms/ExpenseDetail.dart';
-import 'package:e_commerce/screens/forms/LoadDetails.dart';
-import 'package:e_commerce/screens/forms/PUCdetail.dart';
-import 'package:e_commerce/screens/forms/Permit.dart';
-import 'package:e_commerce/screens/forms/VehicleDetails.dart';
-import 'package:e_commerce/screens/forms/insurancedetail.dart';
-import 'package:e_commerce/screens/forms/refuel.dart';
-import 'package:e_commerce/screens/forms/servics.dart';
 import 'package:e_commerce/screens/select/driverselect.dart';
 import 'package:e_commerce/screens/select/expenseselect.dart';
 import 'package:e_commerce/screens/select/insuranceselect.dart';
-import 'package:e_commerce/screens/select/loadselect.dart';
+import 'package:e_commerce/screens/select/loaddetailselect.dart';
 import 'package:e_commerce/screens/select/permitselect.dart';
 import 'package:e_commerce/screens/select/pucselect.dart';
 import 'package:e_commerce/screens/select/refuelselect.dart';
@@ -238,7 +229,7 @@ class Grideview extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const TLoadselect()),
+                          builder: (context) => const Loaddetailselect()),
                     );
                   },
                   child: Container(
