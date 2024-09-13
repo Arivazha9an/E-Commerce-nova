@@ -393,7 +393,7 @@ class _DriverretrieveState extends State<Driverretrieve> {
                       String vehicleno = data['vehiclenumber'] ?? '';
                       String name = data['Name'] ?? '';
                       String place = data['Place'] ?? '';
-                      String bloodGroup = data['Blooad Group'] ?? '';
+                      String bloodGroup = data['Blood Group'] ?? '';
                       String photo = data['Image URL'] ?? '';
                       String expires = data['Expires'] ?? '';
                       String insuranceAmount = data['Insurance Amount'] ?? '';

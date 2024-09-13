@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:e_commerce/BharathBenz/Vehicle%201/screens/Invoice/invoice.dart';
 import 'package:e_commerce/BharathBenz/Vehicle%201/screens/updateforms/loadupdate.dart';
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
@@ -346,7 +347,7 @@ class _LoadretrieveState extends State<Loadretrieve> {
                   },
                 ),
                 IconButton(
-                  icon: Icon(Icons.close_rounded),
+                  icon: const Icon(Icons.close_rounded),
                   onPressed: () {
                     setState(() {
                       _startDate = null; // Clear the start date filter
@@ -422,49 +423,49 @@ class _LoadretrieveState extends State<Loadretrieve> {
                                 ),
                                Row(
                                   children: [
-                                    Text('Start Point  = '),
+                                    const Text('Start Point  = '),
                                     Text(startPoint),
                                   ],
                                 ),
                                 Row(
                                   children: [
-                                    Text('Load Point  = '),
+                                    const Text('Load Point  = '),
                                     Text(loadPoint),
                                   ],
                                 ),
                                 Row(
                                   children: [
-                                    Text('Drop Point = '),
+                                    const Text('Drop Point = '),
                                     Text(dropPoint),
                                   ],
                                 ),
                                 Row(
                                   children: [
-                                    Text('No os Tons= '),
+                                    const Text('No of Tons= '),
                                     Text(tons),
                                   ],
                                 ),
                                 Row(
                                   children: [
-                                    Text('Load Amount = '),
+                                    const Text('Load Amount = '),
                                     Text(loadAmount),
                                   ],
                                 ),
                                 Row(
                                   children: [
-                                    Text('Delivery Amount = '),
+                                    const Text('Delivery Amount = '),
                                     Text(deliveryAmount),
                                   ],
                                 ),
                                 Row(
                                   children: [
-                                    Text('Customer Name = '),
+                                    const Text('Customer Name = '),
                                     Text(customerName),
                                   ],
                                 ),
                                 Row(
                                   children: [
-                                    Text('Customer No= '),
+                                    const Text('Customer No= '),
                                     Text(customerNo),
                                   ],
                                 ),
@@ -518,7 +519,35 @@ class _LoadretrieveState extends State<Loadretrieve> {
                                           // size: 30,
                                         ),
                                       ),
-                                    )
+                                    ),
+                                     IconButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                Invoice(
+                                             
+                                              data: data,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      icon: Container(
+                                        height: 35,
+                                        width: 35,
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(40),
+                                            color: green,
+                                            border: Border.all(color: green)),
+                                        child: const Icon(
+                                          Icons.request_page_sharp,
+                                          color: white,
+                                          // size: 30,
+                                        ),
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ],

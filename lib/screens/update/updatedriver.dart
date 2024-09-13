@@ -21,7 +21,7 @@ class UpdateFormDriverT extends StatefulWidget {
 class _UpdateFormState extends State<UpdateFormDriverT> {
   // Define the controllers at the class level
   late TextEditingController _namecontroller;
-    var _imgnamecontroller =  TextEditingController();
+  var _imgnamecontroller = TextEditingController();
   late TextEditingController _placecontroller;
   late TextEditingController _bloddgroupcontroller;
   late TextEditingController _expirecontroller;
@@ -32,13 +32,14 @@ class _UpdateFormState extends State<UpdateFormDriverT> {
   File? imageFile;
   List<String> _items = []; // List to hold Firestore data
   String? _selectedItemvehicle; // Variable to hold the selected item
+  bool _isLoading = false; // Flag to track loading state
 
   @override
   void initState() {
     _fetchItems();
     super.initState();
     // Initialize controllers with data from Firestore
-    _namecontroller = TextEditingController(text: widget.data['Name'] ?? '');   
+    _namecontroller = TextEditingController(text: widget.data['Name'] ?? '');
     _placecontroller = TextEditingController(text: widget.data['Place'] ?? '');
     _bloddgroupcontroller =
         TextEditingController(text: widget.data['Blood Group'] ?? '');
@@ -115,17 +116,28 @@ class _UpdateFormState extends State<UpdateFormDriverT> {
     }
   }
 
-  @override
-  void dispose() {
-    // Dispose controllers to avoid memory leaks
-    _namecontroller.dispose();
-    _imgnamecontroller.dispose();
-    _placecontroller.dispose();
-    _bloddgroupcontroller.dispose();
-    _expirecontroller.dispose();
-    _insuranceamountcontroller.dispose();
-    _dropController.dispose();
-    super.dispose();
+
+  Future<void> _handleUpdate() async {
+    setState(() {
+      _isLoading = true; // Set loading state to true
+    });
+
+    if (imageFile != null) {
+      String? uploadedImageUrl = await uploadImage(imageFile!);
+      if (uploadedImageUrl != null) {
+        await updateFirestoreWithImageUrl(uploadedImageUrl);
+      } else {
+        print('Failed to upload image.');
+      }
+    } else {
+      print('No image selected.');
+      // If no image is selected, update other fields
+      await updateFirestoreWithImageUrl(widget.data['Image URL'] ?? '');
+    }
+
+    setState(() {
+      _isLoading = false; // Set loading state to false
+    });
   }
 
   @override
@@ -134,234 +146,234 @@ class _UpdateFormState extends State<UpdateFormDriverT> {
 
     return Scaffold(
       appBar: const CustomAppBar(title: 'Update Driver Data', isGoBack: true),
-      body: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(left: w * 0.03, right: w * 0.03),
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(10)),
-                  border: Border.all(color: orange, width: w * 0.005),
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(left: w * 0.03, right: w * 0.03),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(Radius.circular(10)),
+                      border: Border.all(color: orange, width: w * 0.005),
+                    ),
+                    child: Center(
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(
+                                top: w * 0.03,
+                                right: w * 0.03,
+                                left: w * 0.025,
+                                bottom: w * 0.02),
+                            child: const Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text('Vehicle Number')),
+                          ),
+                          Container(
+                            width: 320,
+                            child: TextField(
+                              controller: _dropController,
+                              readOnly: true,
+                              decoration: InputDecoration(
+                                labelText: 'Select Vehicle No',
+                                suffixIcon: DropdownButton<String>(
+                                  value: _selectedItemvehicle,
+                                  hint: const Text('Select'),
+                                  icon: const Icon(Icons.arrow_drop_down),
+                                  items: _items.map((String item) {
+                                    return DropdownMenuItem<String>(
+                                      value: item,
+                                      child: Text(item),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      _selectedItemvehicle = newValue;
+                                      _dropController.text = newValue ?? '';
+                                    });
+                                  },
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(color: orange),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(color: black),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                border: const OutlineInputBorder(
+                                    borderSide: BorderSide(color: orange)),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(
+                                top: w * 0.03,
+                                right: w * 0.03,
+                                left: w * 0.025,
+                                bottom: w * 0.02),
+                            child: const Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text('Name')),
+                          ),
+                          CustomTextFormField(
+                            width: 320,
+                            controller: _namecontroller,
+                            hintText: 'Type',
+                            labeltext: '',
+                            keyboardType: TextInputType.name,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(
+                                top: w * 0.03,
+                                right: w * 0.03,
+                                left: w * 0.025,
+                                bottom: w * 0.02),
+                            child: const Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text('Place')),
+                          ),
+                          CustomTextFormField(
+                            width: 320,
+                            controller: _placecontroller,
+                            hintText: '',
+                            labeltext: '',
+                            keyboardType: TextInputType.name,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(
+                                top: w * 0.03,
+                                right: w * 0.03,
+                                left: w * 0.025,
+                                bottom: w * 0.02),
+                            child: const Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text('Blood Group')),
+                          ),
+                          CustomTextFormField(
+                            width: 320,
+                            controller: _bloddgroupcontroller,
+                            hintText: 'Type',
+                            labeltext: '',
+                            keyboardType: TextInputType.name,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(
+                                top: w * 0.03,
+                                right: w * 0.03,
+                                left: w * 0.025,
+                                bottom: w * 0.02),
+                            child: const Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text('Photo')),
+                          ),
+                          Container(
+                            width: 320,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4),
+                              boxShadow: const [
+                                BoxShadow(
+                                  offset: Offset(-4, 4),
+                                  blurRadius: 18,
+                                  spreadRadius: 0,
+                                  color: Color(0x17000000),
+                                )
+                              ],
+                            ),
+                            child: TextFormField(
+                              controller: _imgnamecontroller,
+                              readOnly: true,
+                              decoration: InputDecoration(
+                                labelText: 'No Image Selected',
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(color: orange),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(color: black),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                border: const OutlineInputBorder(
+                                    borderSide: BorderSide(color: orange)),
+                                suffixIcon: IconButton(
+                                  icon: const Icon(Icons.image),
+                                  onPressed:
+                                      pickImage, // Call pickImage function
+                                ),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(
+                                top: w * 0.03,
+                                right: w * 0.03,
+                                left: w * 0.025,
+                                bottom: w * 0.02),
+                            child: const Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text('Expires')),
+                          ),
+                          CustomTextFormField(
+                            width: 320,
+                            controller: _expirecontroller,
+                            hintText: 'MM/YYYY',
+                            labeltext: '',
+                            keyboardType: TextInputType.datetime,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(
+                                top: w * 0.03,
+                                right: w * 0.03,
+                                left: w * 0.025,
+                                bottom: w * 0.02),
+                            child: const Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text('Insurance Amount')),
+                          ),
+                          CustomTextFormField(
+                            width: 320,
+                            controller: _insuranceamountcontroller,
+                            hintText: 'Type',
+                            labeltext: '',
+                            keyboardType: TextInputType.number,
+                          ),
+                          SizedBox(
+                            height: w * 0.03,
+                          ),
+                          SizedBox(height: w * 0.02),
+                          CustomTextButton(
+                            width: w * 0.9,
+                            onTap: _handleUpdate,
+                            title: 'Update',
+                            background: orange,
+                            textColor: white,
+                            fontSize: 18,
+                          ),
+                          SizedBox(height: w * 0.02),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
+              ],
+            ),
+          ),
+          if (_isLoading)
+            Center(
+              child: Container(
+                color: Colors.black.withOpacity(0.5),
                 child: Center(
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Vehicle Number')),
-                      ),
-                      Container(
-                        width: 320,
-                        child: TextField(
-                          controller: _dropController,
-                          readOnly: true,
-                          decoration: InputDecoration(
-                            labelText: 'Select Vehicle No',
-                            suffixIcon: DropdownButton<String>(
-                              value: _selectedItemvehicle,
-                              hint: const Text('Select'),
-                              icon: const Icon(Icons.arrow_drop_down),
-                              items: _items.map((String item) {
-                                return DropdownMenuItem<String>(
-                                  value: item,
-                                  child: Text(item),
-                                );
-                              }).toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  _selectedItemvehicle = newValue;
-                                  _dropController.text = newValue ?? '';
-                                });
-                              },
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: orange),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: black),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            border: const OutlineInputBorder(
-                                borderSide: BorderSide(color: orange)),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Name')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _namecontroller,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.name,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Place')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _placecontroller,
-                        hintText: '',
-                        labeltext: '',
-                        keyboardType: TextInputType.name,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Blood Group')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _bloddgroupcontroller,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.name,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Photo')),
-                      ),
-                      Container(
-                        width: 320,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(4),
-                          boxShadow: const [
-                            BoxShadow(
-                              offset: Offset(-4, 4),
-                              blurRadius: 18,
-                              spreadRadius: 0,
-                              color: Color(0x17000000),
-                            )
-                          ],
-                        ),
-                        child: TextFormField(
-                          controller: _imgnamecontroller,
-                          readOnly: true,
-                          decoration: InputDecoration(
-                            labelText: 'No Image Selected',
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: orange),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: black),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            border: const OutlineInputBorder(
-                                borderSide: BorderSide(color: orange)),
-                            suffixIcon: IconButton(
-                              icon: const Icon(Icons.image),
-                              onPressed: pickImage, // Call pickImage function
-                            ),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Expires')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _expirecontroller,
-                        hintText: '',
-                        labeltext: '',
-                        keyboardType: TextInputType.name,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Insurance Amount')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _insuranceamountcontroller,
-                        hintText: '',
-                        labeltext: '',
-                        keyboardType: TextInputType.number,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(top: w * 0.05),
-                        child: CustomTextButton(
-                          width: 150,
-                          title: 'Update',
-                          background: orange,
-                          textColor: white,
-                          fontSize: 18,
-                          onTap: () async {
-                            if (imageFile != null) {
-                              String? uploadedImageUrl =
-                                  await uploadImage(imageFile!);
-                              if (uploadedImageUrl != null) {
-                                await updateFirestoreWithImageUrl(
-                                    uploadedImageUrl);
-                              } else {
-                                print('Failed to upload image.');
-                              }
-                            } else {
-                              print('No image selected.');
-                              // If no image is selected, update other fields
-                              await updateFirestoreWithImageUrl(
-                                  widget.data['Image URL'] ?? '');
-                            }
-                          },
-                        ),
-                      ),
-                    ],
+                  child: CircularProgressIndicator(
+                    color: orange,
                   ),
                 ),
               ),
             ),
-          ],
-        ),
+        ],
       ),
     );
   }
 }
-
-

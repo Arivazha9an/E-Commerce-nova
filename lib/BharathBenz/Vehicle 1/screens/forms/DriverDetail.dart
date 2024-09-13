@@ -124,7 +124,7 @@ class _driverDetailState extends State<BDriverDetail> {
             'vehiclenumber': _dropController.text,
            'Name': _namecontroller.text,
             'Place': _placecontroller.text,
-            'Blooad Group': _bloddgroupcontroller.text,
+            'Blood Group': _bloddgroupcontroller.text,
             //'Lorry': _.text,
             'Expires': _expirecontroller.text,
             'Insurance Amount': _insuranceamountcontroller.text,

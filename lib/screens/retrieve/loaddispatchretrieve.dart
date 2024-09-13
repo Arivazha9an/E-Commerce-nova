@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerce/BharathBenz/Vehicle%201/screens/updateforms/loadupdate.dart';
 import 'package:e_commerce/constants/colors.dart';
+import 'package:e_commerce/screens/invoice.dart/loaddispatchinvoice.dart';
 import 'package:e_commerce/screens/update/dispatchupdate.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:flutter/material.dart';
@@ -521,7 +522,33 @@ class _LoadretrieveState extends State<Loaddispatchretrieve> {
                                           // size: 30,
                                         ),
                                       ),
-                                    )
+                                    ),
+                                      IconButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => Loaddispatchinvoice(
+                                              data: data,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      icon: Container(
+                                        height: 35,
+                                        width: 35,
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(40),
+                                            color: green,
+                                            border: Border.all(color: green)),
+                                        child: const Icon(
+                                          Icons.request_page_sharp,
+                                          color: white,
+                                          // size: 30,
+                                        ),
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ],
