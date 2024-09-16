@@ -20,20 +20,34 @@ class UpdateFormLoad extends StatefulWidget {
 class _UpdateFormState extends State<UpdateFormLoad> {
   // Define the controllers at the class level
   late TextEditingController dateController;
-  late TextEditingController  _startpointcontroller;
+  late TextEditingController _startpointcontroller;
   late TextEditingController _loadpointcontroller;
   late TextEditingController _droppointcontroller;
   late TextEditingController _nooftonscontroller;
   late TextEditingController _loadamountcontroller;
   late TextEditingController _deliveryamountcontroller;
-   late TextEditingController _customernamecontroller;
+  late TextEditingController _customernamecontroller;
   late TextEditingController _customernocontroller;
   late TextEditingController _dropController;
-   late String date;
+  late TextEditingController _drivercontroller;
+  late TextEditingController _dieselcontroller;
+  late TextEditingController _paytypecontroller;
+
+  late String date;
   late String amount;
+  bool isOptionAppended = false;
+  String selectedOption = '';
+  String inputText = '';
+  String selectedOption02 = '';
+  final TextEditingController _controller = TextEditingController();
+
+  List<String> options = ['Tons', 'Units'];
+  List<String> options02 = ['Cash', 'Credit'];
 
   List<String> _items = []; // List to hold Firestore data
-  String? _selectedItemvehicle; // Variable to hold the selected item
+  String? _selectedItemvehicle;
+
+  // Variable to hold the selected item
   @override
   @override
   void initState() {
@@ -44,15 +58,41 @@ class _UpdateFormState extends State<UpdateFormLoad> {
     // Initialize controllers with data from Firestore
     _dropController = TextEditingController(text: widget.data['vehiclenumber']);
     dateController = TextEditingController(text: widget.data['date'] ?? '');
-     _startpointcontroller =
+    _startpointcontroller =
         TextEditingController(text: widget.data['Start Point'] ?? '');
-    _loadpointcontroller = TextEditingController(text: widget.data['Load Point'] ?? '');
-    _droppointcontroller = TextEditingController(text: widget.data['Drop Point'] ?? '');
-   _nooftonscontroller = TextEditingController(text: widget.data['No Of Tons / Units'] ?? '');
-    _loadamountcontroller = TextEditingController(text: widget.data['Load Amount'] ?? '');
-   _deliveryamountcontroller = TextEditingController(text: widget.data['Delivery Amount'] ?? '');
-    _customernamecontroller = TextEditingController(text: widget.data['Customer Name'] ?? '');
-    _customernocontroller = TextEditingController(text: widget.data['Customer Number'] ?? '');
+    _loadpointcontroller =
+        TextEditingController(text: widget.data['Load Point'] ?? '');
+    _droppointcontroller =
+        TextEditingController(text: widget.data['Drop Point'] ?? '');
+    _nooftonscontroller =
+        TextEditingController(text: widget.data['No Of Tons / Units'] ?? '');
+    _loadamountcontroller =
+        TextEditingController(text: widget.data['Load Amount'] ?? '');
+    _deliveryamountcontroller =
+        TextEditingController(text: widget.data['Delivery Amount'] ?? '');
+    _customernamecontroller =
+        TextEditingController(text: widget.data['Customer Name'] ?? '');
+    _customernocontroller =
+        TextEditingController(text: widget.data['Customer Number'] ?? '');
+    _drivercontroller =
+        TextEditingController(text: widget.data['driver'] ?? '');
+    _dieselcontroller =
+        TextEditingController(text: widget.data['diesel'] ?? '');
+    _paytypecontroller =
+        TextEditingController(text: widget.data['paymenttype'] ?? '');
+  }
+
+  void _appendOption() {
+    // Append the option only if it hasn't been appended already
+    if (!isOptionAppended &&
+        inputText.isNotEmpty &&
+        selectedOption.isNotEmpty) {
+      _controller.text = '$inputText $selectedOption';
+      _controller.selection = TextSelection.fromPosition(
+        TextPosition(offset: _controller.text.length),
+      );
+      isOptionAppended = true; // Mark as appended
+    }
   }
 
   @override
@@ -60,12 +100,12 @@ class _UpdateFormState extends State<UpdateFormLoad> {
     // Dispose controllers to avoid memory leaks
     _dropController.dispose();
     dateController.dispose();
-     _startpointcontroller.dispose();
+    _startpointcontroller.dispose();
     _loadpointcontroller.dispose();
     _droppointcontroller.dispose();
-   _nooftonscontroller.dispose();
+    _nooftonscontroller.dispose();
     _loadamountcontroller.dispose();
-     _deliveryamountcontroller.dispose();
+    _deliveryamountcontroller.dispose();
     _customernamecontroller.dispose();
     _customernocontroller.dispose();
     super.dispose();
@@ -112,17 +152,17 @@ class _UpdateFormState extends State<UpdateFormLoad> {
     }
   }
 
-   Future<void> _storeOrUpdateData(String date, String number) async {
+  Future<void> _storeOrUpdateData(String date, String number) async {
     if (_dropController.text.isEmpty ||
-    dateController.text.isEmpty ||
-     _startpointcontroller.text.isEmpty||
-    _loadpointcontroller.text.isEmpty||
-    _droppointcontroller.text.isEmpty||
-   _nooftonscontroller.text.isEmpty ||
-    _loadamountcontroller.text.isEmpty ||
-     _deliveryamountcontroller.text.isEmpty||
-    _customernamecontroller.text.isEmpty||
-    _customernocontroller.text.isEmpty) {
+        dateController.text.isEmpty ||
+        _startpointcontroller.text.isEmpty ||
+        _loadpointcontroller.text.isEmpty ||
+        _droppointcontroller.text.isEmpty ||
+        _nooftonscontroller.text.isEmpty ||
+        _loadamountcontroller.text.isEmpty ||
+        _deliveryamountcontroller.text.isEmpty ||
+        _customernamecontroller.text.isEmpty ||
+        _customernocontroller.text.isEmpty) {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -231,9 +271,8 @@ class _UpdateFormState extends State<UpdateFormLoad> {
               padding: EdgeInsets.only(left: w * 0.03, right: w * 0.03),
               child: Container(
                 decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(10)),
-                  border: Border.all(color: orange, width: w * 0.005),
-                ),
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
+                    border: Border.all(color: orange, width: w * 0.005)),
                 child: Center(
                   child: Column(
                     children: [
@@ -346,7 +385,7 @@ class _UpdateFormState extends State<UpdateFormLoad> {
                         hintText: 'City/Location',
                         labeltext: '',
                         keyboardType: TextInputType.name,
-                        prefixicon: Icon(Icons.share_location_sharp),
+                        prefixicon: const Icon(Icons.share_location_sharp),
                       ),
                       Padding(
                         padding: EdgeInsets.only(
@@ -364,7 +403,7 @@ class _UpdateFormState extends State<UpdateFormLoad> {
                         hintText: 'Type',
                         labeltext: '',
                         keyboardType: TextInputType.name,
-                        prefixicon: Icon(Icons.share_location_sharp),
+                        prefixicon: const Icon(Icons.share_location_sharp),
                       ),
                       Padding(
                         padding: EdgeInsets.only(
@@ -382,7 +421,7 @@ class _UpdateFormState extends State<UpdateFormLoad> {
                         hintText: 'Type',
                         labeltext: 'Type',
                         keyboardType: TextInputType.name,
-                        prefixicon: Icon(Icons.share_location_sharp),
+                        prefixicon: const Icon(Icons.share_location_sharp),
                       ),
                       Padding(
                         padding: EdgeInsets.only(
@@ -394,13 +433,43 @@ class _UpdateFormState extends State<UpdateFormLoad> {
                             alignment: Alignment.centerLeft,
                             child: Text('No of Tons / Units')),
                       ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _nooftonscontroller,
-                        hintText: 'ItemWeight in Tons',
-                        labeltext: '',
-                        keyboardType: TextInputType.number,
-                      ),
+                      Stack(children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: CustomTextFormField(
+                            width: 320,
+                            controller: _nooftonscontroller,
+                            hintText: "",
+                            labeltext: "Item's in $selectedOption",
+                            keyboardType: TextInputType.number,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              right: 30, top: 10, bottom: 6),
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: DropdownButton<String>(
+                              hint: const Text('Select'),
+                              value: selectedOption.isEmpty
+                                  ? null
+                                  : selectedOption,
+                              items: options.map((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                              onChanged: (newValue) {
+                                setState(() {
+                                  selectedOption = newValue!;
+                                  _appendOption();
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                      ]),
                       Padding(
                         padding: EdgeInsets.only(
                             top: w * 0.03,
@@ -443,6 +512,54 @@ class _UpdateFormState extends State<UpdateFormLoad> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
+                            child: Text('Payment Type')),
+                      ),
+                      Container(
+                        width: 320,
+                        child: TextField(
+                          controller: _paytypecontroller,
+                          readOnly: true, // Make the text field read-only
+                          decoration: InputDecoration(
+                            labelText: '',
+                            suffixIcon: DropdownButton<String>(
+                              hint: const Text(''),
+                              value: selectedOption02.isEmpty
+                                  ? null
+                                  : selectedOption02,
+                              items: options02.map((String value02) {
+                                return DropdownMenuItem<String>(
+                                  value: value02,
+                                  child: Text(value02),
+                                );
+                              }).toList(),
+                              onChanged: (newValue) {
+                                setState(() {
+                                  selectedOption02 = newValue!;
+                                  _paytypecontroller.text = newValue;
+                                });
+                              },
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: orange),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: black),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            border: const OutlineInputBorder(
+                                borderSide: BorderSide(color: orange)),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
                             child: Text('Customer Name')),
                       ),
                       CustomTextFormField(
@@ -463,10 +580,47 @@ class _UpdateFormState extends State<UpdateFormLoad> {
                             child: Text('Customer No')),
                       ),
                       Padding(
-                        padding: EdgeInsets.only(bottom: w * 0.044),
+                        padding: EdgeInsets.only(bottom: w * 0.0044),
                         child: CustomTextFormField(
                           width: 320,
                           controller: _customernocontroller,
+                          hintText: 'Type',
+                          labeltext: '',
+                          keyboardType: TextInputType.number,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Driver')),
+                      ),
+                      CustomTextFormField(
+                        width: 320,
+                        controller: _drivercontroller,
+                        hintText: 'Type',
+                        labeltext: '',
+                        keyboardType: TextInputType.number,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Diesel')),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(bottom: w * 0.044),
+                        child: CustomTextFormField(
+                          width: 320,
+                          controller: _dieselcontroller,
                           hintText: 'Type',
                           labeltext: '',
                           keyboardType: TextInputType.number,
@@ -477,16 +631,15 @@ class _UpdateFormState extends State<UpdateFormLoad> {
                 ),
               ),
             ),
-
-                      // Other fields with similar padding and input
-                      const SizedBox(height: 20),
-                      CustomTextButton(
-                        width: 150,
-                        title: 'Update',
-                        background: orange,
-                        textColor: white,
-                        fontSize: 18,
-                        onTap: () async {
+            // Other fields with similar padding and input
+            const SizedBox(height: 20),
+            CustomTextButton(
+              width: 150,
+              title: 'Update',
+              background: orange,
+              textColor: white,
+              fontSize: 18,
+              onTap: () async {
                 if (date.isNotEmpty && amount.isNotEmpty) {
                   // Correctly call the function
                   await _storeOrUpdateData(
@@ -502,30 +655,32 @@ class _UpdateFormState extends State<UpdateFormLoad> {
                   print('Error: Date or Amount is missing or not a string.');
                   // Handle the missing or incorrect type data
                 }
-                          // Update Firestore document with new values
-                          FirebaseFirestore.instance
-                              .collection('bharathbenzloaddetail')
-                              .doc(widget.docId)
-                              .update({
-                             'vehiclenumber': _dropController.text,
-            'date': dateController.text,
-            'Start Point': _startpointcontroller.text,
-            'Load Point': _loadpointcontroller.text,
-            'Drop Point': _droppointcontroller.text,
-            'No Of Tons / Units': _nooftonscontroller.text,
-            'Load Amount': _loadamountcontroller.text,
-            'Delivery Amount': _deliveryamountcontroller.text,
-            'Customer Name': _customernamecontroller.text,
-            'Customer Number': _customernocontroller.text
-                          }).then((_) {
-                            Navigator.pop(context); // Go back after updating
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              );
-           
+                // Update Firestore document with new values
+                FirebaseFirestore.instance
+                    .collection('bharathbenzloaddetail')
+                    .doc(widget.docId)
+                    .update({
+                  'driver': _drivercontroller.text,
+                  'diesel': _dieselcontroller.text,
+                  'paymenttype': _paytypecontroller.text,
+                  'vehiclenumber': _dropController.text,
+                  'date': dateController.text,
+                  'Start Point': _startpointcontroller.text,
+                  'Load Point': _loadpointcontroller.text,
+                  'Drop Point': _droppointcontroller.text,
+                  'No Of Tons / Units': _nooftonscontroller.text,
+                  'Load Amount': _loadamountcontroller.text,
+                  'Delivery Amount': _deliveryamountcontroller.text,
+                  'Customer Name': _customernamecontroller.text,
+                  'Customer Number': _customernocontroller.text
+                }).then((_) {
+                  Navigator.pop(context); // Go back after updating
+                });
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

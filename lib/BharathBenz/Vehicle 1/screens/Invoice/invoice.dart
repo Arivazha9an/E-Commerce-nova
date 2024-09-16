@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:flutter/material.dart';
-import 'package:pdf/pdf.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:signature/signature.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -17,7 +16,7 @@ class Invoice extends StatefulWidget {
 }
 
 class _InvoiceState extends State<Invoice> {
-  final TextEditingController _controllername = TextEditingController();
+  final TextEditingController _addresscontroller = TextEditingController();
   late String date;
   late String vehicleNumber;
   late String startPoint;
@@ -119,122 +118,139 @@ class _InvoiceState extends State<Invoice> {
                         pw.Text('Logo'),
                         pw.Row(
                           children: [
-                            pw.Text('Date : $date'),
+                            pw.Text('INVOICE',
+                                style: pw.TextStyle(
+                                    fontSize: 28,
+                                    fontWeight: pw.FontWeight.bold))
                           ],
                         )
                       ],
                     ),
+                    pw.SizedBox(height: 40),
+                    pw.Row(
+                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                      children: [
+                        pw.Column(children: [
+                          pw.Text('  Billed To :',
+                              style: pw.TextStyle(fontSize: 18)),
+                          pw.Text('''$customerName
+$customerNo'''),
+                          pw.Row(children: [
+                            pw.SizedBox(width: 20),
+                            pw.Text(_addresscontroller.text)
+                          ]),
+                        ]),
+                        pw.Text('Date : $date')
+                      ],
+                    ),
                     pw.SizedBox(height: 30),
-                    pw.Center(
-                        child: pw.Text('Invoice',
-                            style: const pw.TextStyle(fontSize: 28))),
-                    pw.SizedBox(height: 30),
-                    pw.Row(children: [
-                      pw.SizedBox(
-                        width: 170,
-                      ),
-                      pw.Text('Customer Name    : $customerName')
-                    ]),
                     pw.SizedBox(height: 10),
                     pw.Row(children: [
-                      pw.SizedBox(width: 100),
-                      pw.Container(height: 5, width: 250, child: pw.Divider()),
+                      pw.SizedBox(width: 30),
+                      pw.Container(height: 5, width: 440, child: pw.Divider()),
                     ]),
                     pw.SizedBox(height: 10),
                     pw.Row(children: [
                       pw.SizedBox(
-                        width: 170,
+                        width: 50,
                       ),
-                      pw.Text('Customer No         : $customerNo'),
+                      pw.Text(
+                          '                                                    Others         Price',
+                          style: pw.TextStyle(
+                              fontSize: 17, fontWeight: pw.FontWeight.normal)),
                     ]),
                     pw.SizedBox(height: 10),
                     pw.Row(children: [
-                      pw.SizedBox(width: 100),
-                      pw.Container(height: 5, width: 250, child: pw.Divider()),
+                      pw.SizedBox(width: 30),
+                      pw.Container(height: 5, width: 440, child: pw.Divider()),
                     ]),
                     pw.SizedBox(height: 10),
                     pw.Row(children: [
                       pw.SizedBox(
-                        width: 170,
+                        width: 50,
                       ),
-                      pw.Text('Vehicle Number    : $vehicleNumber'),
+                      pw.Text(
+                          'Vehicle Number                                                    $vehicleNumber                        -'),
                     ]),
                     pw.SizedBox(height: 10),
                     pw.Row(children: [
-                      pw.SizedBox(width: 100),
-                      pw.Container(height: 5, width: 250, child: pw.Divider()),
+                      pw.SizedBox(width: 30),
+                      pw.Container(height: 5, width: 440, child: pw.Divider()),
                     ]),
                     pw.SizedBox(height: 10),
                     pw.Row(children: [
                       pw.SizedBox(
-                        width: 170,
+                        width: 50,
                       ),
-                      pw.Text('Start Point             : $startPoint'),
+                      pw.Text(
+                          'No of Tons/Units                                                    $noofTons                        -'),
                     ]),
                     pw.SizedBox(height: 10),
                     pw.Row(children: [
-                      pw.SizedBox(width: 100),
-                      pw.Container(height: 5, width: 250, child: pw.Divider()),
+                      pw.SizedBox(width: 30),
+                      pw.Container(height: 5, width: 440, child: pw.Divider()),
                     ]),
                     pw.SizedBox(height: 10),
                     pw.Row(children: [
                       pw.SizedBox(
-                        width: 170,
+                        width: 50,
                       ),
-                      pw.Text('Drop Point             : $dropPoint'),
+                      pw.Text(
+                          'Load Amount                                                          -                         $loadAmount'),
                     ]),
                     pw.SizedBox(height: 10),
                     pw.Row(children: [
-                      pw.SizedBox(width: 100),
-                      pw.Container(height: 5, width: 250, child: pw.Divider()),
+                      pw.SizedBox(width: 30),
+                      pw.Container(height: 5, width: 440, child: pw.Divider()),
                     ]),
                     pw.SizedBox(height: 10),
                     pw.Row(children: [
                       pw.SizedBox(
-                        width: 170,
+                        width: 50,
                       ),
-                      pw.Text('No of Tons/Units   : $noofTons'),
+                      pw.Text(
+                          'Delivery Amount                                                      -                        $deliveryAmount'),
                     ]),
                     pw.SizedBox(height: 10),
                     pw.Row(children: [
-                      pw.SizedBox(width: 100),
-                      pw.Container(height: 5, width: 250, child: pw.Divider()),
+                      pw.SizedBox(width: 30),
+                      pw.Container(height: 5, width: 440, child: pw.Divider()),
                     ]),
-                    pw.SizedBox(height: 10),
-                    pw.Row(children: [
-                      pw.SizedBox(
-                        width: 170,
-                      ),
-                      pw.Text('Load Amount         : $loadAmount'),
-                    ]),
-                    pw.SizedBox(height: 10),
-                    pw.Row(children: [
-                      pw.SizedBox(width: 100),
-                      pw.Container(height: 5, width: 250, child: pw.Divider()),
-                    ]),
-                    pw.SizedBox(height: 10),
-                    pw.Row(children: [
-                      pw.SizedBox(
-                        width: 170,
-                      ),
-                      pw.Text('Delivery Amount    : $deliveryAmount'),
-                    ]),
-                    pw.SizedBox(height: 30),
+                    pw.SizedBox(height: 20),
                     pw.Align(
                       alignment: pw.Alignment.centerRight,
-                      child: pw.Text('Total Amount: Rs.  $deliveryAmount'),
+                      child: pw.Text(
+                          'Total Amount: Rs.  $deliveryAmount                    '),
                     ),
                     if (_signatureImage != null) ...[
-                      pw.SizedBox(height: 20),
+                      pw.SizedBox(height: 40),
                       pw.Align(
                           alignment: pw.Alignment.centerRight,
                           child: pw.Column(children: [
                             pw.Text('Signature:'),
-                            pw.SizedBox(height: 3),
+                            pw.SizedBox(height: 6),
                             pw.Image(pw.MemoryImage(_signatureImage!),
                                 width: 80, height: 40),
                           ]))
                     ],
+                    pw.SizedBox(height: 20),
+                    pw.Text('   Thank You !!!',
+                        style: pw.TextStyle(fontSize: 18)),
+                    pw.SizedBox(height: 80),
+                    pw.Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.end,
+                        children: [
+                          pw.Column(
+                              crossAxisAlignment: pw.CrossAxisAlignment.end,
+                              children: [
+                                pw.Text('Thiruchendur Murugan',
+                                    style: pw.TextStyle(fontSize: 18)),
+                                pw.Text('Peravurani',
+                                    style: pw.TextStyle(fontSize: 14)),
+                                pw.Text('Thanjavur',
+                                    style: pw.TextStyle(fontSize: 14))
+                              ])
+                        ])
                   ],
                 ),
               )),
@@ -278,225 +294,213 @@ class _InvoiceState extends State<Invoice> {
     var w = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: const CustomAppBar(title: 'Invoice'),
-      body: Column(
-        children: [
-          Center(
-            child: Container(
-              width: 350,
-              height: 600,
-              decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(10)),
-                  border: Border.all(color: orange, width: w * 0.005)),
-              child: Padding(
-                  padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
-                  child: Column(
-                    children: [
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      const Center(
-                        child: Text(
-                          'Invoice',
-                          style: TextStyle(
-                              fontSize: 28, fontWeight: FontWeight.w400),
+      body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Column(
+          children: [
+            Center(
+              child: Container(
+                width: 350,
+                height: 600,
+                decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
+                    border: Border.all(color: orange, width: w * 0.005)),
+                child: Padding(
+                    padding:
+                        const EdgeInsets.only(left: 20, right: 20, top: 10),
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 20,
                         ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            children: [
-                              Text('Billed To '),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              SizedBox(
-                                width: 165,
-                                height: 80,
-                                child: TextField(
-                                  controller: _controllername,
-                                  maxLines: null, // Allows unlimited lines
-                                  decoration: InputDecoration(
-                                    labelText: 'Enter Address',
-                                    border: OutlineInputBorder(),
-                                    hintText: 'Type here...',
-                                  ),
-                                  keyboardType: TextInputType.multiline,
+                        const Center(
+                          child: Text(
+                            'Invoice',
+                            style: TextStyle(
+                                fontSize: 28, fontWeight: FontWeight.w400),
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Row(
+                              children: [
+                                Column(
+                                  children: [
+                                    Text('Date : $date'),
+                                  ],
                                 ),
+                                const SizedBox(
+                                  height: 20,
+                                )
+                              ],
+                            )
+                          ],
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const Text('Billed To '),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            SizedBox(
+                              width: 325,
+                              height: 80,
+                              child: TextField(
+                                controller: _addresscontroller,
+                                maxLines: null, // Allows unlimited lines
+                                decoration: const InputDecoration(
+                                  labelText: 'Enter Address',
+                                  border: OutlineInputBorder(),
+                                  hintText: 'Type here...',
+                                ),
+                                keyboardType: TextInputType.multiline,
                               ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Column(
-                                children: [
-                                  Text('Date : $date'),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 20,
-                              )
-                            ],
-                          )
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 30,
-                      ),
-                      Row(
-                        children: [
-                          const Text('Customer name    :'),
-                          const SizedBox(
-                            width: 20,
-                          ),
-                          Text(customerName),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          const Text('Customer No         :'),
-                          const SizedBox(
-                            width: 20,
-                          ),
-                          Text(customerNo),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          const Text('Vehicle Number    :'),
-                          const SizedBox(
-                            width: 20,
-                          ),
-                          Text(vehicleNumber),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          const Text('Start Point             :'),
-                          const SizedBox(
-                            width: 20,
-                          ),
-                          Text(startPoint),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          const Text('Drop Point             :'),
-                          const SizedBox(
-                            width: 20,
-                          ),
-                          Text(dropPoint),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          const Text('No of Tons/ Units :'),
-                          const SizedBox(
-                            width: 20,
-                          ),
-                          Text(noofTons),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          const Text('Load Amount        :'),
-                          const SizedBox(
-                            width: 20,
-                          ),
-                          Text(loadAmount),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          const Text('Delivery Amount   :'),
-                          const SizedBox(
-                            width: 20,
-                          ),
-                          Text(deliveryAmount),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 30,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          const Text('Total Amount : ₹'),
-                          Text(deliveryAmount)
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          // SizedBox(
-                          //   width: 100,
-                          //   height: 100,
-                          //   child: TextField(
-                          //     controller: _controllername,
-                          //     maxLines: null, // Allows unlimited lines
-                          //     decoration: InputDecoration(
-                          //       labelText: 'Enter your text',
-                          //       border: OutlineInputBorder(),
-                          //       hintText: 'Type here...',
-                          //     ),
-                          //     keyboardType: TextInputType.multiline,
-                          //   ),
-                          // ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        Row(
+                          children: [
+                            const Text('Customer name    :'),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            Text(customerName),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            const Text('Customer No         :'),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            Text(customerNo),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            const Text('Vehicle Number    :'),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            Text(vehicleNumber),
+                          ],
+                        ),                   
+                        Row(
+                          children: [
+                            const Text('No of Tons/ Units :'),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            Text(noofTons),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            const Text('Load Amount        :'),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            Text(loadAmount),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            const Text('Delivery Amount   :'),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            Text(deliveryAmount),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            const Text('Total Amount : ₹'),
+                            Text(deliveryAmount)
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            // SizedBox(
+                            //   width: 100,
+                            //   height: 100,
+                            //   child: TextField(
+                            //     controller: _controllername,
+                            //     maxLines: null, // Allows unlimited lines
+                            //     decoration: InputDecoration(
+                            //       labelText: 'Enter your text',
+                            //       border: OutlineInputBorder(),
+                            //       hintText: 'Type here...',
+                            //     ),
+                            //     keyboardType: TextInputType.multiline,
+                            //   ),
+                            // ),
 
-                          GestureDetector(
-                            onTap: () => _showSignaturePad(context),
-                            child: Container(
-                              height: 60,
-                              width: 120,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[200],
-                                // border: Border.all(color: Colors.black),
+                            GestureDetector(
+                              onTap: () => _showSignaturePad(context),
+                              child: Container(
+                                height: 60,
+                                width: 120,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[200],
+                                  // border: Border.all(color: Colors.black),
+                                ),
+                                child: _signatureImage != null
+                                    ? Image.memory(
+                                        _signatureImage!) // Display the signature
+                                    : const Center(child: Text('Tap to Sign')),
                               ),
-                              child: _signatureImage != null
-                                  ? Image.memory(
-                                      _signatureImage!) // Display the signature
-                                  : const Center(child: Text('Tap to Sign')),
                             ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [],
-                      ),
-                      const SizedBox(
-                        height: 25,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Container(
-                            height: 45,
-                            width: 45,
-                            decoration: BoxDecoration(
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(30)),
-                                border: Border.all(
-                                    color: orange, width: w * 0.005)),
-                            child: Center(
-                              child: IconButton(
-                                  onPressed: _sharePdf,
-                                  icon: const Icon(
-                                    Icons.share_rounded,
-                                    size: 26,
-                                    color: orange,
-                                  )),
+                          ],
+                        ),
+                        const Row(
+                          children: [],
+                        ),
+                        const SizedBox(
+                          height: 25,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Container(
+                              height: 45,
+                              width: 45,
+                              decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(30)),
+                                  border: Border.all(
+                                      color: orange, width: w * 0.005)),
+                              child: Center(
+                                child: IconButton(
+                                    onPressed: _sharePdf,
+                                    icon: const Icon(
+                                      Icons.share_rounded,
+                                      size: 26,
+                                      color: orange,
+                                    )),
+                              ),
                             ),
-                          ),
-                        ],
-                      )
-                    ],
-                  )),
+                          ],
+                        )
+                      ],
+                    )),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

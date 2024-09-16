@@ -1,4 +1,3 @@
-import 'package:e_commerce/Gride%20View/Vehicledetailsgrid1.dart';
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/screens/select/driverselect.dart';
 import 'package:e_commerce/screens/select/expenseselect.dart';
@@ -12,9 +11,14 @@ import 'package:e_commerce/screens/select/vehicleselect.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:flutter/material.dart';
 
-class Grideview extends StatelessWidget {
-  const Grideview({super.key});
+class Vehicledetailsgrid1 extends StatefulWidget {
+  const Vehicledetailsgrid1({super.key});
 
+  @override
+  State<Vehicledetailsgrid1> createState() => _Vehicledetailsgrid1State();
+}
+
+class _Vehicledetailsgrid1State extends State<Vehicledetailsgrid1> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,23 +34,23 @@ class Grideview extends StatelessWidget {
             ),
             _buildRow(
                 context,
-                const TFuelselect(),
-                'Refuel',
-                'assets/images/fuel.jpg',
-                const TServiceselect(),
-                'Service',
-                'assets/images/service.jpg'),
+                const TExpenseselect(),
+                'Expense',
+                'assets/images/expense.jpg',
+                const TInsuranceselect(),
+                'Insurance',
+                'assets/images/insurance.jpg'),
             const SizedBox(
               height: 30,
             ),
             _buildRow(
                 context,
-                const Loaddetailselect(),
-                'Load',
-                'assets/images/load.jpg',
-                const TDriverselect(),
-                'Driver',
-                'assets/images/driver.jpg'),
+                const TPermitselect(),
+                'Permit',
+                'assets/images/permit.jpg',
+                const TPucselect(),
+                'PUC',
+                'assets/images/PUC.jpg'),
             const SizedBox(
               height: 30,
             ),
@@ -57,13 +61,13 @@ class Grideview extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const Vehicledetailsgrid1()),
+                          builder: (context) => const TVehicledetailselect()),
                     );
                   },
                   child: Padding(
                     padding: const EdgeInsets.only(left: 21),
                     child: _buildCard(
-                        'Vehicle Details', 'assets/images/vehicledetails.jpg'),
+                        'Vehicle Info', 'assets/images/vehicledetails.jpg'),
                   ),
                 ),
               ],

@@ -55,6 +55,7 @@ class _LoadretrieveState extends State<Loadretrieve> {
     _pageController.dispose();
     super.dispose();
   }
+
   Future<void> _fetchItems() async {
     try {
       // Fetch data from Firestore (replace 'collectionName' and 'fieldName' with your actual Firestore collection and field)
@@ -230,8 +231,11 @@ class _LoadretrieveState extends State<Loadretrieve> {
                   pw.Text('No of Tons: ${data['No Of Tons / Units'] ?? ''}'),
                   pw.Text('Load amount: ${data['Load Amount'] ?? ''}'),
                   pw.Text('Delivey Amount: ${data['Delivery Amount'] ?? ''}'),
+                  pw.Text('Payment Type: ${data['paymenttype'] ?? ''}'),
                   pw.Text('Customer Name: ${data['Customer Name'] ?? ''}'),
                   pw.Text('Customer Number: ${data['Customer Number'] ?? ''}'),
+                  pw.Text('Driver: ${data['driver'] ?? ''}'),
+                  pw.Text('Diesel: ${data['diesel'] ?? ''}'),
                   pw.Divider(),
                 ],
               ),
@@ -383,7 +387,7 @@ class _LoadretrieveState extends State<Loadretrieve> {
                           documents[i].data() as Map<String, dynamic>;
                       String vehicleno = data['vehiclenumber'] ?? '';
                       String date = data['date'] ?? '';
-                  String startPoint = data['Start Point'] ?? '';
+                      String startPoint = data['Start Point'] ?? '';
                       String loadPoint = data['Load Point'] ?? '';
                       String dropPoint = data['Drop Point'] ?? '';
                       String tons = data['No Of Tons / Units'] ?? '';
@@ -391,13 +395,16 @@ class _LoadretrieveState extends State<Loadretrieve> {
                       String deliveryAmount = data['Delivery Amount'] ?? '';
                       String customerName = data['Customer Name'] ?? '';
                       String customerNo = data['Customer Number'] ?? '';
+                      String driver = data['driver'] ?? '';
+                      String diesel = data['diesel'] ?? '';
+                      String paymenttype = data['paymenttype'] ?? '';
                       String docId = documents[i].id;
 
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Container(
                           width: 100,
-                          height: 270,
+                          height: 340,
                           decoration: BoxDecoration(
                               borderRadius:
                                   const BorderRadius.all(Radius.circular(10)),
@@ -421,7 +428,7 @@ class _LoadretrieveState extends State<Loadretrieve> {
                                     Text(date),
                                   ],
                                 ),
-                               Row(
+                                Row(
                                   children: [
                                     const Text('Start Point  = '),
                                     Text(startPoint),
@@ -453,6 +460,12 @@ class _LoadretrieveState extends State<Loadretrieve> {
                                 ),
                                 Row(
                                   children: [
+                                    const Text('Payment Type = '),
+                                    Text(paymenttype),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
                                     const Text('Delivery Amount = '),
                                     Text(deliveryAmount),
                                   ],
@@ -469,6 +482,18 @@ class _LoadretrieveState extends State<Loadretrieve> {
                                     Text(customerNo),
                                   ],
                                 ),
+                                Row(
+                                  children: [
+                                    const Text('Driver = '),
+                                    Text(driver),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    const Text('Diesel= '),
+                                    Text(diesel),
+                                  ],
+                                ),
                                 const Spacer(),
                                 Row(
                                   children: [
@@ -477,7 +502,8 @@ class _LoadretrieveState extends State<Loadretrieve> {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => UpdateFormLoad(
+                                            builder: (context) =>
+                                                UpdateFormLoad(
                                               docId: docId,
                                               data: data,
                                             ),
@@ -520,14 +546,12 @@ class _LoadretrieveState extends State<Loadretrieve> {
                                         ),
                                       ),
                                     ),
-                                     IconButton(
+                                    IconButton(
                                       onPressed: () {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) =>
-                                                Invoice(
-                                             
+                                            builder: (context) => Invoice(
                                               data: data,
                                             ),
                                           ),
@@ -614,7 +638,7 @@ class _LoadretrieveState extends State<Loadretrieve> {
                               center: const Offset(0, 0),
                             ),
                           );
-                                                } catch (e) {
+                        } catch (e) {
                           print('Error sharing PDF: $e');
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(

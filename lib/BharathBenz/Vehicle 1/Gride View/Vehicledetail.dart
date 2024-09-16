@@ -1,4 +1,4 @@
-import 'package:e_commerce/BharathBenz/Vehicle%201/Gride%20View/Vehicledetail.dart';
+import 'package:flutter/material.dart';
 import 'package:e_commerce/BharathBenz/Vehicle%201/screens/select/Insuranceselect.dart';
 import 'package:e_commerce/BharathBenz/Vehicle%201/screens/select/Loadselect.dart';
 import 'package:e_commerce/BharathBenz/Vehicle%201/screens/select/PUCSelect.dart';
@@ -9,21 +9,20 @@ import 'package:e_commerce/BharathBenz/Vehicle%201/screens/select/expenseSelect.
 import 'package:e_commerce/BharathBenz/Vehicle%201/screens/select/serviceselect.dart';
 import 'package:e_commerce/BharathBenz/Vehicle%201/screens/select/vehicledetailselect.dart';
 import 'package:e_commerce/constants/colors.dart';
-import 'package:flutter/material.dart';
 
-class BGrideview extends StatefulWidget {
-  const BGrideview({super.key});
+class Vehciledetailgrid extends StatefulWidget {
+  const Vehciledetailgrid({super.key});
 
   @override
-  State<BGrideview> createState() => _BGrideviewState();
+  State<Vehciledetailgrid> createState() => _VehciledetailgridState();
 }
 
-class _BGrideviewState extends State<BGrideview> {
+class _VehciledetailgridState extends State<Vehciledetailgrid> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Bharath Benz'),
+        title: const Text('Vehicle Details'),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -33,21 +32,21 @@ class _BGrideviewState extends State<BGrideview> {
             const SizedBox(height: 30),
             buildRow(
                 context,
-                const Fuelselect(),
-                "Refuel",
-                "assets/images/fuel.jpg",
-                const Serviceselect(),
-                "Service",
-                "assets/images/service.jpg"),
+                const Expenseselect(),
+                "Expense",
+                "assets/images/expense.jpg",
+                const Insuranceselect(),
+                "Insurance",
+                "assets/images/insurance.jpg"),
             const SizedBox(height: 30),
             buildRow(
                 context,
-                const Loadselect(),
-                "Load",
-                "assets/images/load.jpg",
-                const Driverselect(),
-                "Driver",
-                "assets/images/driver.jpg"),
+                const Permitselect(),
+                "Permit",
+                "assets/images/permit.jpg",
+                const Pucselect(),
+                "PUC",
+                "assets/images/PUC.jpg"),
             const SizedBox(height: 30),
             Row(
               children: [
@@ -56,12 +55,12 @@ class _BGrideviewState extends State<BGrideview> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const Vehciledetailgrid()));
+                            builder: (context) => const Vehicledetailselect()));
                   },
                   child: Padding(
                     padding: const EdgeInsets.only(left: 21),
                     child: buildContainer(
-                        "Vehicle  Details", "assets/images/vehicledetails.jpg"),
+                        "Vehicle Info", "assets/images/vehicledetails.jpg"),
                   ),
                 ),
               ],

@@ -28,7 +28,19 @@ class _LoadDetailsState extends State<BLoadDetails> {
   var _deliveryamountcontroller = TextEditingController();
   var _customernamecontroller = TextEditingController();
   var _customernocontroller = TextEditingController();
+  var _dieselcontroller = TextEditingController();
+  var _drivercontroller = TextEditingController();
+  var _paytypecontroller = TextEditingController();
   final TextEditingController _dropController = TextEditingController();
+  bool isOptionAppended = false;
+  String selectedOption = '';
+  String inputText = '';
+  String selectedOption02 = '';
+  final TextEditingController _controller = TextEditingController();
+
+  List<String> options = ['Tons', 'Units'];
+  List<String> options02 = ['Cash', 'Credit'];
+
   List<String> _items = []; // List to hold Firestore data
   String? _selectedItemvehicle; // Variable to hold the selected item
   @override
@@ -42,15 +54,19 @@ class _LoadDetailsState extends State<BLoadDetails> {
     _startpointcontroller.clear();
     _loadpointcontroller.clear();
     _droppointcontroller.clear();
-    _nooftonscontroller.clear();
+    // _nooftonscontroller.clear();
     _loadamountcontroller.clear();
     _deliveryamountcontroller.clear();
     _customernamecontroller.clear();
     _customernocontroller.clear();
     _dropController.clear();
+    _dieselcontroller.clear();
+    _drivercontroller.clear();
+    _paytypecontroller.clear();
+    print(_nooftonscontroller.text + ' $selectedOption');
   }
 
-  void _storeOrUpdateData(String date, String number) async{
+  void _storeOrUpdateData(String date, String number) async {
     if (_startpointcontroller.text.isEmpty ||
         _loadpointcontroller.text.isEmpty ||
         _droppointcontroller.text.isEmpty ||
@@ -59,6 +75,9 @@ class _LoadDetailsState extends State<BLoadDetails> {
         _deliveryamountcontroller.text.isEmpty ||
         _customernamecontroller.text.isEmpty ||
         _datepickController.text.isEmpty ||
+        _drivercontroller.text.isEmpty ||
+        _dieselcontroller.text.isEmpty ||
+        _paytypecontroller.text.isEmpty ||
         _customernocontroller.text.isEmpty) {
       showDialog(
         context: context,
@@ -151,6 +170,9 @@ class _LoadDetailsState extends State<BLoadDetails> {
           _deliveryamountcontroller.text.isEmpty ||
           _customernamecontroller.text.isEmpty ||
           _datepickController.text.isEmpty ||
+          _drivercontroller.text.isEmpty ||
+          _dieselcontroller.text.isEmpty ||
+          _paytypecontroller.text.isEmpty ||
           _customernocontroller.text.isEmpty) {
         showDialog(
           context: context,
@@ -168,17 +190,22 @@ class _LoadDetailsState extends State<BLoadDetails> {
         return;
       } else {
         try {
-          await FirebaseFirestore.instance.collection('bharathbenzloaddetail').add({
+          await FirebaseFirestore.instance
+              .collection('bharathbenzloaddetail')
+              .add({
             'vehiclenumber': _dropController.text,
             'date': _datepickController.text,
             'Start Point': _startpointcontroller.text,
             'Load Point': _loadpointcontroller.text,
             'Drop Point': _droppointcontroller.text,
-            'No Of Tons / Units': _nooftonscontroller.text,
+            'No Of Tons / Units': _nooftonscontroller.text + ' $selectedOption',
             'Load Amount': _loadamountcontroller.text,
+            'paymenttype': _paytypecontroller.text,
             'Delivery Amount': _deliveryamountcontroller.text,
             'Customer Name': _customernamecontroller.text,
-            'Customer Number': _customernocontroller.text
+            'Customer Number': _customernocontroller.text,
+            'driver': _drivercontroller.text,
+            'diesel': _dieselcontroller.text
           });
           Fluttertoast.showToast(
             msg: "Successfully Stored.",
@@ -188,7 +215,6 @@ class _LoadDetailsState extends State<BLoadDetails> {
             textColor: Colors.white,
             fontSize: 16.0,
           );
-
           // Navigate back to the previous page after a delay
           Future.delayed(
               const Duration(seconds: 2), () => Navigator.pop(context));
@@ -229,6 +255,19 @@ class _LoadDetailsState extends State<BLoadDetails> {
             ),
           );
         }
+      }
+    }
+
+    void _appendOption() {
+      // Append the option only if it hasn't been appended already
+      if (!isOptionAppended &&
+          inputText.isNotEmpty &&
+          selectedOption.isNotEmpty) {
+        _controller.text = '$inputText $selectedOption';
+        _controller.selection = TextSelection.fromPosition(
+          TextPosition(offset: _controller.text.length),
+        );
+        isOptionAppended = true; // Mark as appended
       }
     }
 
@@ -371,7 +410,7 @@ class _LoadDetailsState extends State<BLoadDetails> {
                         hintText: 'City/Location',
                         labeltext: '',
                         keyboardType: TextInputType.name,
-                        prefixicon: Icon(Icons.share_location_sharp),
+                        prefixicon: const Icon(Icons.share_location_sharp),
                       ),
                       Padding(
                         padding: EdgeInsets.only(
@@ -389,7 +428,7 @@ class _LoadDetailsState extends State<BLoadDetails> {
                         hintText: 'Type',
                         labeltext: '',
                         keyboardType: TextInputType.name,
-                        prefixicon: Icon(Icons.share_location_sharp),
+                        prefixicon: const Icon(Icons.share_location_sharp),
                       ),
                       Padding(
                         padding: EdgeInsets.only(
@@ -407,7 +446,7 @@ class _LoadDetailsState extends State<BLoadDetails> {
                         hintText: 'Type',
                         labeltext: 'Type',
                         keyboardType: TextInputType.name,
-                        prefixicon: Icon(Icons.share_location_sharp),
+                        prefixicon: const Icon(Icons.share_location_sharp),
                       ),
                       Padding(
                         padding: EdgeInsets.only(
@@ -419,13 +458,43 @@ class _LoadDetailsState extends State<BLoadDetails> {
                             alignment: Alignment.centerLeft,
                             child: Text('No of Tons / Units')),
                       ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _nooftonscontroller,
-                        hintText: 'ItemWeight in Tons',
-                        labeltext: '',
-                        keyboardType: TextInputType.number,
-                      ),
+                      Stack(children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: CustomTextFormField(
+                            width: 320,
+                            controller: _nooftonscontroller,
+                            hintText: "",
+                            labeltext: "Item's in $selectedOption",
+                            keyboardType: TextInputType.number,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              right: 30, top: 10, bottom: 6),
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: DropdownButton<String>(
+                              hint: const Text('Select'),
+                              value: selectedOption.isEmpty
+                                  ? null
+                                  : selectedOption,
+                              items: options.map((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                              onChanged: (newValue) {
+                                setState(() {
+                                  selectedOption = newValue!;
+                                  _appendOption();
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                      ]),
                       Padding(
                         padding: EdgeInsets.only(
                             top: w * 0.03,
@@ -468,6 +537,54 @@ class _LoadDetailsState extends State<BLoadDetails> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
+                            child: Text('Payment Type')),
+                      ),
+                      Container(
+                        width: 320,
+                        child: TextField(
+                          controller: _paytypecontroller,
+                          readOnly: true, // Make the text field read-only
+                          decoration: InputDecoration(
+                            labelText: '',
+                            suffixIcon: DropdownButton<String>(
+                              hint: const Text(''),
+                              value: selectedOption02.isEmpty
+                                  ? null
+                                  : selectedOption02,
+                              items: options02.map((String value02) {
+                                return DropdownMenuItem<String>(
+                                  value: value02,
+                                  child: Text(value02),
+                                );
+                              }).toList(),
+                              onChanged: (newValue) {
+                                setState(() {
+                                  selectedOption02 = newValue!;
+                                  _paytypecontroller.text = newValue;
+                                });
+                              },
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: orange),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: black),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            border: const OutlineInputBorder(
+                                borderSide: BorderSide(color: orange)),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
                             child: Text('Customer Name')),
                       ),
                       CustomTextFormField(
@@ -488,10 +605,47 @@ class _LoadDetailsState extends State<BLoadDetails> {
                             child: Text('Customer No')),
                       ),
                       Padding(
-                        padding: EdgeInsets.only(bottom: w * 0.044),
+                        padding: EdgeInsets.only(bottom: w * 0.0044),
                         child: CustomTextFormField(
                           width: 320,
                           controller: _customernocontroller,
+                          hintText: 'Type',
+                          labeltext: '',
+                          keyboardType: TextInputType.number,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Driver')),
+                      ),
+                      CustomTextFormField(
+                        width: 320,
+                        controller: _drivercontroller,
+                        hintText: 'Type',
+                        labeltext: '',
+                        keyboardType: TextInputType.number,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Diesel')),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(bottom: w * 0.044),
+                        child: CustomTextFormField(
+                          width: 320,
+                          controller: _dieselcontroller,
                           hintText: 'Type',
                           labeltext: '',
                           keyboardType: TextInputType.number,
@@ -530,7 +684,7 @@ class _LoadDetailsState extends State<BLoadDetails> {
                     textColor: black,
                     fontSize: 20,
                     onTap: () {
-                     clear();
+                      clear();
                     },
                     color: black,
                   ),
