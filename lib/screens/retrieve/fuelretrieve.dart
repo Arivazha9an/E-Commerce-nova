@@ -224,13 +224,14 @@ class _Fuelretrieve2State extends State<Fuelretrieve2> {
               child: pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  pw.Text('Vehicle No: ${data['vehiclenumber'] ?? ''}'),
+                pw.Text('Vehicle No: ${data['vehiclenumber'] ?? ''}'),
                   pw.Text('Date: ${data['date'] ?? ''}'),
                   pw.Text('Start Km: ${data['Start KM'] ?? ''}'),
                   pw.Text('Price: ${data['Price'] ?? ''}'),
                   pw.Text('Liters: ${data['Liter'] ?? ''}'),
                   pw.Text('Place: ${data['Place'] ?? ''}'),
                   pw.Text('End KM: ${data['End Km'] ?? ''}'),
+                  pw.Text('Mileage: ${data['Mileage'] ?? ''}'),
                   pw.Divider(),
                 ],
               ),
@@ -387,6 +388,7 @@ class _Fuelretrieve2State extends State<Fuelretrieve2> {
                       String liter = data['Liter'] ?? '';
                       String place = data['Place'] ?? '';
                       String endKm = data['End Km'] ?? '';
+                      String mileage = data['Mileage'] ?? '';
                       String docId = documents[i].id;
 
                       return Padding(
@@ -445,6 +447,12 @@ class _Fuelretrieve2State extends State<Fuelretrieve2> {
                                   children: [
                                     const Text('End Km: '),
                                     Text(endKm),
+                                  ],
+                                ),
+                                  Row(
+                                  children: [
+                                    const Text('Mileage: '),
+                                    Text(mileage),
                                   ],
                                 ),
                                 const Spacer(),

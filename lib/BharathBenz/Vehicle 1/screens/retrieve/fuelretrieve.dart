@@ -54,6 +54,7 @@ class _FuelRetrieveState extends State<FuelRetrieve> {
     _pageController.dispose();
     super.dispose();
   }
+
   Future<void> _fetchItems() async {
     try {
       // Fetch data from Firestore (replace 'collectionName' and 'fieldName' with your actual Firestore collection and field)
@@ -228,6 +229,7 @@ class _FuelRetrieveState extends State<FuelRetrieve> {
                   pw.Text('Liters: ${data['Liter'] ?? ''}'),
                   pw.Text('Place: ${data['Place'] ?? ''}'),
                   pw.Text('End KM: ${data['End Km'] ?? ''}'),
+                  pw.Text('Mileage: ${data['Mileage'] ?? ''}'),
                   pw.Divider(),
                 ],
               ),
@@ -384,13 +386,14 @@ class _FuelRetrieveState extends State<FuelRetrieve> {
                       String liter = data['Liter'] ?? '';
                       String place = data['Place'] ?? '';
                       String endKm = data['End Km'] ?? '';
+                      String mileage = data['Mileage'] ?? '';
                       String docId = documents[i].id;
 
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Container(
                           width: 100,
-                          height: 210,
+                          height: 240,
                           decoration: BoxDecoration(
                               borderRadius:
                                   const BorderRadius.all(Radius.circular(10)),
@@ -442,6 +445,12 @@ class _FuelRetrieveState extends State<FuelRetrieve> {
                                   children: [
                                     const Text('End Km: '),
                                     Text(endKm),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    const Text('Mileage: '),
+                                    Text(mileage),
                                   ],
                                 ),
                                 const Spacer(),
@@ -561,7 +570,7 @@ class _FuelRetrieveState extends State<FuelRetrieve> {
                               center: const Offset(0, 0),
                             ),
                           );
-                                                } catch (e) {
+                        } catch (e) {
                           print('Error sharing PDF: $e');
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(

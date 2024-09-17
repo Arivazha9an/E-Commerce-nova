@@ -230,12 +230,16 @@ class _LoadretrieveState extends State<Loaddispatchretrieve> {
                   pw.Text('Start Point: ${data['Start Point'] ?? ''}'),
                   pw.Text('Load Point: ${data['Load Point'] ?? ''}'),
                   pw.Text('Drop Point: ${data['Drop Point'] ?? ''}'),
-                  pw.Text('No of Tons: ${data['No Of Tons / Units'] ?? ''}'),
+                  pw.Text('No of Tons / Units: ${data['No Of Tons / Units'] ?? ''}'),
                   pw.Text('Load amount: ${data['Load Amount'] ?? ''}'),
                   pw.Text('Delivey Amount: ${data['Delivery Amount'] ?? ''}'),
+                  pw.Text('Payment Type: ${data['paymenttype'] ?? ''}'),
                   pw.Text('Customer Name: ${data['Customer Name'] ?? ''}'),
                   pw.Text('Customer Number: ${data['Customer Number'] ?? ''}'),
+                  pw.Text('Driver: ${data['driver'] ?? ''}'),
+                  pw.Text('Diesel: ${data['diesel'] ?? ''}'),
                   pw.Divider(),
+                
                 ],
               ),
             );
@@ -383,7 +387,7 @@ class _LoadretrieveState extends State<Loaddispatchretrieve> {
                     itemBuilder: (context, i) {
                       Map<String, dynamic> data =
                           documents[i].data() as Map<String, dynamic>;
-                      String vehicleno = data['vehiclenumber'] ?? '';
+                       String vehicleno = data['vehiclenumber'] ?? '';
                       String date = data['date'] ?? '';
                       String startPoint = data['Start Point'] ?? '';
                       String loadPoint = data['Load Point'] ?? '';
@@ -393,13 +397,16 @@ class _LoadretrieveState extends State<Loaddispatchretrieve> {
                       String deliveryAmount = data['Delivery Amount'] ?? '';
                       String customerName = data['Customer Name'] ?? '';
                       String customerNo = data['Customer Number'] ?? '';
+                      String driver = data['driver'] ?? '';
+                      String diesel = data['diesel'] ?? '';
+                      String paymenttype = data['paymenttype'] ?? '';
                       String docId = documents[i].id;
 
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Container(
                           width: 100,
-                          height: 270,
+                          height: 340,
                           decoration: BoxDecoration(
                               borderRadius:
                                   const BorderRadius.all(Radius.circular(10)),
@@ -425,50 +432,68 @@ class _LoadretrieveState extends State<Loaddispatchretrieve> {
                                 ),
                                 Row(
                                   children: [
-                                    Text('Start Point  = '),
+                                    const Text('Start Point  = '),
                                     Text(startPoint),
                                   ],
                                 ),
                                 Row(
                                   children: [
-                                    Text('Load Point  = '),
+                                    const Text('Load Point  = '),
                                     Text(loadPoint),
                                   ],
                                 ),
                                 Row(
                                   children: [
-                                    Text('Drop Point = '),
+                                    const Text('Drop Point = '),
                                     Text(dropPoint),
                                   ],
                                 ),
                                 Row(
                                   children: [
-                                    Text('No os Tons= '),
+                                    const Text('No of Tons / Units = '),
                                     Text(tons),
                                   ],
                                 ),
                                 Row(
                                   children: [
-                                    Text('Load Amount = '),
+                                    const Text('Load Amount = '),
                                     Text(loadAmount),
                                   ],
                                 ),
                                 Row(
                                   children: [
-                                    Text('Delivery Amount = '),
+                                    const Text('Payment Type = '),
+                                    Text(paymenttype),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    const Text('Delivery Amount = '),
                                     Text(deliveryAmount),
                                   ],
                                 ),
                                 Row(
                                   children: [
-                                    Text('Customer Name = '),
+                                    const Text('Customer Name = '),
                                     Text(customerName),
                                   ],
                                 ),
                                 Row(
                                   children: [
-                                    Text('Customer No= '),
+                                    const Text('Customer No= '),
                                     Text(customerNo),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    const Text('Driver = '),
+                                    Text(driver),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    const Text('Diesel= '),
+                                    Text(diesel),
                                   ],
                                 ),
                                 const Spacer(),

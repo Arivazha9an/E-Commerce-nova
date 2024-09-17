@@ -318,6 +318,11 @@ class _UpdateFormState extends State<UpdateFormT> {
                         textColor: white,
                         fontSize: 18,
                         onTap: () {
+                          int start = int.tryParse(startKmController.text) ?? 0;
+                          int end = int.tryParse(endKmController.text) ?? 0;
+                          int fuel = int.tryParse(literController.text) ?? 0;
+                          final distance = end - start;
+                          final milage = distance / fuel;
                           // Update Firestore document with new values
                           FirebaseFirestore.instance
                               .collection('tauruszrefuel')
@@ -330,6 +335,7 @@ class _UpdateFormState extends State<UpdateFormT> {
                             'Liter': literController.text,
                             'Place': placeController.text,
                             'End Km': endKmController.text,
+                             'Mileage': milage.toString()
                           }).then((_) {
                             Navigator.pop(context); // Go back after updating
                           });

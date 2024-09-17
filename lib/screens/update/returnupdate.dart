@@ -30,11 +30,25 @@ class _UpdateFormState extends State<Returnupdate> {
   late TextEditingController _customernamecontroller;
   late TextEditingController _customernocontroller;
   late TextEditingController _dropController;
+  late TextEditingController _drivercontroller;
+  late TextEditingController _dieselcontroller;
+  late TextEditingController _paytypecontroller;
+
   late String date;
   late String amount;
+  bool isOptionAppended = false;
+  String selectedOption = '';
+  String inputText = '';
+  String selectedOption02 = '';
+  final TextEditingController _controller = TextEditingController();
+
+  List<String> options = ['Tons', 'Units'];
+  List<String> options02 = ['Cash', 'Credit'];
 
   List<String> _items = []; // List to hold Firestore data
-  String? _selectedItemvehicle; // Variable to hold the selected item
+  String? _selectedItemvehicle;
+
+  // Variable to hold the selected item
   @override
   @override
   void initState() {
@@ -61,6 +75,12 @@ class _UpdateFormState extends State<Returnupdate> {
         TextEditingController(text: widget.data['Customer Name'] ?? '');
     _customernocontroller =
         TextEditingController(text: widget.data['Customer Number'] ?? '');
+    _drivercontroller =
+        TextEditingController(text: widget.data['driver'] ?? '');
+    _dieselcontroller =
+        TextEditingController(text: widget.data['diesel'] ?? '');
+    _paytypecontroller =
+        TextEditingController(text: widget.data['paymenttype'] ?? '');
   }
 
   @override
@@ -354,7 +374,7 @@ class _UpdateFormState extends State<Returnupdate> {
                         hintText: 'City/Location',
                         labeltext: '',
                         keyboardType: TextInputType.name,
-                        prefixicon: Icon(Icons.share_location_sharp),
+                        prefixicon: const Icon(Icons.share_location_sharp),
                       ),
                       Padding(
                         padding: EdgeInsets.only(
@@ -372,7 +392,7 @@ class _UpdateFormState extends State<Returnupdate> {
                         hintText: 'Type',
                         labeltext: '',
                         keyboardType: TextInputType.name,
-                        prefixicon: Icon(Icons.share_location_sharp),
+                        prefixicon: const Icon(Icons.share_location_sharp),
                       ),
                       Padding(
                         padding: EdgeInsets.only(
@@ -390,7 +410,7 @@ class _UpdateFormState extends State<Returnupdate> {
                         hintText: 'Type',
                         labeltext: 'Type',
                         keyboardType: TextInputType.name,
-                        prefixicon: Icon(Icons.share_location_sharp),
+                        prefixicon: const Icon(Icons.share_location_sharp),
                       ),
                       Padding(
                         padding: EdgeInsets.only(
@@ -402,13 +422,43 @@ class _UpdateFormState extends State<Returnupdate> {
                             alignment: Alignment.centerLeft,
                             child: Text('No of Tons / Units')),
                       ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _nooftonscontroller,
-                        hintText: 'ItemWeight in Tons',
-                        labeltext: '',
-                        keyboardType: TextInputType.number,
-                      ),
+                      Stack(children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: CustomTextFormField(
+                            width: 320,
+                            controller: _nooftonscontroller,
+                            hintText: "",
+                            labeltext: "Item's in $selectedOption",
+                            keyboardType: TextInputType.number,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              right: 30, top: 10, bottom: 6),
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: DropdownButton<String>(
+                              hint: const Text('Select'),
+                              value: selectedOption.isEmpty
+                                  ? null
+                                  : selectedOption,
+                              items: options.map((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                              onChanged: (newValue) {
+                                setState(() {
+                                  selectedOption = newValue!;
+                                
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                      ]),
                       Padding(
                         padding: EdgeInsets.only(
                             top: w * 0.03,
@@ -451,6 +501,54 @@ class _UpdateFormState extends State<Returnupdate> {
                             bottom: w * 0.02),
                         child: const Align(
                             alignment: Alignment.centerLeft,
+                            child: Text('Payment Type')),
+                      ),
+                      Container(
+                        width: 320,
+                        child: TextField(
+                          controller: _paytypecontroller,
+                          readOnly: true, // Make the text field read-only
+                          decoration: InputDecoration(
+                            labelText: '',
+                            suffixIcon: DropdownButton<String>(
+                              hint: const Text(''),
+                              value: selectedOption02.isEmpty
+                                  ? null
+                                  : selectedOption02,
+                              items: options02.map((String value02) {
+                                return DropdownMenuItem<String>(
+                                  value: value02,
+                                  child: Text(value02),
+                                );
+                              }).toList(),
+                              onChanged: (newValue) {
+                                setState(() {
+                                  selectedOption02 = newValue!;
+                                  _paytypecontroller.text = newValue;
+                                });
+                              },
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: orange),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: black),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            border: const OutlineInputBorder(
+                                borderSide: BorderSide(color: orange)),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
                             child: Text('Customer Name')),
                       ),
                       CustomTextFormField(
@@ -471,10 +569,47 @@ class _UpdateFormState extends State<Returnupdate> {
                             child: Text('Customer No')),
                       ),
                       Padding(
-                        padding: EdgeInsets.only(bottom: w * 0.044),
+                        padding: EdgeInsets.only(bottom: w * 0.0044),
                         child: CustomTextFormField(
                           width: 320,
                           controller: _customernocontroller,
+                          hintText: 'Type',
+                          labeltext: '',
+                          keyboardType: TextInputType.number,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Driver')),
+                      ),
+                      CustomTextFormField(
+                        width: 320,
+                        controller: _drivercontroller,
+                        hintText: 'Type',
+                        labeltext: '',
+                        keyboardType: TextInputType.number,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Diesel')),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(bottom: w * 0.044),
+                        child: CustomTextFormField(
+                          width: 320,
+                          controller: _dieselcontroller,
                           hintText: 'Type',
                           labeltext: '',
                           keyboardType: TextInputType.number,
@@ -515,6 +650,9 @@ class _UpdateFormState extends State<Returnupdate> {
                     .collection('taurusreturn')
                     .doc(widget.docId)
                     .update({
+                   'driver': _drivercontroller.text,
+                  'diesel': _dieselcontroller.text,
+                  'paymenttype': _paytypecontroller.text,
                   'vehiclenumber': _dropController.text,
                   'date': dateController.text,
                   'Start Point': _startpointcontroller.text,

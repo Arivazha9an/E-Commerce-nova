@@ -228,7 +228,7 @@ class _LoadretrieveState extends State<Loadretrieve> {
                   pw.Text('Start Point: ${data['Start Point'] ?? ''}'),
                   pw.Text('Load Point: ${data['Load Point'] ?? ''}'),
                   pw.Text('Drop Point: ${data['Drop Point'] ?? ''}'),
-                  pw.Text('No of Tons: ${data['No Of Tons / Units'] ?? ''}'),
+                  pw.Text('No of Tons / Units: ${data['No Of Tons / Units'] ?? ''}'),
                   pw.Text('Load amount: ${data['Load Amount'] ?? ''}'),
                   pw.Text('Delivey Amount: ${data['Delivery Amount'] ?? ''}'),
                   pw.Text('Payment Type: ${data['paymenttype'] ?? ''}'),
@@ -270,7 +270,7 @@ class _LoadretrieveState extends State<Loadretrieve> {
     var w = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Refuel Data', isGoBack: true),
+      appBar: const CustomAppBar(title: 'Load Data', isGoBack: true),
       body: Column(
         children: [
           Padding(
@@ -448,7 +448,7 @@ class _LoadretrieveState extends State<Loadretrieve> {
                                 ),
                                 Row(
                                   children: [
-                                    const Text('No of Tons= '),
+                                    const Text('No of Tons / Units = '),
                                     Text(tons),
                                   ],
                                 ),

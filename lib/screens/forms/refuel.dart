@@ -90,6 +90,11 @@ class _FuelState extends State<Fuel> {
         return;
       } else {
         try {
+            int start = int.tryParse(_startKmcontroller.text) ?? 0;
+          int end = int.tryParse(_endKMcontroller.text) ?? 0;
+          int fuel = int.tryParse(_literscontroller.text) ?? 0;
+          final distance = end - start;
+          final milage = distance / fuel;
           await FirebaseFirestore.instance.collection('tauruszrefuel').add({
             'vehiclenumber': _dropController.text,
             'date': _datepickController.text,
@@ -97,7 +102,8 @@ class _FuelState extends State<Fuel> {
             'Price': _priceontroller.text,
             'Liter': _literscontroller.text,
             'Place': _placecontroller.text,
-            'End Km': _endKMcontroller.text
+            'End Km': _endKMcontroller.text,
+             'Mileage':milage.toString()
           });
           Fluttertoast.showToast(
             msg: "Successfully Stored.",

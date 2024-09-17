@@ -68,7 +68,7 @@ class _UpdateFormState extends State<UpdateForm> {
   Future<void> _fetchItems() async {
     try {
       // Fetch data from Firestore (replace 'collectionName' and 'fieldName' with your actual Firestore collection and field)
-        QuerySnapshot snapshot = await FirebaseFirestore.instance
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('bharathbenzvehicledetail')
           .get();
 
@@ -318,6 +318,11 @@ class _UpdateFormState extends State<UpdateForm> {
                         textColor: white,
                         fontSize: 18,
                         onTap: () {
+                          int start = int.tryParse(startKmController.text) ?? 0;
+                          int end = int.tryParse(endKmController.text) ?? 0;
+                          int fuel = int.tryParse(literController.text) ?? 0;
+                          final distance = end - start;
+                          final milage = distance / fuel;
                           // Update Firestore document with new values
                           FirebaseFirestore.instance
                               .collection('bharthbenzrefuel')
@@ -330,6 +335,7 @@ class _UpdateFormState extends State<UpdateForm> {
                             'Liter': literController.text,
                             'Place': placeController.text,
                             'End Km': endKmController.text,
+                            'Mileage': milage.toString()
                           }).then((_) {
                             Navigator.pop(context); // Go back after updating
                           });

@@ -6,6 +6,7 @@ import 'package:e_commerce/widgets/custombuttom%20outlined.dart';
 import 'package:e_commerce/widgets/custombutton.dart';
 import 'package:e_commerce/widgets/customtextform.dart';
 import 'package:e_commerce/widgets/customtextformwithicon.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
@@ -153,7 +154,9 @@ class _LoadDetailsState extends State<BLoadDetails> {
         _items = items; // Update the state with fetched items
       });
     } catch (e) {
-      print('Error fetching data from Firestore: $e'); // Handle errors
+      if (kDebugMode) {
+        print('Error fetching data from Firestore: $e');
+      } // Handle errors
     }
   }
 
@@ -547,7 +550,7 @@ class _LoadDetailsState extends State<BLoadDetails> {
                           decoration: InputDecoration(
                             labelText: '',
                             suffixIcon: DropdownButton<String>(
-                              hint: const Text(''),
+                              hint: const Text('select'),
                               value: selectedOption02.isEmpty
                                   ? null
                                   : selectedOption02,

@@ -24,6 +24,7 @@ class _FuelState extends State<BFuel> {
   var _literscontroller = TextEditingController();
   var _placecontroller = TextEditingController();
   var _endKMcontroller = TextEditingController();
+  
   final TextEditingController _dropController = TextEditingController();
   List<String> _items = []; // List to hold Firestore data
   String? _selectedItemvehicle; // Variable to hold the selected item
@@ -89,6 +90,12 @@ class _FuelState extends State<BFuel> {
         return;
       } else {
         try {
+          int start = int.tryParse(_startKmcontroller.text) ?? 0;
+          int end = int.tryParse(_endKMcontroller.text) ?? 0;
+          int fuel = int.tryParse(_literscontroller.text) ?? 0;
+          final distance = end - start ;
+          final  milage = distance / fuel ;
+          print(milage);
           await FirebaseFirestore.instance.collection('bharthbenzrefuel').add({
             'vehiclenumber': _dropController.text,
             'date': _datepickController.text,
@@ -96,7 +103,8 @@ class _FuelState extends State<BFuel> {
             'Price': _priceontroller.text,
             'Liter': _literscontroller.text,
             'Place': _placecontroller.text,
-            'End Km': _endKMcontroller.text
+            'End Km': _endKMcontroller.text,
+            'Mileage':milage.toString()
           });
           Fluttertoast.showToast(
             msg: "Successfully Stored.",
@@ -190,7 +198,7 @@ class _FuelState extends State<BFuel> {
                             alignment: Alignment.centerLeft,
                             child: Text('Vehicle Number')),
                       ),
-                      Container(
+                      SizedBox(
                         width: 320,
                         child: TextField(
                           controller: _dropController,
@@ -382,6 +390,7 @@ class _FuelState extends State<BFuel> {
                       textColor: white,
                       fontSize: 20,
                       onTap: () {
+                       
                         _saveData();
                       }),
                 ),
