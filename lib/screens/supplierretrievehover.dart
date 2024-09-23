@@ -1,4 +1,5 @@
 import 'package:e_commerce/screens/forms/Supplierdetails.dart';
+import 'package:e_commerce/screens/update/updateformsuppier.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -46,14 +47,18 @@ class _SupplierretrievehoverState extends State<Supplierretrievehover> {
 
       setState(() {
         _allDataList = querySnapshot.docs.map((doc) {
-          return doc.data() as Map<String, dynamic>;
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+          data['id'] = doc.id; // Store document ID in the data map
+          return data;
         }).toList();
         _filteredDataList = _allDataList; // Initialize with all data
-        _isLoading = false; // Stop loading once data is fetched
+        _isLoading = false;
+
+        // Stop loading once data is fetched
       });
     } catch (e) {
       if (kDebugMode) {
-        print('Error fetching customer details: $e');
+        print('Error fetching supplierdetails details: $e');
       }
       setState(() {
         _isLoading = false; // Stop loading on error as well
@@ -248,20 +253,38 @@ class _SupplierretrievehoverState extends State<Supplierretrievehover> {
   }
 
   Widget _buildSearchBar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: TextFormField(
-        controller: _searchController,
-        decoration: InputDecoration(
-          hintText: 'Search',
-          hintStyle: const TextStyle(color: grey),
-          suffixIcon: const Icon(Icons.search, color: black),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(17),
-            borderSide: const BorderSide(color: black),
+    return Row(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            width: 280,
+            child: Column(
+              children: [
+                TextFormField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: 'Search',
+                    hintStyle: const TextStyle(color: grey),
+                    suffixIcon: const Icon(Icons.search, color: black),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(17),
+                      borderSide: const BorderSide(color: black),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
+        IconButton(
+            onPressed: () {
+              setState(() {
+                _fetchData();
+              });
+            },
+            icon: Icon(Icons.refresh))
+      ],
     );
   }
 
@@ -279,11 +302,18 @@ class _SupplierretrievehoverState extends State<Supplierretrievehover> {
               child: CustomFieldButton(
                 name: _filteredDataList[index]['Name'],
                 ontap: () {
+                  // Access the document ID from _filteredDataList
+                  String docId = _filteredDataList[index]
+                      ['id']; // 'id' is already set in _fetchData
+
+                  // Navigate to DetailPage and pass both data and docId
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          DetailPage(data: _filteredDataList[index]),
+                      builder: (context) => DetailPage(
+                        data: _filteredDataList[index], // Pass data
+                        documentId: docId, // Pass document ID
+                      ),
                     ),
                   );
                 },
@@ -322,34 +352,103 @@ class _SupplierretrievehoverState extends State<Supplierretrievehover> {
 
 class DetailPage extends StatelessWidget {
   final Map<String, dynamic> data;
+  final String documentId; // Document ID for deleting
 
-  DetailPage({required this.data});
+  DetailPage({required this.data, required this.documentId});
 
   @override
   Widget build(BuildContext context) {
-    var w = MediaQuery.sizeOf(context).width;
+    Color borderColor =
+        (data['Not_Paid'] == 0.toString()) ? Colors.green : Colors.red;
+    double width = (data['Not_Paid'] == 0.toString()) ? 2 : 4;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Customer Information'),
+        title: const Text('Supplier Information'),
       ),
       body: Center(
         child: Container(
-          height: 150,
+          height: 200,
           margin: const EdgeInsets.all(20.0),
           padding: const EdgeInsets.all(10.0),
           decoration: BoxDecoration(
             borderRadius: const BorderRadius.all(Radius.circular(10)),
-            border: Border.all(color: orange, width: w * 0.005),
+            border: Border.all(color: borderColor, width: width),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildDetailRow('Customer Name:', data['Name']),
+              _buildDetailRow('Supplier Name:', data['Name']),
               _buildDetailRow('Place:', data['Place']),
               _buildDetailRow('Material:', data['Material']),
               _buildDetailRow('Paid:', data['Paid']),
               _buildDetailRow('Not Paid:', data['Not_Paid']),
               _buildDetailRow('Payment:', data['Payment']),
+              Center(
+                child: Row(
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => UpdateFormSupplier(
+                              docId: documentId,
+                              data: data,
+                            ),
+                          ),
+                        );
+                      },
+                      icon: Container(
+                        height: 35,
+                        width: 35,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(40),
+                            color: orange,
+                            border: Border.all(color: orange)),
+                        child: const Icon(
+                          Icons.edit,
+                          color: white,
+                          // size: 30,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        _showDeleteConfirmationDialog(context);
+                      },
+                      icon: Container(
+                        height: 35,
+                        width: 35,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(40),
+                            color: Colors.red,
+                            border: Border.all(color: Colors.red)),
+                        child: const Icon(
+                          Icons.delete,
+                          color: white,
+                          // size: 30,
+                        ),
+                      ),
+                    ),
+                    // IconButton(
+                    //   onPressed: () {},
+                    //   icon: Container(
+                    //     height: 35,
+                    //     width: 35,
+                    //     decoration: BoxDecoration(
+                    //         borderRadius: BorderRadius.circular(40),
+                    //         color: Colors.green.shade400,
+                    //         border: Border.all(color: Colors.red)),
+                    //     child: const Icon(
+                    //       Icons.share,
+                    //       color: white,
+                    //       // size: 30,
+                    //     ),
+                    //   ),
+                    // )
+                  ],
+                ),
+              )
             ],
           ),
         ),
@@ -364,5 +463,60 @@ class DetailPage extends StatelessWidget {
         Text('$value'),
       ],
     );
+  }
+
+  // Show confirmation dialog for deletion
+  void _showDeleteConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text("Delete Confirmation"),
+          content: const Text("Are you sure you want to delete this supplier?"),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Cancel"),
+              onPressed: () {
+                Navigator.of(dialogContext).pop(); // Close the dialog
+              },
+            ),
+            TextButton(
+              child: const Text("Delete"),
+              onPressed: () {
+                Navigator.of(dialogContext).pop(); // Close the dialog first
+                _deleteCustomer(
+                    context); // Proceed to delete after dialog is closed
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Delete customer document from Firestore
+  Future<void> _deleteCustomer(BuildContext context) async {
+    try {
+      // Delete the customer document
+      await FirebaseFirestore.instance
+          .collection('supplierdetails')
+          .doc(documentId)
+          .delete();
+
+      // Show the SnackBar using root context
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Supplier deleted successfully")),
+      );
+
+      // Wait for a brief moment so the SnackBar is visible before popping
+      Future.delayed(const Duration(milliseconds: 500), () {
+        Navigator.of(context).pop(); // Go back to the previous screen
+      });
+    } catch (e) {
+      // Show an error message if the delete fails
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error deleting Supplier: $e")),
+      );
+    }
   }
 }

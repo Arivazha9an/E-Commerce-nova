@@ -224,7 +224,7 @@ class _Fuelretrieve2State extends State<Fuelretrieve2> {
               child: pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                pw.Text('Vehicle No: ${data['vehiclenumber'] ?? ''}'),
+                  pw.Text('Vehicle No: ${data['vehiclenumber'] ?? ''}'),
                   pw.Text('Date: ${data['date'] ?? ''}'),
                   pw.Text('Start Km: ${data['Start KM'] ?? ''}'),
                   pw.Text('Price: ${data['Price'] ?? ''}'),
@@ -395,7 +395,7 @@ class _Fuelretrieve2State extends State<Fuelretrieve2> {
                         padding: const EdgeInsets.all(8.0),
                         child: Container(
                           width: 100,
-                          height: 210,
+                          height: 250,
                           decoration: BoxDecoration(
                               borderRadius:
                                   const BorderRadius.all(Radius.circular(10)),
@@ -449,7 +449,7 @@ class _Fuelretrieve2State extends State<Fuelretrieve2> {
                                     Text(endKm),
                                   ],
                                 ),
-                                  Row(
+                                Row(
                                   children: [
                                     const Text('Mileage: '),
                                     Text(mileage),

@@ -1,7 +1,5 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/updateforms/loadupdate.dart';
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/screens/invoice.dart/loadreturninvoice.dart';
 import 'package:e_commerce/screens/update/returnupdate.dart';
@@ -138,17 +136,14 @@ class _LoadretrieveState extends State<Loadreturnretrieve> {
 
   Future<void> _fetchData(int pageIndex) async {
     if (_isLoading || !_hasMoreData) return;
-
     setState(() {
       _isLoading = true;
     });
-
     // Start with the base query
     Query query = FirebaseFirestore.instance
         .collection('taurusreturn')
         .orderBy('date')
         .limit(10);
-
     // Apply date filters if selected
     if (_startDate != null) {
       query = query.where('date',

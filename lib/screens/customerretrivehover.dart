@@ -1,11 +1,16 @@
+import 'dart:io';
+
+import 'package:e_commerce/screens/update/customerupdate.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/screens/forms/CustomerDetails.dart';
 import 'package:e_commerce/widgets/TextfieldwithButton.dart';
-
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/widgets.dart' as pw;
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class CustomerRetriveHover extends StatefulWidget {
   const CustomerRetriveHover({super.key});
@@ -47,10 +52,14 @@ class _CustomerRetriveHoverState extends State<CustomerRetriveHover> {
 
       setState(() {
         _allDataList = querySnapshot.docs.map((doc) {
-          return doc.data() as Map<String, dynamic>;
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+          data['id'] = doc.id; // Store document ID in the data map
+          return data;
         }).toList();
         _filteredDataList = _allDataList; // Initialize with all data
-        _isLoading = false; // Stop loading once data is fetched
+        _isLoading = false;
+
+        // Stop loading once data is fetched
       });
     } catch (e) {
       if (kDebugMode) {
@@ -249,20 +258,38 @@ class _CustomerRetriveHoverState extends State<CustomerRetriveHover> {
   }
 
   Widget _buildSearchBar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: TextFormField(
-        controller: _searchController,
-        decoration: InputDecoration(
-          hintText: 'Search',
-          hintStyle: const TextStyle(color: grey),
-          suffixIcon: const Icon(Icons.search, color: black),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(17),
-            borderSide: const BorderSide(color: black),
+    return Row(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            width: 280,
+            child: Column(
+              children: [
+                TextFormField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: 'Search',
+                    hintStyle: const TextStyle(color: grey),
+                    suffixIcon: const Icon(Icons.search, color: black),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(17),
+                      borderSide: const BorderSide(color: black),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
+        IconButton(
+            onPressed: () {
+              setState(() {
+                _fetchData();
+              });
+            },
+            icon: Icon(Icons.refresh))
+      ],
     );
   }
 
@@ -280,11 +307,18 @@ class _CustomerRetriveHoverState extends State<CustomerRetriveHover> {
               child: CustomFieldButton(
                 name: _filteredDataList[index]['Name'],
                 ontap: () {
+                  // Access the document ID from _filteredDataList
+                  String docId = _filteredDataList[index]
+                      ['id']; // 'id' is already set in _fetchData
+
+                  // Navigate to DetailPage and pass both data and docId
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          DetailPage(data: _filteredDataList[index]),
+                      builder: (context) => DetailPage(
+                        data: _filteredDataList[index], // Pass data
+                        documentId: docId, // Pass document ID
+                      ),
                     ),
                   );
                 },
@@ -323,24 +357,78 @@ class _CustomerRetriveHoverState extends State<CustomerRetriveHover> {
 
 class DetailPage extends StatelessWidget {
   final Map<String, dynamic> data;
+  final String documentId; // Document ID for deleting
 
-  DetailPage({required this.data});
+  DetailPage({required this.data, required this.documentId});
 
   @override
   Widget build(BuildContext context) {
-    var w = MediaQuery.sizeOf(context).width;
+    Color borderColor =
+        (data['Not_Paid'] == 0.toString()) ? Colors.green : Colors.red;
+    double width = (data['Not_Paid'] == 0.toString()) ? 2 : 4;
+
+    Future<void> _generatePdf() async {
+      final pdf = pw.Document();
+
+      pdf.addPage(
+        pw.Page(
+          build: (pw.Context context) => pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Center(
+                  child: pw.Text('Customer Data',
+                      style: pw.TextStyle(fontSize: 24))),
+              pw.SizedBox(height: 16),
+              pw.Text('Customer Name: ${data['Name'] ?? ''}'),
+              pw.Text('Place: ${data['Place'] ?? ''}'),
+              pw.Text('Material: ${data['Material'] ?? ''}'),
+              pw.Text('Payment: ${data['Payment'] ?? ''}'),
+              pw.Text('Paid: ${data['Paid'] ?? ''}'),
+              pw.Text('Not Paid: ${data['Not_Paid'] ?? ''}'),
+            ],
+          ),
+        ),
+      );
+
+      try {
+        // Request storage permission if not granted
+        if (!await Permission.storage.isGranted) {
+          await Permission.storage.request();
+        }
+
+        // Get directory for saving the PDF
+        final directory = await getApplicationDocumentsDirectory();
+        final path =
+            '${directory.path}/customer_data_${DateTime.now().toIso8601String()}.pdf';
+
+        // Save the PDF to file
+        final file = File(path);
+        await file.writeAsBytes(await pdf.save());
+
+        // Share or open the PDF (optional)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('PDF saved: $path')),
+        );
+      } catch (e) {
+        print('Error generating PDF: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error generating PDF: $e')),
+        );
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Customer Information'),
       ),
       body: Center(
         child: Container(
-          height: 150,
+          height: 200,
           margin: const EdgeInsets.all(20.0),
           padding: const EdgeInsets.all(10.0),
           decoration: BoxDecoration(
             borderRadius: const BorderRadius.all(Radius.circular(10)),
-            border: Border.all(color: orange, width: w * 0.005),
+            border: Border.all(color: borderColor, width: width),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -351,6 +439,70 @@ class DetailPage extends StatelessWidget {
               _buildDetailRow('Paid:', data['Paid']),
               _buildDetailRow('Not Paid:', data['Not_Paid']),
               _buildDetailRow('Payment:', data['Payment']),
+              Center(
+                child: Row(
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => UpdateFormCustomer(
+                              docId: documentId,
+                              data: data,
+                            ),
+                          ),
+                        );
+                      },
+                      icon: Container(
+                        height: 35,
+                        width: 35,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(40),
+                            color: Colors.orange,
+                            border: Border.all(color: Colors.orange)),
+                        child: const Icon(
+                          Icons.edit,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        _showDeleteConfirmationDialog(context);
+                      },
+                      icon: Container(
+                        height: 35,
+                        width: 35,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(40),
+                            color: Colors.red,
+                            border: Border.all(color: Colors.red)),
+                        child: const Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    // IconButton(
+                    //   onPressed: () {
+                    //     _generatePdf();
+                    //   },
+                    //   icon: Container(
+                    //     height: 35,
+                    //     width: 35,
+                    //     decoration: BoxDecoration(
+                    //         borderRadius: BorderRadius.circular(40),
+                    //         color: Colors.green.shade400),
+                    //     child: const Icon(
+                    //       Icons.share,
+                    //       color: Colors.white,
+                    //     ),
+                    //   ),
+                    // ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -365,5 +517,56 @@ class DetailPage extends StatelessWidget {
         Text('$value'),
       ],
     );
+  }
+
+  // Show confirmation dialog for deletion
+  void _showDeleteConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text("Delete Confirmation"),
+          content: const Text("Are you sure you want to delete this customer?"),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Cancel"),
+              onPressed: () {
+                Navigator.of(dialogContext).pop(); // Close the dialog
+              },
+            ),
+            TextButton(
+              child: const Text("Delete"),
+              onPressed: () {
+                Navigator.of(dialogContext).pop(); // Close the dialog first
+                _deleteCustomer(
+                    context); // Proceed to delete after dialog is closed
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Delete customer document from Firestore
+  Future<void> _deleteCustomer(BuildContext context) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('customerdetails')
+          .doc(documentId)
+          .delete();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Customer deleted successfully")),
+      );
+
+      Future.delayed(const Duration(milliseconds: 500), () {
+        Navigator.of(context).pop(); // Go back to the previous screen
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error deleting customer: $e")),
+      );
+    }
   }
 }
