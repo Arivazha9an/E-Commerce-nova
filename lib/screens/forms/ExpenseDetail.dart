@@ -22,31 +22,35 @@ class _ExpensedetailState extends State<Expensedetail> {
 
   var _loadmancontroller = TextEditingController();
   var _otherscontroller = TextEditingController();
-  var valuecontroller = TextEditingController();
+  
   String? selectedItem;
   final TextEditingController _dropController = TextEditingController();
-  List<String> _items = []; // List to hold Firestore data
-  String? _selectedItemvehicle; // Variable to hold the selected item
+  final TextEditingController _expensecontroller = TextEditingController();
+  List<String> _items = [];
+  List<String> _expenseitems = []; // List to hold Firestore data
+  String? _selectedItemvehicle; 
+  String? _selectedexpense;// Variable to hold the selected item
   @override
   void initState() {
     super.initState();
-    _fetchItems(); // Fetch items when the widget is initialized
+    _fetchItems();
+  _fetchexpenseItems();
+     // Fetch items when the widget is initialized
   }
 
   void clear() {
-    valuecontroller.clear();
+    _expensecontroller.clear();
     _datepickController.clear();
     _otherscontroller.clear();
     _dropController.clear();
     _loadmancontroller.clear();
   }
 
-  // Function to fetch data from Firestore
   Future<void> _fetchItems() async {
     try {
       // Fetch data from Firestore (replace 'collectionName' and 'fieldName' with your actual Firestore collection and field)
       QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('taurusvehicledetail')
+          .collection('bharathbenzvehicledetail')
           .get();
 
       // Extract data from documents and convert to a list of strings
@@ -61,13 +65,23 @@ class _ExpensedetailState extends State<Expensedetail> {
     }
   }
 
-  List<String> vehicleitems = [
-    'Food',
-    'Lorry Service',
-    'Tyre',
-    'Fast tag/Toll',
-    'Others'
-  ];
+   Future<void> _fetchexpenseItems() async {
+        try {    
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('expense')
+          .get();    
+      List<String> items =
+          snapshot.docs.map((doc) => doc['expense'].toString()).toList();
+
+      setState(() {
+        _expenseitems = items; 
+      });
+    } catch (e) {
+      print('Error fetching data from Firestore: $e'); 
+    }
+  }
+
+
   Future<void> _selectDate() async {
     DateTime? picked = await showDatePicker(
         context: context,
@@ -85,7 +99,7 @@ class _ExpensedetailState extends State<Expensedetail> {
   void _saveData() {
     if (_dropController.text.isEmpty ||
         _datepickController.text.isEmpty ||
-        valuecontroller.text.isEmpty ||
+        _expensecontroller.text.isEmpty ||
         _loadmancontroller.text.isEmpty ||
         _otherscontroller.text.isEmpty) {
       showDialog(
@@ -107,7 +121,7 @@ class _ExpensedetailState extends State<Expensedetail> {
         FirebaseFirestore.instance.collection('taurusexpensedetail').add({
           'vehiclenumber': _dropController.text,
           'Date': _datepickController.text,
-          'ExpenseType': valuecontroller.text,
+          'ExpenseType': _expensecontroller.text,
           'Amount': _loadmancontroller.text,
           'Km': _otherscontroller.text
         });
@@ -164,7 +178,7 @@ class _ExpensedetailState extends State<Expensedetail> {
   void _storeOrUpdateData(String date, String number) async {
     if (_dropController.text.isEmpty ||
         _datepickController.text.isEmpty ||
-        valuecontroller.text.isEmpty ||
+        _expensecontroller.text.isEmpty ||
         _loadmancontroller.text.isEmpty ||
         _otherscontroller.text.isEmpty) {
       showDialog(
@@ -280,11 +294,11 @@ class _ExpensedetailState extends State<Expensedetail> {
                               },
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: orange),
+                              borderSide: const BorderSide(color: orange),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: black),
+                              borderSide: const BorderSide(color: black),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             border: const OutlineInputBorder(
@@ -320,7 +334,7 @@ class _ExpensedetailState extends State<Expensedetail> {
                           readOnly: true,
                           decoration: InputDecoration(
                               focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: orange),
+                                borderSide: const BorderSide(color: orange),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               enabledBorder: OutlineInputBorder(
@@ -333,7 +347,7 @@ class _ExpensedetailState extends State<Expensedetail> {
                               hintText: 'Choose Date',
                               prefixIcon: GestureDetector(
                                   onTap: _selectDate,
-                                  child: Icon(Icons.calendar_month))),
+                                  child: const Icon(Icons.calendar_month))),
                         ),
                       ),
                       Padding(
@@ -346,49 +360,42 @@ class _ExpensedetailState extends State<Expensedetail> {
                             alignment: Alignment.centerLeft,
                             child: Text('Expense Type')),
                       ),
-                      Container(
+                        Container(
                         width: 320,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(4),
-                          boxShadow: const [
-                            BoxShadow(
-                              offset: Offset(-4, 4),
-                              blurRadius: 18,
-                              spreadRadius: 0,
-                              color: Color(0x17000000),
-                            )
-                          ],
-                        ),
-                        child: TextFormField(
-                          controller: valuecontroller,
-                          readOnly: true,
+                        child: TextField(
+                          controller: _expensecontroller,
+                          readOnly: true, // Make the text field read-only
                           decoration: InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: orange),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            errorBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.red),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            hintText: '',
+                            labelText: 'Expense Type',
                             suffixIcon: DropdownButton<String>(
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  selectedItem = newValue;
-                                  valuecontroller.text = newValue!;
-                                });
-                              },
-                              items: vehicleitems.map((String vehicleitems) {
+                              value: _selectedexpense,
+                              hint: const Text('Select'),
+                              icon: const Icon(Icons.arrow_drop_down),
+                              items: _expenseitems.map((String _expenseitems) {
                                 return DropdownMenuItem<String>(
-                                  value: vehicleitems,
-                                  child: Text(vehicleitems),
+                                  value: _expenseitems,
+                                  child: Text(_expenseitems),
                                 );
                               }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _selectedexpense =
+                                      newValue; // Update the selected item
+                                 _expensecontroller.text =
+                                      newValue ?? ''; // Update the text field
+                                });
+                              },
                             ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: orange),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: black),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            border: const OutlineInputBorder(
+                                borderSide: BorderSide(color: orange)),
                           ),
                         ),
                       ),

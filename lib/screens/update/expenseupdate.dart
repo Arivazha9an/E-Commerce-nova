@@ -21,20 +21,24 @@ class _UpdateFormState extends State<UpdateFormExpenseT> {
   late TextEditingController _datepickController;
   late TextEditingController _loadmancontroller;
   late TextEditingController _otherscontroller;
-  late TextEditingController valuecontroller;
+  late TextEditingController _expensecontroller;
   late TextEditingController _dropController;
   late String date;
   late String amount;
+  
 
   String? selectedItem;
-  List<String> _items = []; // List to hold Firestore data
-  String? _selectedItemvehicle; // Variable to hold the selected item
+  List<String> _items = [];
+  List<String> _expenseitems = [];  
+  String? _selectedItemvehicle;
+  String? _selectedexpense;  
   @override
   @override
   void initState() {
     _fetchItems();
     super.initState();
-    // Initialize controllers with data from Firestore
+      _fetchexpenseItems();
+    
     _dropController = TextEditingController(text: widget.data['vehiclenumber']);
     _datepickController =
         TextEditingController(text: widget.data['Date'] ?? '');
@@ -44,21 +48,32 @@ class _UpdateFormState extends State<UpdateFormExpenseT> {
         TextEditingController(text: widget.data['Amount'] ?? '');
 
     _otherscontroller = TextEditingController(text: widget.data['Km'] ?? '');
-    valuecontroller =
+    _expensecontroller =
         TextEditingController(text: widget.data['ExpenseType'] ?? '');
   }
 
-  List<String> vehicleitems = [
-    'Food',
-    'Lorry Service',
-    'Tyre',
-    'Fast tag/Toll',
-    'Others'
-  ];
+    Future<void> _fetchexpenseItems() async {
+    try {
+      // Fetch data from Firestore (replace 'collectionName' and 'fieldName' with your actual Firestore collection and field)
+      QuerySnapshot snapshot =
+          await FirebaseFirestore.instance.collection('expense').get();
+
+      // Extract data from documents and convert to a list of strings
+      List<String> items =
+          snapshot.docs.map((doc) => doc['expense'].toString()).toList();
+
+      setState(() {
+        _expenseitems = items; // Update the state with fetched items
+      });
+    } catch (e) {
+      print('Error fetching data from Firestore: $e'); // Handle errors
+    }
+  }
+
+  
   @override
-  void dispose() {
-    // Dispose controllers to avoid memory leaks
-    valuecontroller.dispose();
+  void dispose() {     
+    _expensecontroller.dispose();
     _datepickController.dispose();
     _otherscontroller.dispose();
     _dropController.dispose();
@@ -112,7 +127,7 @@ class _UpdateFormState extends State<UpdateFormExpenseT> {
   Future<void> _storeOrUpdateData(String date, String number) async {
     if (_dropController.text.isEmpty ||
         _datepickController.text.isEmpty ||
-        valuecontroller.text.isEmpty ||
+        _expensecontroller.text.isEmpty ||
         _loadmancontroller.text.isEmpty ||
         _otherscontroller.text.isEmpty) {
       showDialog(
@@ -333,47 +348,40 @@ class _UpdateFormState extends State<UpdateFormExpenseT> {
                       ),
                       Container(
                         width: 320,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(4),
-                          boxShadow: const [
-                            BoxShadow(
-                              offset: Offset(-4, 4),
-                              blurRadius: 18,
-                              spreadRadius: 0,
-                              color: Color(0x17000000),
-                            )
-                          ],
-                        ),
-                        child: TextFormField(
-                          controller: valuecontroller,
-                          readOnly: true,
+                        child: TextField(
+                          controller: _expensecontroller,
+                          readOnly: true, // Make the text field read-only
                           decoration: InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: orange),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            errorBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.red),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            hintText: '',
+                            labelText: 'Expense Type',
                             suffixIcon: DropdownButton<String>(
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  selectedItem = newValue;
-                                  valuecontroller.text = newValue!;
-                                });
-                              },
-                              items: vehicleitems.map((String vehicleitems) {
+                              value: _selectedexpense,
+                              hint: const Text('Select'),
+                              icon: const Icon(Icons.arrow_drop_down),
+                              items: _expenseitems.map((String _expenseitems) {
                                 return DropdownMenuItem<String>(
-                                  value: vehicleitems,
-                                  child: Text(vehicleitems),
+                                  value: _expenseitems,
+                                  child: Text(_expenseitems),
                                 );
                               }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  // Update the selected item
+                                  _selectedexpense = newValue ?? '';
+                                  _expensecontroller.text =
+                                      newValue ?? ''; // Update the text field
+                                });
+                              },
                             ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: orange),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: black),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            border: const OutlineInputBorder(
+                                borderSide: BorderSide(color: orange)),
                           ),
                         ),
                       ),
@@ -451,7 +459,7 @@ class _UpdateFormState extends State<UpdateFormExpenseT> {
                     .update({
                   'vehiclenumber': _dropController.text,
                   'Date': _datepickController.text,
-                  'ExpenseType': valuecontroller.text,
+                  'ExpenseType': _expensecontroller.text,
                   'Amount': _loadmancontroller.text,
                   'Km': _otherscontroller.text
                 }).then((_) {

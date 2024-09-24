@@ -1,9 +1,13 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/widgets/customcolorappbar.dart';
+import 'package:e_commerce/widgets/customtextform.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
 class MyPieChart extends StatefulWidget {
@@ -14,8 +18,10 @@ class MyPieChart extends StatefulWidget {
 class _MyPieChartState extends State<MyPieChart> {
   DateTime selectedDate = DateTime.now();
   final TextEditingController _datepickController = TextEditingController();
+  final TextEditingController _addexpensecontroller = TextEditingController();
   int combinedexpense = 0;
   int combineincome = 0;
+  final _addexpenseController = TextEditingController();
 
   @override
   void initState() {
@@ -32,7 +38,6 @@ class _MyPieChartState extends State<MyPieChart> {
       // List of collection names
       List<String> collections = [
         'bharathbenzloaddetail',
-        'bharathbenzloaddetail2',
         'taurusloaddetail',
       ];
       // Field names to sum
@@ -89,7 +94,6 @@ class _MyPieChartState extends State<MyPieChart> {
       // List of collection names
       List<String> collections = [
         'bharathbenzexpensedetail',
-        'bharathbenzexpensedetail2',
         'taurusexpensedetail',
       ];
 
@@ -132,12 +136,11 @@ class _MyPieChartState extends State<MyPieChart> {
   }
 
   final Map<String, Color> expenseColors = {
-    'Food': Colors.green,
     'Lorry Service': Colors.blue,
     'Tyre': Colors.red,
     'Fast tag/Toll': Colors.orange,
-    'Others': Colors.pinkAccent
-  };
+    'abcd': Colors.pinkAccent
+  }; 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -161,7 +164,6 @@ class _MyPieChartState extends State<MyPieChart> {
     // Define the three collections
     List<String> collections = [
       'bharathbenzexpensedetail',
-      'bharathbenzexpensedetail2',
       'taurusexpensedetail'
     ];
 
@@ -177,38 +179,147 @@ class _MyPieChartState extends State<MyPieChart> {
       for (var doc in querySnapshot.docs) {
         // Convert the amount from String to double
         String amountString = doc['Amount'];
+      //  Color color =doc['color'];
         double amount = double.tryParse(amountString) ?? 0.0;
         totalAmount += amount;
       }
     }
 
     return totalAmount;
+    
   }
 
   Future<Map<String, double>> fetchExpenseData() async {
-    // Define the expense types
-    List<String> expenseTypes = [
-      'Food',
-      'Lorry Service',
-      'Tyre',
-      'Fast tag/Toll',
-      'Others'
-    ];
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-    // Initialize the map
     Map<String, double> dataMap = {};
 
-    // Retrieve the sum for each expense type
-    for (String expenseType in expenseTypes) {
-      double totalAmount = await getSumByExpenseType(expenseType);
-      dataMap[expenseType] = totalAmount;
-    }
+    try {
+      QuerySnapshot<Map<String, dynamic>> snapshot =
+          await firestore.collection('expense').get();
 
+      for (var doc in snapshot.docs) {
+        String expenseType = doc.data()['expense'];
+        double totalAmount = await getSumByExpenseType(expenseType);
+        dataMap[expenseType] = totalAmount;
+      }
+    } catch (e) {
+      print('Error fetching expense types: $e');
+    }
     return dataMap;
   }
 
+
+
   @override
   Widget build(BuildContext context) {
+    void _saveData(context) async {
+      if (_addexpenseController.text.isEmpty) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Error'),
+            content: const Text('Please Add Expense.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+        return;
+      } else {
+        try {
+         await FirebaseFirestore.instance.collection('expense').add({
+            'expense': _addexpenseController.text,
+           
+          });
+
+          Fluttertoast.showToast(
+            msg: "Successfully Stored.",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+            fontSize: 16.0,
+          );
+
+          Future.delayed(
+              const Duration(seconds: 2), () => Navigator.pop(context));
+        } on FirebaseException catch (e) {
+          print('Failed with error code: ${e.code}');
+          print(e.message);
+
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Error'),
+              content: const Text('Failed to Store Data. Please try again.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        } catch (e) {
+          print('Unexpected error: $e');
+
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Error'),
+              content:
+                  const Text('An unexpected error occurred. Please try again.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        }
+      }
+    }
+
+    void _addExpense() {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Add Expense'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: _addexpenseController,
+                  decoration: const InputDecoration(labelText: 'Add Expense'),
+                ),
+              ],
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  _saveData(context);
+                  Navigator.pop(context);
+                },
+                child: const Text('Add'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Cancel'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+
     return FutureBuilder<Map<String, double>>(
       future: fetchExpenseData(),
       builder: (context, snapshot) {
@@ -495,8 +606,18 @@ class _MyPieChartState extends State<MyPieChart> {
                     }).toList(),
                   ),
                 ),
+                FloatingActionButton(onPressed: () {
+                  _addExpense();
+                })
+                //  ListTile(
+                //   title: CustomTextFormField(controller:_addexpensecontroller , hintText: 'Add Expense', labeltext: '', keyboardType: TextInputType.text,
+
+                //   ),
+
+                // ),
               ],
-            ));
+            ),
+            );
       },
     );
   }

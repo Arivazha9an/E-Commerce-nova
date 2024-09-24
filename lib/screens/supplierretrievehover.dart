@@ -48,20 +48,20 @@ class _SupplierretrievehoverState extends State<Supplierretrievehover> {
       setState(() {
         _allDataList = querySnapshot.docs.map((doc) {
           Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-          data['id'] = doc.id; // Store document ID in the data map
+          data['id'] = doc.id;
           return data;
         }).toList();
-        _filteredDataList = _allDataList; // Initialize with all data
+        _filteredDataList = _allDataList;
         _isLoading = false;
 
-        // Stop loading once data is fetched
+        
       });
     } catch (e) {
       if (kDebugMode) {
         print('Error fetching supplierdetails details: $e');
       }
       setState(() {
-        _isLoading = false; // Stop loading on error as well
+        _isLoading = false;
       });
     }
   }
