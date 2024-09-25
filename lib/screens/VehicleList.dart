@@ -4,7 +4,6 @@ import '../Gride View/GrideView.dart';
 import 'package:e_commerce/constants/colors.dart';
 import 'package:flutter/material.dart';
 
-
 class VehicleList extends StatelessWidget {
   const VehicleList({super.key});
 
@@ -15,6 +14,8 @@ class VehicleList extends StatelessWidget {
         title: Text(''),
       ),
       body: Column(
+        
+       
         children: [
           const Text(
             'Vehicle List',
@@ -32,24 +33,38 @@ class VehicleList extends StatelessWidget {
                 );
               },
               child: Container(
-                  height: 150,
-                  width: 330,
-                  decoration: const BoxDecoration(
-                    color: black,
-                    borderRadius: BorderRadius.all(Radius.circular(20)),
-                    image: DecorationImage(
-                      image: AssetImage("assets/images/bharathbenz.jpg"),
-                      fit: BoxFit.cover,
-                    ),
+                height: 150,
+                width: 330,
+                decoration: BoxDecoration(
+                  color: black,
+                  borderRadius: const BorderRadius.all(Radius.circular(20)),
+                  image: DecorationImage(
+                    image: AssetImage("assets/images/bharathbenz.jpg"),
+                    fit: BoxFit.cover,
                   ),
-                  child: const Center(
+                ),
+                child: Stack(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black
+                            .withOpacity(0.5), // Add a semi-transparent overlay
+                        borderRadius: const BorderRadius.all(Radius.circular(20)),
+                      ),
+                    ),
+                    Center(
                       child: Text(
-                    'BHARATH BENZ',
-                    style: TextStyle(
-                        color: white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold),
-                  ))),
+                        'BHARATH BENZ',
+                        style: const TextStyle(
+                          color: white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
           const SizedBox(
@@ -58,32 +73,47 @@ class VehicleList extends StatelessWidget {
           Center(
             child: InkWell(
               onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) =>const Grideview()),
-                    );
-                  },
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Grideview()),
+                );
+              },
               child: Container(
-                  height: 150,
-                  width: 330,
-                  decoration: const BoxDecoration(
-                    color: black,
-                    borderRadius: BorderRadius.all(Radius.circular(20)),
-                    image: DecorationImage(
-                      image: AssetImage("assets/images/Taurus.jpg"),
-                      fit: BoxFit.cover,
-                    ),
+                height: 150,
+                width: 330,
+                decoration: BoxDecoration(
+                  color: black,
+                  borderRadius: const BorderRadius.all(Radius.circular(20)),
+                  image: DecorationImage(
+                    image: AssetImage("assets/images/Taurus.jpg"),
+                    fit: BoxFit.cover,
                   ),
-                  child: const Center(
+                ),
+                child: Stack(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black
+                            .withOpacity(0.5), // Add a semi-transparent overlay
+                        borderRadius: const BorderRadius.all(Radius.circular(20)),
+                      ),
+                    ),
+                    Center(
                       child: Text(
-                    'TAURUS LORRY',
-                    style: TextStyle(
-                        color: white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold),
-                  ),),),
+                        'TAURUS LORRY',
+                        style: const TextStyle(
+                          color: white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          )
+          ),
+          SizedBox(height: 40),
         ],
       ),
     );

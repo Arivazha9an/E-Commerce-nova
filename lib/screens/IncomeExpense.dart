@@ -1,9 +1,6 @@
-
 import 'package:e_commerce/constants/colors.dart';
-
 import 'package:e_commerce/screens/customerretrivehover.dart';
 import 'package:e_commerce/screens/supplierretrievehover.dart';
-
 import 'package:e_commerce/widgets/customcolorappbar.dart';
 import 'package:flutter/material.dart';
 
@@ -44,30 +41,31 @@ class _IncomeExpenseState extends State<IncomeExpense> {
         title: '',
         child: Column(
           children: [
-            const SizedBox(
-              height: 70,
-            ),
-           
-           
+            const SizedBox(height: 70),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildTextButton("Customer ", 0),
+                _buildTextButton("Customer", 0),
                 _buildTextButton("Supplier", 1),
               ],
             ),
           ],
         ),
       ),
-      body: Expanded(
-        child: PageView(
-          controller: _pageController,
-          onPageChanged: _onPageChanged,
-          children: const [
-            CustomerRetriveHover(),
-            Supplierretrievehover(),
-          ],
-        ),
+      // Replace Expanded with a Column or Container
+      body: Column(
+        children: [
+          Expanded(
+            child: PageView(
+              controller: _pageController,
+              onPageChanged: _onPageChanged,
+              children: const [
+                CustomerRetriveHover(),
+                Supplierretrievehover(),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -77,7 +75,7 @@ class _IncomeExpenseState extends State<IncomeExpense> {
       onTap: () {
         _pageController.animateToPage(
           page,
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
         );
       },
@@ -89,7 +87,7 @@ class _IncomeExpenseState extends State<IncomeExpense> {
               ? TextDecoration.underline
               : TextDecoration.none,
         ),
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         child: Text(
           text,
           style: TextStyle(fontSize: 22, color: white),

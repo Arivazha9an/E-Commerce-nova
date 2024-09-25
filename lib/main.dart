@@ -1,5 +1,4 @@
 import 'package:e_commerce/Auth/keeplogin.dart';
-import 'package:e_commerce/emptybutton.dart';
 import 'package:e_commerce/firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -9,12 +8,11 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }
-
 // void init() async {
 //   WidgetsFlutterBinding.ensureInitialized();
+
 //   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 // }
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -25,10 +23,8 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home:
-      //const StartScreen()   
+        home:      
       AuthWrapper()      
-     // Invoice()  
-        );
+            );
   }
 }

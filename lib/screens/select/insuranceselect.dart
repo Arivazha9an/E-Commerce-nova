@@ -1,5 +1,3 @@
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/insurancedetail.dart';
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/retrieve/insuranceretrive.dart';
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/screens/forms/insurancedetail.dart';
 import 'package:e_commerce/screens/retrieve/insuranceretrive.dart';

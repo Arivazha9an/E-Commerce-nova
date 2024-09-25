@@ -1,4 +1,3 @@
-import 'package:e_commerce/Auth/signup.dart';
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/screens/BottomNavigation.dart';
 import 'package:e_commerce/widgets/custombutton.dart';

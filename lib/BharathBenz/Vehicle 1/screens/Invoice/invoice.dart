@@ -105,190 +105,197 @@ class _InvoiceState extends State<Invoice> {
 
     pdf.addPage(
       pw.Page(
-          build: (pw.Context context) => pw.Center(
-                child: pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.SizedBox(
-                      height: 10,
-                    ),
-                    pw.Row(
-                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                      children: [
-                        pw.Text('Logo'),
-                        pw.Row(
-                          children: [
-                            pw.Text('INVOICE',
-                                style: pw.TextStyle(
-                                    fontSize: 28,
-                                    fontWeight: pw.FontWeight.bold))
-                          ],
-                        )
-                      ],
-                    ),
-                    pw.SizedBox(height: 40),
-                    pw.Row(
-                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                      children: [
-                        pw.Column(children: [
-                          pw.Text('  Billed To :',
-                              style: pw.TextStyle(fontSize: 18)),
-                          pw.Text('''$customerName
-$customerNo'''),
-                          pw.Row(children: [
-                            pw.SizedBox(width: 20),
-                            pw.Text(_addresscontroller.text)
-                          ]),
-                        ]),
-                        pw.Text('Date : $date')
-                      ],
-                    ),
-                    pw.SizedBox(height: 30),
-                    pw.SizedBox(height: 10),
-                    pw.Row(children: [
-                      pw.SizedBox(width: 30),
-                      pw.Container(height: 5, width: 440, child: pw.Divider()),
-                    ]),
-                    pw.SizedBox(height: 10),
-                    pw.Row(children: [
-                      pw.SizedBox(
-                        width: 50,
-                      ),
-                      pw.Text(
-                          '                                                    Others         Price',
-                          style: pw.TextStyle(
-                              fontSize: 17, fontWeight: pw.FontWeight.normal)),
-                    ]),
-                    pw.SizedBox(height: 10),
-                    pw.Row(children: [
-                      pw.SizedBox(width: 30),
-                      pw.Container(height: 5, width: 440, child: pw.Divider()),
-                    ]),
-                    pw.SizedBox(height: 10),
-                    pw.Row(children: [
-                      pw.SizedBox(
-                        width: 50,
-                      ),
-                      pw.Text(
-                          'Vehicle Number                                                    $vehicleNumber                        -'),
-                    ]),
-                    pw.SizedBox(height: 10),
-                    pw.Row(children: [
-                      pw.SizedBox(width: 30),
-                      pw.Container(height: 5, width: 440, child: pw.Divider()),
-                    ]),
-                    pw.SizedBox(height: 10),
-                    pw.Row(children: [
-                      pw.SizedBox(
-                        width: 50,
-                      ),
-                      pw.Text(
-                          'No of Tons/Units                                                    $noofTons                        -'),
-                    ]),
-                    pw.SizedBox(height: 10),
-                    pw.Row(children: [
-                      pw.SizedBox(width: 30),
-                      pw.Container(height: 5, width: 440, child: pw.Divider()),
-                    ]),
-                    pw.SizedBox(height: 10),
-                    pw.Row(children: [
-                      pw.SizedBox(
-                        width: 50,
-                      ),
-                      pw.Text(
-                          'Load Amount                                                          -                         $loadAmount'),
-                    ]),
-                    pw.SizedBox(height: 10),
-                    pw.Row(children: [
-                      pw.SizedBox(width: 30),
-                      pw.Container(height: 5, width: 440, child: pw.Divider()),
-                    ]),
-                    pw.SizedBox(height: 10),
-                    pw.Row(children: [
-                      pw.SizedBox(
-                        width: 50,
-                      ),
-                      pw.Text(
-                          'Delivery Amount                                                      -                        $deliveryAmount'),
-                    ]),
-                    pw.SizedBox(height: 10),
-                    pw.Row(children: [
-                      pw.SizedBox(width: 30),
-                      pw.Container(height: 5, width: 440, child: pw.Divider()),
-                    ]),
-                    pw.SizedBox(height: 20),
-                    pw.Align(
-                      alignment: pw.Alignment.centerRight,
-                      child: pw.Text(
-                          'Total Amount: Rs.  $deliveryAmount                    '),
-                    ),
-                    if (_signatureImage != null) ...[
-                      pw.SizedBox(height: 40),
-                      pw.Align(
-                          alignment: pw.Alignment.centerRight,
-                          child: pw.Column(children: [
-                            pw.Text('Signature:'),
-                            pw.SizedBox(height: 6),
-                            pw.Image(pw.MemoryImage(_signatureImage!),
-                                width: 80, height: 40),
-                          ]))
-                    ],
-                    pw.SizedBox(height: 20),
-                    pw.Text('   Thank You !!!',
-                        style: pw.TextStyle(fontSize: 18)),
-                    pw.SizedBox(height: 80),
-                    pw.Row(
-                        mainAxisAlignment: pw.MainAxisAlignment.end,
-                        children: [
-                          pw.Column(
-                              crossAxisAlignment: pw.CrossAxisAlignment.end,
-                              children: [
-                                pw.Text('Thiruchendur Murugan',
-                                    style: pw.TextStyle(fontSize: 18)),
-                                pw.Text('Peravurani',
-                                    style: pw.TextStyle(fontSize: 14)),
-                                pw.Text('Thanjavur',
-                                    style: pw.TextStyle(fontSize: 14))
-                              ])
-                        ])
-                  ],
-                ),
-              )),
-    );
+        build: (pw.Context context) => pw.Padding(
+          padding: const pw.EdgeInsets.all(20), // Add padding to the page
+          child: pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.SizedBox(height: 10),
+              // Header Section
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                children: [
+                  pw.Text('Logo', style: const pw.TextStyle(fontSize: 16)),
+                  pw.Text(
+                    'INVOICE',
+                    style: pw.TextStyle(
+                        fontSize: 28, fontWeight: pw.FontWeight.bold),
+                  ),
+                ],
+              ),
+              pw.SizedBox(height: 40),
 
+              // Billing Information
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                children: [
+                  pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.Text('Billed To:', style: const pw.TextStyle(fontSize: 18)),
+                      pw.Text(customerName, style: const pw.TextStyle(fontSize: 16)),
+                      pw.Text(customerNo, style: const pw.TextStyle(fontSize: 16)),
+                      pw.Text(_addresscontroller.text,
+                          style: const pw.TextStyle(fontSize: 14)),
+                    ],
+                  ),
+                  pw.Text('Date: $date', style: const pw.TextStyle(fontSize: 16)),
+                ],
+              ),
+              pw.SizedBox(height: 30),
+
+              // Divider
+              pw.Divider(thickness: 1.5),
+
+              // Table Header
+              pw.Row(
+                children: [
+                  pw.Expanded(
+                    flex: 3,
+                    child: pw.Text('Description',
+                        style: pw.TextStyle(
+                            fontSize: 16, fontWeight: pw.FontWeight.bold)),
+                  ),
+                  pw.Expanded(
+                    flex: 1,
+                    child: pw.Text('Price',
+                        style: pw.TextStyle(
+                            fontSize: 16, fontWeight: pw.FontWeight.bold)),
+                  ),
+                ],
+              ),
+              pw.Divider(thickness: 1),
+
+              // Table Content
+              pw.Row(
+                children: [
+                  pw.Expanded(
+                    flex: 3,
+                    child: pw.Text('Vehicle Number: $vehicleNumber',
+                        style: const pw.TextStyle(fontSize: 14)),
+                  ),
+                  pw.Expanded(
+                    flex: 1,
+                    child: pw.Text('-', style: const pw.TextStyle(fontSize: 14)),
+                  ),
+                ],
+              ),
+              pw.Divider(),
+
+              pw.Row(
+                children: [
+                  pw.Expanded(
+                    flex: 3,
+                    child: pw.Text('No of Tons/Units: $noofTons',
+                        style: const pw.TextStyle(fontSize: 14)),
+                  ),
+                  pw.Expanded(
+                    flex: 1,
+                    child: pw.Text('-', style: const pw.TextStyle(fontSize: 14)),
+                  ),
+                ],
+              ),
+              pw.Divider(),
+
+              pw.Row(
+                children: [
+                  pw.Expanded(
+                    flex: 3,
+                    child: pw.Text('Load Amount',
+                        style: const pw.TextStyle(fontSize: 14)),
+                  ),
+                  pw.Expanded(
+                    flex: 1,
+                    child: pw.Text('Rs. $loadAmount',
+                        style: const pw.TextStyle(fontSize: 14)),
+                  ),
+                ],
+              ),
+              pw.Divider(),
+
+              pw.Row(
+                children: [
+                  pw.Expanded(
+                    flex: 3,
+                    child: pw.Text('Delivery Amount',
+                        style: const pw.TextStyle(fontSize: 14)),
+                  ),
+                  pw.Expanded(
+                    flex: 1,
+                    child: pw.Text('Rs. $deliveryAmount',
+                        style: const pw.TextStyle(fontSize: 14)),
+                  ),
+                ],
+              ),
+              pw.Divider(),
+
+              // Total Amount
+              pw.SizedBox(height: 20),
+              pw.Align(
+                alignment: pw.Alignment.centerRight,
+                child: pw.Text('Total Amount: Rs. $deliveryAmount',
+                    style: pw.TextStyle(
+                        fontSize: 16, fontWeight: pw.FontWeight.bold)),
+              ),
+
+              // Signature
+              if (_signatureImage != null) ...[
+                pw.SizedBox(height: 40),
+                pw.Align(
+                  alignment: pw.Alignment.centerRight,
+                  child: pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.end,
+                    children: [
+                      pw.Text('Signature:', style: const pw.TextStyle(fontSize: 16)),
+                      pw.SizedBox(height: 6),
+                      pw.Image(pw.MemoryImage(_signatureImage!),
+                          width: 80, height: 40),
+                    ],
+                  ),
+                ),
+              ],
+
+              pw.SizedBox(height: 20),
+
+              // Footer
+              pw.Text('Thank You !!!', style: const pw.TextStyle(fontSize: 18)),
+              pw.SizedBox(height: 40),
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.end,
+                children: [
+                  pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.end,
+                    children: [
+                      pw.Text('Thiruchendur Murugan',
+                          style: const pw.TextStyle(fontSize: 18)),
+                      pw.Text('Peravurani', style: const pw.TextStyle(fontSize: 14)),
+                      pw.Text('Thanjavur', style: const pw.TextStyle(fontSize: 14)),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
     return pdf.save();
   }
 
   // Function to share the generated PDF
   Future<void> _sharePdf() async {
+      var date= DateTime.now();
     final pdfBytes = await _createPdf();
 
     // Share the PDF using share_plus
     await Share.shareXFiles(
-      [
+      [      
         XFile.fromData(pdfBytes,
-            mimeType: 'application/pdf', name: 'invoice.pdf')
+            mimeType: 'application/pdf', name: 'invoice$date.pdf')
       ],
       text: 'Here is your invoice!',
     );
   }
-
-//   @override
-//   void initState() {
-//     super.initState();
-//    // Initialize controllers with data from Firestore
-//   vehicleNumber =  widget.data['vehiclenumber'] ?? '';
-//    date= widget.data['date'] ?? '';
-//    startPoint=  widget.data['Start Point'] ?? '';
-//    loadPoint= widget.data['Load Point'] ?? '';
-//     dropPoint= widget.data['Drop Point'] ?? '';
-//   noofTons = widget.data['No Of Tons / Units'] ?? '';
-//     loadAmount = widget.data['Load Amount'] ?? '';
-//    deliveryAmount= widget.data['Delivery Amount'] ?? '';
-//  customerName = widget.data['Customer Name'] ?? '';
-//   customerNo =  widget.data['Customer Number'] ?? '';
-//   }
-
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;

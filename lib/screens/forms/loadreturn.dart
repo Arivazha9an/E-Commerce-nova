@@ -36,7 +36,6 @@ class _LoadDetailsState extends State<Loadreturn> {
   String selectedOption = '';
   String inputText = '';
   String selectedOption02 = '';
-  final TextEditingController _controller = TextEditingController();
 
   List<String> options = ['Tons', 'Units'];
   List<String> options02 = ['Cash', 'Credit'];

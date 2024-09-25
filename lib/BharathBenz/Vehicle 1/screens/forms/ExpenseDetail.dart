@@ -1,6 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/select/expenseSelect.dart';
-
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:e_commerce/widgets/custombuttom%20outlined.dart';
@@ -172,7 +170,7 @@ void clear(){
   void _storeOrUpdateData(String date, String number) async {
     if (_dropController.text.isEmpty ||
         _datepickController.text.isEmpty ||
-        valuecontroller.text.isEmpty ||
+        _expensecontroller.text.isEmpty ||
         _loadmancontroller.text.isEmpty ||
         _otherscontroller.text.isEmpty) {
       showDialog(

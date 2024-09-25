@@ -1,5 +1,3 @@
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/forms/DriverDetail.dart';
-import 'package:e_commerce/BharathBenz/Vehicle%201/screens/retrieve/driverretrieve.dart';
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/screens/forms/DriverDetail.dart';
 import 'package:e_commerce/screens/retrieve/driverretrieve.dart';

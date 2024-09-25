@@ -3,6 +3,7 @@ import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/widgets/customappbar.dart';
 import 'package:e_commerce/widgets/custombutton.dart';
 import 'package:e_commerce/widgets/customtextform.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -66,7 +67,9 @@ class _UpdateFormState extends State<UpdateFormExpense> {
         _expenseitems = items; // Update the state with fetched items
       });
     } catch (e) {
-      print('Error fetching data from Firestore: $e'); // Handle errors
+      if (kDebugMode) {
+        print('Error fetching data from Firestore: $e');
+      } // Handle errors
     }
   }
   @override
@@ -103,7 +106,9 @@ class _UpdateFormState extends State<UpdateFormExpense> {
         _items = items; // Update the state with fetched items
       });
     } catch (e) {
-      print('Error fetching data from Firestore: $e'); // Handle errors
+      if (kDebugMode) {
+        print('Error fetching data from Firestore: $e');
+      } // Handle errors
     }
   }
 

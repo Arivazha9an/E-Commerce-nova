@@ -1,9 +1,6 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/widgets/customcolorappbar.dart';
-import 'package:e_commerce/widgets/customtextform.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -18,7 +15,6 @@ class MyPieChart extends StatefulWidget {
 class _MyPieChartState extends State<MyPieChart> {
   DateTime selectedDate = DateTime.now();
   final TextEditingController _datepickController = TextEditingController();
-  final TextEditingController _addexpensecontroller = TextEditingController();
   int combinedexpense = 0;
   int combineincome = 0;
   final _addexpenseController = TextEditingController();
@@ -140,7 +136,7 @@ class _MyPieChartState extends State<MyPieChart> {
     'Tyre': Colors.red,
     'Fast tag/Toll': Colors.orange,
     'abcd': Colors.pinkAccent
-  }; 
+  };
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -179,14 +175,13 @@ class _MyPieChartState extends State<MyPieChart> {
       for (var doc in querySnapshot.docs) {
         // Convert the amount from String to double
         String amountString = doc['Amount'];
-      //  Color color =doc['color'];
+        //  Color color =doc['color'];
         double amount = double.tryParse(amountString) ?? 0.0;
         totalAmount += amount;
       }
     }
 
     return totalAmount;
-    
   }
 
   Future<Map<String, double>> fetchExpenseData() async {
@@ -209,11 +204,9 @@ class _MyPieChartState extends State<MyPieChart> {
     return dataMap;
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-    void _saveData(context) async {
+   void _saveData(BuildContext context) async {
       if (_addexpenseController.text.isEmpty) {
         showDialog(
           context: context,
@@ -231,22 +224,45 @@ class _MyPieChartState extends State<MyPieChart> {
         return;
       } else {
         try {
-         await FirebaseFirestore.instance.collection('expense').add({
-            'expense': _addexpenseController.text,
-           
-          });
+          // Check if the expense already exists in Firestore
+          QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+              .collection('expense')
+              .where('expense', isEqualTo: _addexpenseController.text)
+              .get();
 
-          Fluttertoast.showToast(
-            msg: "Successfully Stored.",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            backgroundColor: Colors.green,
-            textColor: Colors.white,
-            fontSize: 16.0,
-          );
+          if (querySnapshot.docs.isNotEmpty) {
+            // If the expense already exists, show a dialog and don't store
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Error'),
+                content: const Text('Expense already exists.'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('OK'),
+                  ),
+                ],
+              ),
+            );
+          } else {
+            // If the expense does not exist, add it to Firestore
+            await FirebaseFirestore.instance.collection('expense').add({
+              'expense': _addexpenseController.text,
+            });
 
-          Future.delayed(
-              const Duration(seconds: 2), () => Navigator.pop(context));
+            Fluttertoast.showToast(
+              msg: "Successfully Stored.",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              backgroundColor: Colors.green,
+              textColor: Colors.white,
+              fontSize: 16.0,
+            );
+
+            Future.delayed(
+                const Duration(seconds: 2), () => Navigator.pop(context));
+          }
         } on FirebaseException catch (e) {
           print('Failed with error code: ${e.code}');
           print(e.message);
@@ -284,6 +300,7 @@ class _MyPieChartState extends State<MyPieChart> {
         }
       }
     }
+
 
     void _addExpense() {
       showDialog(
@@ -339,7 +356,7 @@ class _MyPieChartState extends State<MyPieChart> {
 
         return Scaffold(
             appBar: CustomAppBarcolor(
-              height: 185,
+              height: 175,
               title: '',
               child: Column(
                 children: [
@@ -502,7 +519,6 @@ class _MyPieChartState extends State<MyPieChart> {
                                 return PieChartSectionData(
                                   value: entry.value,
                                   title: "",
-                                  titlePositionPercentageOffset: 1.2,
                                   color: color,
                                   radius: 70,
                                   titleStyle: TextStyle(
@@ -537,8 +553,8 @@ class _MyPieChartState extends State<MyPieChart> {
                               return Row(
                                 children: [
                                   Container(
-                                    width: 10,
-                                    height: 10,
+                                    width: 8,
+                                    height: 8,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       color: color,
@@ -547,7 +563,7 @@ class _MyPieChartState extends State<MyPieChart> {
                                   const SizedBox(width: 10),
                                   Text(
                                     entry.key,
-                                    style: const TextStyle(fontSize: 14),
+                                    style: const TextStyle(fontSize: 12),
                                   ),
                                 ],
                               );
@@ -558,47 +574,48 @@ class _MyPieChartState extends State<MyPieChart> {
                     ],
                   ),
                 ),
-                const Expanded(
-                    flex: 1,
-                    child: SizedBox(
-                      height: 10,
-                    )),
-                const Padding(
-                  padding: EdgeInsets.only(right: 120),
-                  child: Text(
-                    'Category wise Summary',
-                    style: TextStyle(
-                        fontSize: 17, fontWeight: FontWeight.w500, color: grey),
-                  ),
+                const SizedBox(height: 40), // Adjust spacing
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: 25,
+                    ),
+                    Text(
+                      'Category wise Summary',
+                      style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w500,
+                          color: grey),
+                    ),
+                  ],
                 ),
                 // List View with Details at the Bottom
                 Expanded(
-                  flex: 6,
+                  flex: 4,
                   child: ListView(
+                    padding: const EdgeInsets.only(top: 10), // Adjust padding
                     children: dataMap.entries.map((entry) {
                       Color color = expenseColors[entry.key] ?? Colors.grey;
-
                       return Padding(
-                        padding:
-                            const EdgeInsets.only(left: 20, right: 20, top: 10),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 5),
                         child: Container(
                           height: 55,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                             color: color.withOpacity(0.7),
                           ),
-                          child: Container(
-                            child: ListTile(
-                              title: Text(entry.key,
-                                  style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                      color: white)),
-                              trailing: Text(
-                                '₹${entry.value.toStringAsFixed(2)}',
-                                style:
-                                    const TextStyle(fontSize: 14, color: white),
-                              ),
+                          child: ListTile(
+                            title: Text(entry.key,
+                                style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: white)),
+                            trailing: Text(
+                              '₹${entry.value.toStringAsFixed(2)}',
+                              style:
+                                  const TextStyle(fontSize: 14, color: white),
                             ),
                           ),
                         ),
@@ -606,18 +623,26 @@ class _MyPieChartState extends State<MyPieChart> {
                     }).toList(),
                   ),
                 ),
-                FloatingActionButton(onPressed: () {
-                  _addExpense();
-                })
-                //  ListTile(
-                //   title: CustomTextFormField(controller:_addexpensecontroller , hintText: 'Add Expense', labeltext: '', keyboardType: TextInputType.text,
-
-                //   ),
-
-                // ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      FloatingActionButton.small(
+                        onPressed: () {
+                          _addExpense();
+                        },
+                        backgroundColor: orange,
+                        shape: const CircleBorder(),
+                        child: const Icon(Icons.add, color: white),
+                      ),
+                      const SizedBox(width: 10), // Adjust spacing
+                      const Text('Add Expense'),
+                    ],
+                  ),
+                ),
               ],
-            ),
-            );
+            ));
       },
     );
   }
