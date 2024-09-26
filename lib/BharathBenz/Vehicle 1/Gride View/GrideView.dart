@@ -56,7 +56,7 @@ class _BGrideviewState extends State<BGrideview> {
                   child: Padding(
                     padding: const EdgeInsets.only(left: 21),
                     child: buildContainer(
-                        "Vehicle  Details", "assets/images/vehicledetails.jpg"),
+                        "Vehicle \n Details", "assets/images/vehicledetails.jpg"),
                   ),
                 ),
               ],

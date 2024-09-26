@@ -14,8 +14,6 @@ class VehicleList extends StatelessWidget {
         title: Text(''),
       ),
       body: Column(
-        
-       
         children: [
           const Text(
             'Vehicle List',
@@ -49,17 +47,18 @@ class VehicleList extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: Colors.black
                             .withOpacity(0.5), // Add a semi-transparent overlay
-                        borderRadius: const BorderRadius.all(Radius.circular(20)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(20)),
                       ),
                     ),
                     Center(
                       child: Text(
                         'BHARATH BENZ',
                         style: const TextStyle(
-                          color: white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
+                            color: white,
+                            fontSize: 30,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 2),
                       ),
                     ),
                   ],
@@ -95,17 +94,18 @@ class VehicleList extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: Colors.black
                             .withOpacity(0.5), // Add a semi-transparent overlay
-                        borderRadius: const BorderRadius.all(Radius.circular(20)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(20)),
                       ),
                     ),
                     Center(
                       child: Text(
                         'TAURUS LORRY',
                         style: const TextStyle(
-                          color: white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
+                            color: white,
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 2),
                       ),
                     ),
                   ],
