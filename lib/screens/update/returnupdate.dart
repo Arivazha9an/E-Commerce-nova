@@ -65,7 +65,7 @@ class _UpdateFormState extends State<Returnupdate> {
     _droppointcontroller =
         TextEditingController(text: widget.data['Drop Point'] ?? '');
     _nooftonscontroller =
-        TextEditingController(text: widget.data['No Of Tons / Units'] ?? '');
+        TextEditingController(text: widget.data['No Of Tons Units'] ?? '');
     _loadamountcontroller =
         TextEditingController(text: widget.data['Load Amount'] ?? '');
     _deliveryamountcontroller =
@@ -649,19 +649,20 @@ class _UpdateFormState extends State<Returnupdate> {
                     .collection('taurusreturn')
                     .doc(widget.docId)
                     .update({
-                   'driver': _drivercontroller.text,
+                  'driver': _drivercontroller.text,
                   'diesel': _dieselcontroller.text,
-                  'paymenttype': _paytypecontroller.text,
+                  'paymenttype':  _paytypecontroller.text ,
                   'vehiclenumber': _dropController.text,
                   'date': dateController.text,
                   'Start Point': _startpointcontroller.text,
                   'Load Point': _loadpointcontroller.text,
                   'Drop Point': _droppointcontroller.text,
-                  'No Of Tons / Units': _nooftonscontroller.text,
+                  'No Of Tons Units':'${_nooftonscontroller.text} $selectedOption',
                   'Load Amount': _loadamountcontroller.text,
                   'Delivery Amount': _deliveryamountcontroller.text,
                   'Customer Name': _customernamecontroller.text,
-                  'Customer Number': _customernocontroller.text
+                  'Customer Number': _customernocontroller.text,
+                  'delDate': Timestamp.now(),
                 }).then((_) {
                   Navigator.pop(context); // Go back after updating
                 });

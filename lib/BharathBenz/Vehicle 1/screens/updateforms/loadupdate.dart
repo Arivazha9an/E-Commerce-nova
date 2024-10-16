@@ -655,6 +655,7 @@ class _UpdateFormState extends State<UpdateFormLoad> {
                   print('Error: Date or Amount is missing or not a string.');
                   // Handle the missing or incorrect type data
                 }
+                print("selected $_nooftonscontroller");
                 // Update Firestore document with new values
                 FirebaseFirestore.instance
                     .collection('bharathbenzloaddetail')
@@ -668,11 +669,12 @@ class _UpdateFormState extends State<UpdateFormLoad> {
                   'Start Point': _startpointcontroller.text,
                   'Load Point': _loadpointcontroller.text,
                   'Drop Point': _droppointcontroller.text,
-                  'No Of Tons / Units': _nooftonscontroller.text,
+                  'No Of Tons Units': '${_nooftonscontroller.text} $selectedOption',
                   'Load Amount': _loadamountcontroller.text,
                   'Delivery Amount': _deliveryamountcontroller.text,
                   'Customer Name': _customernamecontroller.text,
-                  'Customer Number': _customernocontroller.text
+                  'Customer Number': _customernocontroller.text,
+                  'delDate': Timestamp.now(),
                 }).then((_) {
                   Navigator.pop(context); // Go back after updating
                 });

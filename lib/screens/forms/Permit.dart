@@ -92,7 +92,8 @@ class _PermitState extends State<Permit> {
             'Permit Number': _permitnocontroller.text,
             'Expiry': _expirycontroller.text,
             'Issue': _issuecontroller.text,
-            'Permit Card': _permitcardcontroller.text
+            'Permit Card': _permitcardcontroller.text,
+            'delDate': Timestamp.now(),
           });
           Fluttertoast.showToast(
             msg: "Successfully Stored.",

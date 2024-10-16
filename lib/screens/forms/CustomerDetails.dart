@@ -6,6 +6,7 @@ import 'package:e_commerce/widgets/custombutton.dart';
 import 'package:e_commerce/widgets/customtextformwithicon.dart';
 import 'package:e_commerce/widgets/customtextform.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class CustomerDetails extends StatefulWidget {
   const CustomerDetails({super.key});
@@ -51,8 +52,21 @@ class _CustomerDetailsState extends State<CustomerDetails> {
           'Material': _materialcontroller.text,
           'Payment': _paymentcontroller.text,
           'Paid': _paidcontroller.text,
-          'Not_Paid': _notpaidcontroller.text
+          'Not_Paid': _notpaidcontroller.text,
+          'delDate': Timestamp.now(),
         });
+         Fluttertoast.showToast(
+          msg: "Successfully Stored.",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+
+        // Navigate back to the previous page after a delay
+        Future.delayed(
+            const Duration(seconds: 2), () => Navigator.pop(context));
       } on FirebaseException catch (e) {
         print('Failed with error code: ${e.code}');
         print(e.message);
@@ -163,7 +177,7 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                         controller: _paidcontroller,
                         hintText: 'Type',
                         labeltext: 'Type',
-                        keyboardType: TextInputType.name,
+                        keyboardType: TextInputType.number,
                       ),
                       Padding(
                         padding: EdgeInsets.only(
@@ -182,7 +196,7 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                           controller: _notpaidcontroller,
                           hintText: 'Type',
                           labeltext: '',
-                          keyboardType: TextInputType.name,
+                          keyboardType: TextInputType.number,
                           prefixicon: const Icon(Icons.share_location_sharp),
                         ),
                       ),

@@ -346,7 +346,8 @@ class _UpdateFormState extends State<UpdateFormInsurance> {
                   'Policy Number': _policynocontroller.text,
                   'Issue': _issuecontroller.text,
                   'Expire': _expirecontroller.text,
-                  'Insurance Amount': _insuranceamountcontroller.text
+                  'Insurance Amount': _insuranceamountcontroller.text,
+                  'delDate': Timestamp.now(),
                           }).then((_) {
                             Navigator.pop(context); // Go back after updating
                           });

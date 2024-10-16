@@ -461,7 +461,8 @@ class _UpdateFormState extends State<UpdateFormExpenseT> {
                   'Date': _datepickController.text,
                   'ExpenseType': _expensecontroller.text,
                   'Amount': _loadmancontroller.text,
-                  'Km': _otherscontroller.text
+                  'Km': _otherscontroller.text,
+                  'delDate': Timestamp.now(),
                 }).then((_) {
                   Navigator.pop(context); // Go back after updating
                 });

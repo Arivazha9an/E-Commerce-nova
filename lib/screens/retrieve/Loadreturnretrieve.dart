@@ -225,7 +225,7 @@ class _LoadretrieveState extends State<Loadreturnretrieve> {
                   pw.Text('Start Point: ${data['Start Point'] ?? ''}'),
                   pw.Text('Load Point: ${data['Load Point'] ?? ''}'),
                   pw.Text('Drop Point: ${data['Drop Point'] ?? ''}'),
-                  pw.Text('No of Tons / Units: ${data['No Of Tons / Units'] ?? ''}'),
+                  pw.Text('No of Tons / Units: ${data['No Of Tons Units'] ?? ''}'),
                   pw.Text('Load amount: ${data['Load Amount'] ?? ''}'),
                   pw.Text('Delivey Amount: ${data['Delivery Amount'] ?? ''}'),
                   pw.Text('Payment Type: ${data['paymenttype'] ?? ''}'),
@@ -387,7 +387,7 @@ class _LoadretrieveState extends State<Loadreturnretrieve> {
                       String startPoint = data['Start Point'] ?? '';
                       String loadPoint = data['Load Point'] ?? '';
                       String dropPoint = data['Drop Point'] ?? '';
-                      String tons = data['No Of Tons / Units'] ?? '';
+                      String tons = data['No Of Tons Units'] ?? '';
                       String loadAmount = data['Load Amount'] ?? '';
                       String deliveryAmount = data['Delivery Amount'] ?? '';
                       String customerName = data['Customer Name'] ?? '';

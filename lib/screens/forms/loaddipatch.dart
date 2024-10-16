@@ -186,14 +186,15 @@ class _LoadDetailsState extends State<Loaddispatch> {
             'Start Point': _startpointcontroller.text,
             'Load Point': _loadpointcontroller.text,
             'Drop Point': _droppointcontroller.text,
-            'No Of Tons / Units': _nooftonscontroller.text + ' $selectedOption',
+            'No Of Tons Units': _nooftonscontroller.text + ' $selectedOption',
             'Load Amount': _loadamountcontroller.text,
             'paymenttype': _paytypecontroller.text,
             'Delivery Amount': _deliveryamountcontroller.text,
             'Customer Name': _customernamecontroller.text,
             'Customer Number': _customernocontroller.text,
             'driver': _drivercontroller.text,
-            'diesel': _dieselcontroller.text
+            'diesel': _dieselcontroller.text,
+            'delDate': Timestamp.now(),
           });
           Fluttertoast.showToast(
             msg: "Successfully Stored.",

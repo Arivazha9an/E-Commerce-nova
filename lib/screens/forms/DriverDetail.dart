@@ -127,6 +127,7 @@ class _driverDetailState extends State<DriverDetail> {
             'Expires': _expirecontroller.text,
             'Insurance Amount': _insuranceamountcontroller.text,
             'Image URL': imageUrl,
+            'delDate': Timestamp.now(),
           });
           Fluttertoast.showToast(
             msg: "Successfully Stored.",

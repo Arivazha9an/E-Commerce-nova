@@ -44,7 +44,7 @@ class _InvoiceState extends State<Invoice> {
     startPoint = widget.data['Start Point'] ?? '';
     loadPoint = widget.data['Load Point'] ?? '';
     dropPoint = widget.data['Drop Point'] ?? '';
-    noofTons = widget.data['No Of Tons / Units'] ?? '';
+    noofTons = widget.data['No Of Tons Units'] ?? '';
     loadAmount = widget.data['Load Amount'] ?? '';
     deliveryAmount = widget.data['Delivery Amount'] ?? '';
     customerName = widget.data['Customer Name'] ?? '';

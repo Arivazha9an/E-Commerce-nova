@@ -11,7 +11,8 @@ class UpdateFormDispatch extends StatefulWidget {
   final String docId;
   final Map<String, dynamic> data;
 
-  const UpdateFormDispatch({super.key, required this.docId, required this.data});
+  const UpdateFormDispatch(
+      {super.key, required this.docId, required this.data});
 
   @override
   State<UpdateFormDispatch> createState() => _UpdateFormState();
@@ -19,7 +20,7 @@ class UpdateFormDispatch extends StatefulWidget {
 
 class _UpdateFormState extends State<UpdateFormDispatch> {
   // Define the controllers at the class level
-late TextEditingController dateController;
+  late TextEditingController dateController;
   late TextEditingController _startpointcontroller;
   late TextEditingController _loadpointcontroller;
   late TextEditingController _droppointcontroller;
@@ -64,7 +65,7 @@ late TextEditingController dateController;
     _droppointcontroller =
         TextEditingController(text: widget.data['Drop Point'] ?? '');
     _nooftonscontroller =
-        TextEditingController(text: widget.data['No Of Tons / Units'] ?? '');
+        TextEditingController(text: widget.data['No Of Tons Units'] ?? '');
     _loadamountcontroller =
         TextEditingController(text: widget.data['Load Amount'] ?? '');
     _deliveryamountcontroller =
@@ -449,7 +450,7 @@ late TextEditingController dateController;
                               }).toList(),
                               onChanged: (newValue) {
                                 setState(() {
-                                  selectedOption = newValue!;                                  
+                                  selectedOption = newValue!;
                                 });
                               },
                             ),
@@ -647,7 +648,7 @@ late TextEditingController dateController;
                     .collection('taurusdispatch')
                     .doc(widget.docId)
                     .update({
-                   'driver': _drivercontroller.text,
+                  'driver': _drivercontroller.text,
                   'diesel': _dieselcontroller.text,
                   'paymenttype': _paytypecontroller.text,
                   'vehiclenumber': _dropController.text,
@@ -655,11 +656,13 @@ late TextEditingController dateController;
                   'Start Point': _startpointcontroller.text,
                   'Load Point': _loadpointcontroller.text,
                   'Drop Point': _droppointcontroller.text,
-                  'No Of Tons / Units': _nooftonscontroller.text,
+                  'No Of Tons Units':
+                      '${_nooftonscontroller.text} $selectedOption',
                   'Load Amount': _loadamountcontroller.text,
                   'Delivery Amount': _deliveryamountcontroller.text,
                   'Customer Name': _customernamecontroller.text,
-                  'Customer Number': _customernocontroller.text
+                  'Customer Number': _customernocontroller.text,
+                  'delDate': Timestamp.now(),
                 }).then((_) {
                   Navigator.pop(context); // Go back after updating
                 });

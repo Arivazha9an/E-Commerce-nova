@@ -214,7 +214,8 @@ class _UpdateFormState extends State<UpdateFormVehicle> {
                             'Brand': _brandcontroller.text,
                             'Lorry': _lorrycontroller.text,
                             'Model': _modelcontroller.text,
-                            'Build Year': _buildyearcontroller.text
+                            'Build Year': _buildyearcontroller.text,
+                            'delDate': Timestamp.now(),
                           }).then((_) {
                             Navigator.pop(context); // Go back after updating
                           });

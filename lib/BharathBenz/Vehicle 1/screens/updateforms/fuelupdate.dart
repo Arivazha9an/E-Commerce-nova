@@ -335,7 +335,8 @@ class _UpdateFormState extends State<UpdateForm> {
                             'Liter': literController.text,
                             'Place': placeController.text,
                             'End Km': endKmController.text,
-                            'Mileage': milage.toString()
+                            'Mileage': milage.toString(),
+                            'delDate': Timestamp.now(),
                           }).then((_) {
                             Navigator.pop(context); // Go back after updating
                           });

@@ -1,6 +1,7 @@
 import 'package:e_commerce/constants/colors.dart';
 import 'package:e_commerce/screens/BottomNavigation.dart';
 import 'package:e_commerce/widgets/custombutton.dart';
+import 'package:e_commerce/widgets/paswordfield.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -47,14 +48,16 @@ class _LoginState extends State<Login> {
       }
     }
   }
-
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.sizeOf(context).width;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login'),
+        title: const Text(
+          'Login',
+          style: TextStyle(color: white),
+        ),
         centerTitle: true,
         backgroundColor: orange,
       ),
@@ -67,7 +70,7 @@ class _LoginState extends State<Login> {
               children: [
                 ClipOval(
                   child: Image.asset(
-                    'assets/images/bharathbenz.jpg',
+                    'assets/icons/AppIconRounded.png',
                     height: 120,
                     width: 120,
                     fit: BoxFit.cover,
@@ -106,7 +109,7 @@ class _LoginState extends State<Login> {
                         },
                       ),
                       const SizedBox(height: 16),
-                      _buildTextField(
+                      CustomPassField(
                         controller: _passwordController,
                         label: 'Password',
                         obscureText: true,

@@ -101,7 +101,8 @@ class _FuelState extends State<Fuel> {
             'Liter': _literscontroller.text,
             'Place': _placecontroller.text,
             'End Km': _endKMcontroller.text,
-             'Mileage':milage.toString()
+             'Mileage':milage.toString(),
+             'delDate': Timestamp.now(),
           });
           Fluttertoast.showToast(
             msg: "Successfully Stored.",

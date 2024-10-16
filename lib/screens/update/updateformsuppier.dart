@@ -200,7 +200,8 @@ class _updateFormCustomerState extends State<UpdateFormSupplier> {
                   'Material': _materialcontroller.text,
                   'Payment': _paymentcontroller.text,
                   'Paid': _paidcontroller.text,
-                  'Not_Paid': _notpaidcontroller.text
+                  'Not_Paid': _notpaidcontroller.text,
+                  'delDate': Timestamp.now(),
                 }).then((_) {
                   Navigator.pop(context); // Go back after updating
                 });

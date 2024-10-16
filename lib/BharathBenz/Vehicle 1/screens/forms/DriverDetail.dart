@@ -129,6 +129,7 @@ class _driverDetailState extends State<BDriverDetail> {
             'Expires': _expirecontroller.text,
             'Insurance Amount': _insuranceamountcontroller.text,
             'Image URL': imageUrl,
+            'delDate': Timestamp.now(),
           });
           Fluttertoast.showToast(
             msg: "Successfully Stored.",
@@ -186,7 +187,7 @@ class _driverDetailState extends State<BDriverDetail> {
     var w = MediaQuery.sizeOf(context).width;
 
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Refuel Detail'),
+      appBar: const CustomAppBar(title: 'Driver Detail'),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(

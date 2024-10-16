@@ -321,7 +321,8 @@ class _UpdateFormState extends State<UpdateFormService> {
                             'Service Place': _serviceplacetroller.text,
                             'Contact': _contactcontroller.text,
                             'Amount': _amountcontroller.text,
-                            'KM Riding': _KMridingcontroller.text
+                            'KM Riding': _KMridingcontroller.text,
+                            'delDate': Timestamp.now(),
                           }).then((_) {
                             Navigator.pop(context); // Go back after updating
                           });

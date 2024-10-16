@@ -101,7 +101,8 @@ class _InsurancedetailState extends State<Insurancedetail> {
             'Policy Number': _policynocontroller.text,
             'Issue': _issuecontroller.text,
             'Expire': _expirecontroller.text,
-            'Insurance Amount': _insuranceamountcontroller.text
+            'Insurance Amount': _insuranceamountcontroller.text,
+            'delDate': Timestamp.now(),
           });
           Fluttertoast.showToast(
             msg: "Successfully Stored.",

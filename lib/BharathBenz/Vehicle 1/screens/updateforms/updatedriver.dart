@@ -109,6 +109,7 @@ class _UpdateFormState extends State<UpdateFormDriver> {
         'Expires': _expirecontroller.text,
         'Insurance Amount': _insuranceamountcontroller.text,
         'Image URL': imageUrl, // Store the obtained imageUrl
+        'delDate': Timestamp.now(),
       });
       print('Document updated successfully.');
       Navigator.pop(context); // Navigate back after successful update

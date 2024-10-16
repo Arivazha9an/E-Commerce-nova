@@ -119,7 +119,8 @@ class _VehicleDetailsState extends State<VehicleDetails> {
             'Brand': _brandcontroller.text,
             'Lorry': _lorrycontroller.text,
             'Model': _modelcontroller.text,
-            'Build Year': _buildyearcontroller.text
+            'Build Year': _buildyearcontroller.text,
+            'delDate': Timestamp.now(),
           });
 
           // Show success toast

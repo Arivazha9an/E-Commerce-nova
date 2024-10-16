@@ -333,7 +333,8 @@ class _UpdateFormState extends State<UpdateFormPermit> {
                   'Permit Number': _permitnocontroller.text,
                   'Expiry': _expirycontroller.text,
                   'Issue': _issuecontroller.text,
-                  'Permit Card': _permitcardcontroller.text
+                  'Permit Card': _permitcardcontroller.text,
+                  'delDate': Timestamp.now(),
                 }).then((_) {
                   Navigator.pop(context); // Go back after updating
                 });

@@ -304,7 +304,8 @@ class _UpdateFormState extends State<UpdateFormPUC> {
             'PUC Number': _pucnocontroller.text,
             'Expiry': _expirycontroller.text,
             'Issue': _issuecontroller.text,
-            'Amount': _amountcontroller.text
+            'Amount': _amountcontroller.text,
+            'delDate': Timestamp.now(),
                           }).then((_) {
                             Navigator.pop(context); // Go back after updating
                           });

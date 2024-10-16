@@ -122,7 +122,8 @@ class _ExpensedetailState extends State<Expensedetail> {
           'Date': _datepickController.text,
           'ExpenseType': _expensecontroller.text,
           'Amount': _loadmancontroller.text,
-          'Km': _otherscontroller.text
+          'Km': _otherscontroller.text,
+          'delDate': Timestamp.now(),
         });
         Fluttertoast.showToast(
           msg: "Successfully Stored.",

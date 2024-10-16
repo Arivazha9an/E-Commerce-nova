@@ -94,7 +94,8 @@ class _ServicesState extends State<Services> {
             'Service Place': _serviceplacetroller.text,
             'Contact': _contactcontroller.text,
             'Amount': _amountcontroller.text,
-            'KM Riding': _KMridingcontroller.text
+            'KM Riding': _KMridingcontroller.text,
+            'delDate': Timestamp.now(),
           });
           Fluttertoast.showToast(
             msg: "Successfully Stored.",

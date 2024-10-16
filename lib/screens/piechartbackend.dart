@@ -132,11 +132,21 @@ class _MyPieChartState extends State<MyPieChart> {
   }
 
   final Map<String, Color> expenseColors = {
+    'Fuel Costs': Colors.green,
     'Lorry Service': Colors.blue,
     'Tyre': Colors.red,
     'Fast tag/Toll': Colors.orange,
-    'abcd': Colors.pinkAccent
+    'Insurance': Colors.purple,
+    'Road Taxes': Colors.brown,
+    'Licensing/Permits': Colors.teal,
+    'Parking': Colors.yellow,
+    'Food and Lodging': Colors.cyan,
+    'Communication': Colors.indigo,
+    'Loan Payments': Colors.grey,
+    'Fines and Penalties': Colors.lime,
+    'Miscellaneous Expenses': Colors.pinkAccent,
   };
+
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -206,7 +216,7 @@ class _MyPieChartState extends State<MyPieChart> {
 
   @override
   Widget build(BuildContext context) {
-   void _saveData(BuildContext context) async {
+    void _saveData(BuildContext context) async {
       if (_addexpenseController.text.isEmpty) {
         showDialog(
           context: context,
@@ -300,7 +310,6 @@ class _MyPieChartState extends State<MyPieChart> {
         }
       }
     }
-
 
     void _addExpense() {
       showDialog(
@@ -545,42 +554,52 @@ class _MyPieChartState extends State<MyPieChart> {
                         child: Padding(
                           padding: const EdgeInsets.only(
                               top: 14, right: 16.0, left: 16.0, bottom: 0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: dataMap.entries.map((entry) {
-                              Color color =
-                                  expenseColors[entry.key] ?? Colors.grey;
-                              return Row(
-                                children: [
-                                  Container(
-                                    width: 8,
-                                    height: 8,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: color,
-                                    ),
+                          child: SingleChildScrollView(
+                            // Allow legend to scroll if needed
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: dataMap.entries.map((entry) {
+                                Color color =
+                                    expenseColors[entry.key] ?? Colors.grey;
+                                return Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 4.0),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 8,
+                                        height: 8,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: color,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        // Wrap text in Expanded to prevent overflow
+                                        child: Text(
+                                          entry.key,
+                                          style: const TextStyle(fontSize: 12),
+                                          overflow: TextOverflow
+                                              .ellipsis, // Handle overflow
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(width: 10),
-                                  Text(
-                                    entry.key,
-                                    style: const TextStyle(fontSize: 12),
-                                  ),
-                                ],
-                              );
-                            }).toList(),
+                                );
+                              }).toList(),
+                            ),
                           ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 40), // Adjust spacing
+                const SizedBox(height: 30), // Adjust spacing
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: 25,
-                    ),
+                  children: const [
+                    SizedBox(width: 25),
                     Text(
                       'Category wise Summary',
                       style: TextStyle(
@@ -607,11 +626,14 @@ class _MyPieChartState extends State<MyPieChart> {
                             color: color.withOpacity(0.7),
                           ),
                           child: ListTile(
-                            title: Text(entry.key,
-                                style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: white)),
+                            title: Text(
+                              entry.key,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: white,
+                              ),
+                            ),
                             trailing: Text(
                               '₹${entry.value.toStringAsFixed(2)}',
                               style:
@@ -621,24 +643,6 @@ class _MyPieChartState extends State<MyPieChart> {
                         ),
                       );
                     }).toList(),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      FloatingActionButton.small(
-                        onPressed: () {
-                          _addExpense();
-                        },
-                        backgroundColor: orange,
-                        shape: const CircleBorder(),
-                        child: const Icon(Icons.add, color: white),
-                      ),
-                      const SizedBox(width: 10), // Adjust spacing
-                      const Text('Add Expense'),
-                    ],
                   ),
                 ),
               ],
