@@ -19,6 +19,8 @@ class UpdateFormDriverT extends StatefulWidget {
 }
 
 class _UpdateFormState extends State<UpdateFormDriverT> {
+  final _formKey = GlobalKey<FormState>();
+
   // Define the controllers at the class level
   late TextEditingController _namecontroller;
   var _imgnamecontroller = TextEditingController();
@@ -64,6 +66,26 @@ class _UpdateFormState extends State<UpdateFormDriverT> {
     } catch (e) {
       print('Error fetching data from Firestore: $e'); // Handle errors
     }
+  }
+    void showDropdownMenu() {
+    FocusScope.of(context).requestFocus(FocusNode());
+    showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(100, 100, 100, 100),
+      items: _items.map((String item) {
+        return PopupMenuItem<String>(
+          value: item,
+          child: Text(item),
+        );
+      }).toList(),
+    ).then((newValue) {
+      if (newValue != null) {
+        setState(() {
+          _selectedItemvehicle = newValue;
+          _dropController.text = newValue;
+        });
+      }
+    });
   }
 
   Future<void> pickImage() async {
@@ -117,28 +139,28 @@ class _UpdateFormState extends State<UpdateFormDriverT> {
     }
   }
 
-
   Future<void> _handleUpdate() async {
     setState(() {
       _isLoading = true; // Set loading state to true
     });
-
-    if (imageFile != null) {
-      String? uploadedImageUrl = await uploadImage(imageFile!);
-      if (uploadedImageUrl != null) {
-        await updateFirestoreWithImageUrl(uploadedImageUrl);
+    if (_formKey.currentState!.validate()) {
+      if (imageFile != null) {
+        String? uploadedImageUrl = await uploadImage(imageFile!);
+        if (uploadedImageUrl != null) {
+          await updateFirestoreWithImageUrl(uploadedImageUrl);
+        } else {
+          print('Failed to upload image.');
+        }
       } else {
-        print('Failed to upload image.');
+        print('No image selected.');
+        // If no image is selected, update other fields
+        await updateFirestoreWithImageUrl(widget.data['Image URL'] ?? '');
       }
-    } else {
-      print('No image selected.');
-      // If no image is selected, update other fields
-      await updateFirestoreWithImageUrl(widget.data['Image URL'] ?? '');
-    }
 
-    setState(() {
-      _isLoading = false; // Set loading state to false
-    });
+      setState(() {
+        _isLoading = false; // Set loading state to false
+      });
+    }
   }
 
   @override
@@ -161,200 +183,224 @@ class _UpdateFormState extends State<UpdateFormDriverT> {
                       border: Border.all(color: orange, width: w * 0.005),
                     ),
                     child: Center(
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(
-                                top: w * 0.03,
-                                right: w * 0.03,
-                                left: w * 0.025,
-                                bottom: w * 0.02),
-                            child: const Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text('Vehicle Number')),
-                          ),
-                          Container(
-                            width: 320,
-                            child: TextField(
-                              controller: _dropController,
-                              readOnly: true,
-                              decoration: InputDecoration(
-                                labelText: 'Select Vehicle No',
-                                suffixIcon: DropdownButton<String>(
-                                  value: _selectedItemvehicle,
-                                  hint: const Text('Select'),
-                                  icon: const Icon(Icons.arrow_drop_down),
-                                  items: _items.map((String item) {
-                                    return DropdownMenuItem<String>(
-                                      value: item,
-                                      child: Text(item),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      _selectedItemvehicle = newValue;
-                                      _dropController.text = newValue ?? '';
-                                    });
-                                  },
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: const BorderSide(color: orange),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: const BorderSide(color: black),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                border: const OutlineInputBorder(
-                                    borderSide: BorderSide(color: orange)),
-                              ),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  top: w * 0.03,
+                                  right: w * 0.03,
+                                  left: w * 0.025,
+                                  bottom: w * 0.02),
+                              child: const Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text('Vehicle Number')),
                             ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(
-                                top: w * 0.03,
-                                right: w * 0.03,
-                                left: w * 0.025,
-                                bottom: w * 0.02),
-                            child: const Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text('Name')),
-                          ),
-                          CustomTextFormField(
-                            width: 320,
-                            controller: _namecontroller,
-                            hintText: 'Type',
-                            labeltext: '',
-                            keyboardType: TextInputType.name,
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(
-                                top: w * 0.03,
-                                right: w * 0.03,
-                                left: w * 0.025,
-                                bottom: w * 0.02),
-                            child: const Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text('Place')),
-                          ),
-                          CustomTextFormField(
-                            width: 320,
-                            controller: _placecontroller,
-                            hintText: '',
-                            labeltext: '',
-                            keyboardType: TextInputType.name,
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(
-                                top: w * 0.03,
-                                right: w * 0.03,
-                                left: w * 0.025,
-                                bottom: w * 0.02),
-                            child: const Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text('Blood Group')),
-                          ),
-                          CustomTextFormField(
-                            width: 320,
-                            controller: _bloddgroupcontroller,
-                            hintText: 'Type',
-                            labeltext: '',
-                            keyboardType: TextInputType.name,
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(
-                                top: w * 0.03,
-                                right: w * 0.03,
-                                left: w * 0.025,
-                                bottom: w * 0.02),
-                            child: const Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text('Photo')),
-                          ),
-                          Container(
-                            width: 320,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(4),
-                              boxShadow: const [
-                                BoxShadow(
-                                  offset: Offset(-4, 4),
-                                  blurRadius: 18,
-                                  spreadRadius: 0,
-                                  color: Color(0x17000000),
-                                )
-                              ],
-                            ),
-                            child: TextFormField(
-                              controller: _imgnamecontroller,
-                              readOnly: true,
-                              decoration: InputDecoration(
-                                labelText: 'No Image Selected',
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: const BorderSide(color: orange),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: const BorderSide(color: black),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                border: const OutlineInputBorder(
-                                    borderSide: BorderSide(color: orange)),
-                                suffixIcon: IconButton(
-                                  icon: const Icon(Icons.image),
-                                  onPressed:
-                                      pickImage, // Call pickImage function
+                            SizedBox(
+                              width: 320,
+                              child: GestureDetector(
+                                onTap: () {
+                                  FocusScope.of(context)
+                                      .requestFocus(FocusNode());
+                                  showDropdownMenu();
+                                },
+                                child: AbsorbPointer(
+                                  child: TextFormField(
+                                    controller: _dropController,
+                                    readOnly: true,
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please select a Value';
+                                      }
+                                      return null;
+                                    },
+                                    decoration: InputDecoration(
+                                      labelText: 'Select Vehicle No',
+                                      suffixIcon: DropdownButton<String>(
+                                        value: _selectedItemvehicle,
+                                        hint: const Text('Select'),
+                                        icon: const Icon(Icons.arrow_drop_down),
+                                        items: _items.map((String item) {
+                                          return DropdownMenuItem<String>(
+                                            value: item,
+                                            child: Text(item),
+                                          );
+                                        }).toList(),
+                                        onChanged: (String? newValue) {
+                                          setState(() {
+                                            _selectedItemvehicle = newValue;
+                                            _dropController.text =
+                                                newValue ?? '';
+                                          });
+                                        },
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide:
+                                            const BorderSide(color: orange),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderSide:
+                                            const BorderSide(color: black),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      border: const OutlineInputBorder(
+                                          borderSide:
+                                              BorderSide(color: orange)),
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(
-                                top: w * 0.03,
-                                right: w * 0.03,
-                                left: w * 0.025,
-                                bottom: w * 0.02),
-                            child: const Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text('Expires')),
-                          ),
-                          CustomTextFormField(
-                            width: 320,
-                            controller: _expirecontroller,
-                            hintText: 'MM/YYYY',
-                            labeltext: '',
-                            keyboardType: TextInputType.datetime,
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(
-                                top: w * 0.03,
-                                right: w * 0.03,
-                                left: w * 0.025,
-                                bottom: w * 0.02),
-                            child: const Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text('Insurance Amount')),
-                          ),
-                          CustomTextFormField(
-                            width: 320,
-                            controller: _insuranceamountcontroller,
-                            hintText: 'Type',
-                            labeltext: '',
-                            keyboardType: TextInputType.number,
-                          ),
-                          SizedBox(
-                            height: w * 0.03,
-                          ),
-                          SizedBox(height: w * 0.02),
-                          CustomTextButton(
-                            width: w * 0.9,
-                            onTap: _handleUpdate,
-                            title: 'Update',
-                            background: orange,
-                            textColor: white,
-                            fontSize: 18,
-                          ),
-                          SizedBox(height: w * 0.02),
-                        ],
+
+
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  top: w * 0.03,
+                                  right: w * 0.03,
+                                  left: w * 0.025,
+                                  bottom: w * 0.02),
+                              child: const Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text('Name')),
+                            ),
+                            CustomTextFormField(
+                              width: 320,
+                              controller: _namecontroller,
+                              hintText: '',
+                              labeltext: '',
+                              keyboardType: TextInputType.name,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  top: w * 0.03,
+                                  right: w * 0.03,
+                                  left: w * 0.025,
+                                  bottom: w * 0.02),
+                              child: const Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text('Place')),
+                            ),
+                            CustomTextFormField(
+                              width: 320,
+                              controller: _placecontroller,
+                              hintText: '',
+                              labeltext: '',
+                              keyboardType: TextInputType.name,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  top: w * 0.03,
+                                  right: w * 0.03,
+                                  left: w * 0.025,
+                                  bottom: w * 0.02),
+                              child: const Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text('Blood Group')),
+                            ),
+                            CustomTextFormField(
+                              width: 320,
+                              controller: _bloddgroupcontroller,
+                              hintText: '',
+                              labeltext: '',
+                              keyboardType: TextInputType.name,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  top: w * 0.03,
+                                  right: w * 0.03,
+                                  left: w * 0.025,
+                                  bottom: w * 0.02),
+                              child: const Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text('Photo')),
+                            ),
+                            Container(
+                              width: 320,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(4),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    offset: Offset(-4, 4),
+                                    blurRadius: 18,
+                                    spreadRadius: 0,
+                                    color: Color(0x17000000),
+                                  )
+                                ],
+                              ),
+                              child: TextFormField(
+                                controller: _imgnamecontroller,
+                                readOnly: true,
+                                decoration: InputDecoration(
+                                  labelText: 'No Image Selected',
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(color: orange),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(color: black),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  border: const OutlineInputBorder(
+                                      borderSide: BorderSide(color: orange)),
+                                  suffixIcon: IconButton(
+                                    icon: const Icon(Icons.image),
+                                    onPressed:
+                                        pickImage, // Call pickImage function
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  top: w * 0.03,
+                                  right: w * 0.03,
+                                  left: w * 0.025,
+                                  bottom: w * 0.02),
+                              child: const Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text('Expires')),
+                            ),
+                            CustomTextFormField(
+                              width: 320,
+                              controller: _expirecontroller,
+                              hintText: 'MM/YYYY',
+                              labeltext: '',
+                              keyboardType: TextInputType.datetime,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  top: w * 0.03,
+                                  right: w * 0.03,
+                                  left: w * 0.025,
+                                  bottom: w * 0.02),
+                              child: const Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text('Insurance Amount')),
+                            ),
+                            CustomTextFormField(
+                              width: 320,
+                              controller: _insuranceamountcontroller,
+                              hintText: '',
+                              labeltext: '',
+                              keyboardType: TextInputType.number,
+                            ),
+                            SizedBox(
+                              height: w * 0.03,
+                            ),
+                            SizedBox(height: w * 0.02),
+                            CustomTextButton(
+                              width: w * 0.9,
+                              onTap: _handleUpdate,
+                              title: 'Update',
+                              background: orange,
+                              textColor: white,
+                              fontSize: 18,
+                            ),
+                            SizedBox(height: w * 0.02),
+                          ],
+                        ),
                       ),
                     ),
                   ),

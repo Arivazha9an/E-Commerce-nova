@@ -10,13 +10,15 @@ class UpdateFormExpenseT extends StatefulWidget {
   final String docId;
   final Map<String, dynamic> data;
 
-  const UpdateFormExpenseT({super.key, required this.docId, required this.data});
+  const UpdateFormExpenseT(
+      {super.key, required this.docId, required this.data});
 
   @override
   State<UpdateFormExpenseT> createState() => _UpdateFormState();
 }
 
 class _UpdateFormState extends State<UpdateFormExpenseT> {
+  final _formKey = GlobalKey<FormState>();
   // Define the controllers at the class level
   late TextEditingController _datepickController;
   late TextEditingController _loadmancontroller;
@@ -25,20 +27,19 @@ class _UpdateFormState extends State<UpdateFormExpenseT> {
   late TextEditingController _dropController;
   late String date;
   late String amount;
-  
 
   String? selectedItem;
   List<String> _items = [];
-  List<String> _expenseitems = [];  
+  List<String> _expenseitems = [];
   String? _selectedItemvehicle;
-  String? _selectedexpense;  
+  String? _selectedexpense;
   @override
   @override
   void initState() {
     _fetchItems();
     super.initState();
-      _fetchexpenseItems();
-    
+    _fetchexpenseItems();
+
     _dropController = TextEditingController(text: widget.data['vehiclenumber']);
     _datepickController =
         TextEditingController(text: widget.data['Date'] ?? '');
@@ -52,7 +53,7 @@ class _UpdateFormState extends State<UpdateFormExpenseT> {
         TextEditingController(text: widget.data['ExpenseType'] ?? '');
   }
 
-    Future<void> _fetchexpenseItems() async {
+  Future<void> _fetchexpenseItems() async {
     try {
       // Fetch data from Firestore (replace 'collectionName' and 'fieldName' with your actual Firestore collection and field)
       QuerySnapshot snapshot =
@@ -69,10 +70,30 @@ class _UpdateFormState extends State<UpdateFormExpenseT> {
       print('Error fetching data from Firestore: $e'); // Handle errors
     }
   }
-
+void showDropdownMenu() {
+    FocusScope.of(context).requestFocus(FocusNode());
+    showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(100, 100, 100, 100),
+      items: _items.map((String item) {
+        return PopupMenuItem<String>(
+          value: item,
+          child: Text(item),
+        );
+      }).toList(),
+    ).then((newValue) {
+      if (newValue != null) {
+        setState(() {
+          _selectedItemvehicle = newValue;
+          _dropController.text = newValue;
+        });
+      }
+    });
+  }
   
+
   @override
-  void dispose() {     
+  void dispose() {
     _expensecontroller.dispose();
     _datepickController.dispose();
     _otherscontroller.dispose();
@@ -125,10 +146,10 @@ class _UpdateFormState extends State<UpdateFormExpenseT> {
   //Storing the data for calender function
 
   Future<void> _storeOrUpdateData(String date, String number) async {
-    if (_dropController.text.isEmpty ||
-        _datepickController.text.isEmpty ||
-        _expensecontroller.text.isEmpty ||
-        _loadmancontroller.text.isEmpty ||
+    if (_dropController.text.isEmpty &&
+        _datepickController.text.isEmpty &&
+        _expensecontroller.text.isEmpty &&
+        _loadmancontroller.text.isEmpty &&
         _otherscontroller.text.isEmpty) {
       showDialog(
         context: context,
@@ -144,7 +165,7 @@ class _UpdateFormState extends State<UpdateFormExpenseT> {
         ),
       );
       return;
-    } else {
+    } else if (_formKey.currentState!.validate()) {
       try {
         // Reference to the Firestore collection
         final collectionRef = FirebaseFirestore.instance
@@ -253,45 +274,59 @@ class _UpdateFormState extends State<UpdateFormExpenseT> {
                             alignment: Alignment.centerLeft,
                             child: Text('Vehicle Number')),
                       ),
-                      Container(
+                       SizedBox(
                         width: 320,
-                        child: TextField(
-                          controller: _dropController,
-                          readOnly: true, // Make the text field read-only
-                          decoration: InputDecoration(
-                            labelText: 'Select Vehicle No',
-                            suffixIcon: DropdownButton<String>(
-                              value: _selectedItemvehicle,
-                              hint: const Text('Select'),
-                              icon: const Icon(Icons.arrow_drop_down),
-                              items: _items.map((String item) {
-                                return DropdownMenuItem<String>(
-                                  value: item,
-                                  child: Text(item),
-                                );
-                              }).toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  _selectedItemvehicle =
-                                      newValue; // Update the selected item
-                                  _dropController.text =
-                                      newValue ?? ''; // Update the text field
-                                });
+                        child: GestureDetector(
+                          onTap: () {
+                            FocusScope.of(context).requestFocus(FocusNode());
+                            showDropdownMenu();
+                          },
+                          child: AbsorbPointer(
+                            child: TextFormField(
+                              controller: _dropController,
+                              readOnly: true,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please select a Value';
+                                }
+                                return null;
                               },
+                              decoration: InputDecoration(
+                                labelText: 'Select Vehicle No',
+                                suffixIcon: DropdownButton<String>(
+                                  value: _selectedItemvehicle,
+                                  hint: const Text('Select'),
+                                  icon: const Icon(Icons.arrow_drop_down),
+                                  items: _items.map((String item) {
+                                    return DropdownMenuItem<String>(
+                                      value: item,
+                                      child: Text(item),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      _selectedItemvehicle = newValue;
+                                      _dropController.text = newValue ?? '';
+                                    });
+                                  },
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(color: orange),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(color: black),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                border: const OutlineInputBorder(
+                                    borderSide: BorderSide(color: orange)),
+                              ),
                             ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: orange),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: black),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            border: const OutlineInputBorder(
-                                borderSide: BorderSide(color: orange)),
                           ),
                         ),
                       ),
+
+
                       Padding(
                         padding: EdgeInsets.only(
                             top: w * 0.03,
@@ -302,7 +337,7 @@ class _UpdateFormState extends State<UpdateFormExpenseT> {
                             alignment: Alignment.centerLeft,
                             child: Text('Date')),
                       ),
-                      Container(
+                     Container(
                         width: 320,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(4),
@@ -312,28 +347,39 @@ class _UpdateFormState extends State<UpdateFormExpenseT> {
                               blurRadius: 18,
                               spreadRadius: 0,
                               color: Color(0x17000000),
-                            )
+                            ),
                           ],
                         ),
-                        child: TextFormField(
-                          controller: _datepickController,
-                          readOnly: true,
-                          decoration: InputDecoration(
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: orange),
-                                borderRadius: BorderRadius.circular(4),
+                        child: GestureDetector(
+                          onTap: _selectDate,
+                          child: AbsorbPointer(
+                            child: TextFormField(
+                              controller: _datepickController,
+                              readOnly: true,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please select a Date';
+                                }
+                                return null;
+                              },
+                              decoration: InputDecoration(
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(color: orange),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderSide:
+                                      const BorderSide(color: Colors.red),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                hintText: 'Choose Date',
+                                prefixIcon: const Icon(Icons.calendar_month),
                               ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Colors.red),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              hintText: 'Choose Date',
-                              prefixIcon: GestureDetector(
-                                  onTap: _selectDate,
-                                  child: Icon(Icons.calendar_month))),
+                            ),
+                          ),
                         ),
                       ),
                       Padding(
@@ -436,36 +482,40 @@ class _UpdateFormState extends State<UpdateFormExpenseT> {
               textColor: white,
               fontSize: 18,
               onTap: () async {
-                if (date.isNotEmpty && amount.isNotEmpty) {
-                  // Correctly call the function
-                  await _storeOrUpdateData(
-                      _datepickController.text, _loadmancontroller.text);
-                } else {
-                  print('Error: Date or Amount is missing or not a string.');
-                  // Handle the missing or incorrect type data
-                }
-                if (date.isNotEmpty && amount.isNotEmpty) {
-                  // Correctly call the function
-                  await updateOrDeleteByDate(date, amount);
-                } else {
-                  print('Error: Date or Amount is missing or not a string.');
-                  // Handle the missing or incorrect type data
-                }
+                if (_formKey.currentState!.validate()) {
+                  if (date.isNotEmpty && amount.isNotEmpty) {
+                    // Correctly call the function
+                    await _storeOrUpdateData(
+                        _datepickController.text, _loadmancontroller.text);
+                  } else {
+                    print('Error: Date or Amount is missing or not a string.');
+                    // Handle the missing or incorrect type data
+                  }
+                  if (date.isNotEmpty && amount.isNotEmpty) {
+                    // Correctly call the function
+                    await updateOrDeleteByDate(date, amount);
+                  } else {
+                    print('Error: Date or Amount is missing or not a string.');
+                    // Handle the missing or incorrect type data
+                  }
 
-                // Update Firestore document with new values
-                FirebaseFirestore.instance
-                    .collection('taurusexpensedetail')
-                    .doc(widget.docId)
-                    .update({
-                  'vehiclenumber': _dropController.text,
-                  'Date': _datepickController.text,
-                  'ExpenseType': _expensecontroller.text,
-                  'Amount': _loadmancontroller.text,
-                  'Km': _otherscontroller.text,
-                  'delDate': Timestamp.now(),
-                }).then((_) {
-                  Navigator.pop(context); // Go back after updating
-                });
+                  // Update Firestore document with new values
+                  FirebaseFirestore.instance
+                      .collection('taurusexpensedetail')
+                      .doc(widget.docId)
+                      .update({
+                    'vehiclenumber': _dropController.text,
+                    'Date': _datepickController.text,
+                    'ExpenseType': _expensecontroller.text,
+                    'Amount': _loadmancontroller.text,
+                    'Km': _otherscontroller.text,
+                    'delDate': Timestamp.now(),
+                  }).then((_) {
+                    Navigator.pop(context); // Go back after updating
+                  });
+                } else {
+                  return;
+                }
               },
             ),
           ],
@@ -474,4 +524,3 @@ class _UpdateFormState extends State<UpdateFormExpenseT> {
     );
   }
 }
-

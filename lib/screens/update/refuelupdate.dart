@@ -18,6 +18,8 @@ class UpdateFormT extends StatefulWidget {
 }
 
 class _UpdateFormState extends State<UpdateFormT> {
+  final _formKey = GlobalKey<FormState>();
+
   // Define the controllers at the class level
   late TextEditingController dateController;
   late TextEditingController startKmController;
@@ -28,7 +30,7 @@ class _UpdateFormState extends State<UpdateFormT> {
   late TextEditingController _dropController;
   List<String> _items = []; // List to hold Firestore data
   String? _selectedItemvehicle; // Variable to hold the selected item
-  @override
+
   @override
   void initState() {
     _fetchItems();
@@ -83,7 +85,26 @@ class _UpdateFormState extends State<UpdateFormT> {
       print('Error fetching data from Firestore: $e'); // Handle errors
     }
   }
-
+  void showDropdownMenu() {
+    FocusScope.of(context).requestFocus(FocusNode());
+    showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(100, 100, 100, 100),
+      items: _items.map((String item) {
+        return PopupMenuItem<String>(
+          value: item,
+          child: Text(item),
+        );
+      }).toList(),
+    ).then((newValue) {
+      if (newValue != null) {
+        setState(() {
+          _selectedItemvehicle = newValue;
+          _dropController.text = newValue;
+        });
+      }
+    });
+  }
   Future<void> _selectDate() async {
     DateTime? picked = await showDatePicker(
       context: context,
@@ -116,233 +137,266 @@ class _UpdateFormState extends State<UpdateFormT> {
                   border: Border.all(color: orange, width: w * 0.005),
                 ),
                 child: Center(
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Vehicle Number')),
-                      ),
-                      Container(
-                        width: 320,
-                        child: TextField(
-                          controller: _dropController,
-                          readOnly: true, // Make the text field read-only
-                          decoration: InputDecoration(
-                            //labelText: 'Select Vehicle No',
-                            suffixIcon: DropdownButton<String>(
-                              value: _selectedItemvehicle,
-                              hint: const Text('Select'),
-                              icon: const Icon(Icons.arrow_drop_down),
-                              items: _items.map((String item) {
-                                return DropdownMenuItem<String>(
-                                  value: item,
-                                  child: Text(item),
-                                );
-                              }).toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  _selectedItemvehicle =
-                                      newValue; // Update the selected item
-                                  _dropController.text =
-                                      newValue ?? ''; // Update the text field
-                                });
-                              },
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: orange),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: black),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            border: const OutlineInputBorder(
-                                borderSide: BorderSide(color: orange)),
-                          ),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Vehicle Number')),
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                          top: w * 0.03,
-                          right: w * 0.03,
-                          left: w * 0.025,
-                          bottom: w * 0.02,
-                        ),
-                        child: const Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text('Date'),
-                        ),
-                      ),
-                      Container(
-                        width: 320,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(4),
-                          boxShadow: const [
-                            BoxShadow(
-                              offset: Offset(-4, 4),
-                              blurRadius: 18,
-                              spreadRadius: 0,
-                              color: Color(0x17000000),
-                            ),
-                          ],
-                        ),
-                        child: TextFormField(
-                          controller: dateController,
-                          readOnly: true,
-                          decoration: InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: orange),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            errorBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.red),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            hintText: 'Choose Date',
-                            prefixIcon: GestureDetector(
-                              onTap: _selectDate,
-                              child: const Icon(Icons.calendar_month),
-                            ),
-                          ),
-                        ),
-                      ),
-                      // Other input fields go here
-                      Padding(
-                        padding: EdgeInsets.only(
-                          top: w * 0.03,
-                          right: w * 0.03,
-                          left: w * 0.025,
-                          bottom: w * 0.02,
-                        ),
-                        child: const Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text('Start Km'),
-                        ),
-                      ),
-                      CustomTextFormFieldIcon(
-                        width: 320,
-                        controller: startKmController,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.number,
-                        prefixicon: const Icon(Icons.share_location_sharp),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Price')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: priceController,
-                        hintText: 'Type',
-                        labeltext: 'Type',
-                        keyboardType: TextInputType.number,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Liters')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: literController,
-                        hintText: 'Type',
-                        labeltext: 'Type',
-                        keyboardType: TextInputType.number,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Place')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: placeController,
-                        hintText: 'Type',
-                        labeltext: 'Type',
-                        keyboardType: TextInputType.name,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('End Km')),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(bottom: w * 0.044),
-                        child: CustomTextFormFieldIcon(
+                        SizedBox(
                           width: 320,
-                          controller: endKmController,
-                          hintText: 'Type',
+                          child: GestureDetector(
+                            onTap: () {
+                              FocusScope.of(context).requestFocus(FocusNode());
+                              showDropdownMenu();
+                            },
+                            child: AbsorbPointer(
+                              child: TextFormField(
+                                controller: _dropController,
+                                readOnly: true,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please select a Value';
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  labelText: 'Select Vehicle No',
+                                  suffixIcon: DropdownButton<String>(
+                                    value: _selectedItemvehicle,
+                                    hint: const Text('Select'),
+                                    icon: const Icon(Icons.arrow_drop_down),
+                                    items: _items.map((String item) {
+                                      return DropdownMenuItem<String>(
+                                        value: item,
+                                        child: Text(item),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        _selectedItemvehicle = newValue;
+                                        _dropController.text = newValue ?? '';
+                                      });
+                                    },
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(color: orange),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(color: black),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  border: const OutlineInputBorder(
+                                      borderSide: BorderSide(color: orange)),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
+
+                        Padding(
+                          padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02,
+                          ),
+                          child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Date'),
+                          ),
+                        ),
+                       Container(
+                          width: 320,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(4),
+                            boxShadow: const [
+                              BoxShadow(
+                                offset: Offset(-4, 4),
+                                blurRadius: 18,
+                                spreadRadius: 0,
+                                color: Color(0x17000000),
+                              ),
+                            ],
+                          ),
+                          child: GestureDetector(
+                            onTap: _selectDate,
+                            child: AbsorbPointer(
+                              child: TextFormField(
+                                controller: dateController,
+                                readOnly: true,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please select a Date';
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(color: orange),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  errorBorder: OutlineInputBorder(
+                                    borderSide:
+                                        const BorderSide(color: Colors.red),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  hintText: 'Choose Date',
+                                  prefixIcon: const Icon(Icons.calendar_month),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        // Other input fields go here
+                        Padding(
+                          padding: EdgeInsets.only(
+                            top: w * 0.03,
+                            right: w * 0.03,
+                            left: w * 0.025,
+                            bottom: w * 0.02,
+                          ),
+                          child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Start Km'),
+                          ),
+                        ),
+                        CustomTextFormFieldIcon(
+                          width: 320,
+                          controller: startKmController,
+                          hintText: '',
                           labeltext: '',
                           keyboardType: TextInputType.number,
                           prefixicon: const Icon(Icons.share_location_sharp),
                         ),
-                      ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Price')),
+                        ),
+                        CustomTextFormField(
+                          width: 320,
+                          controller: priceController,
+                          hintText: '',
+                          labeltext: '',
+                          keyboardType: TextInputType.number,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Liters')),
+                        ),
+                        CustomTextFormField(
+                          width: 320,
+                          controller: literController,
+                          hintText: '',
+                          labeltext: '',
+                          keyboardType: TextInputType.number,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Place')),
+                        ),
+                        CustomTextFormField(
+                          width: 320,
+                          controller: placeController,
+                          hintText: '',
+                          labeltext: '',
+                          keyboardType: TextInputType.name,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('End Km')),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(bottom: w * 0.044),
+                          child: CustomTextFormFieldIcon(
+                            width: 320,
+                            controller: endKmController,
+                            hintText: '',
+                            labeltext: '',
+                            keyboardType: TextInputType.number,
+                            prefixicon: const Icon(Icons.share_location_sharp),
+                          ),
+                        ),
 
-                      // Other fields with similar padding and input
-                      const SizedBox(height: 20),
-                      CustomTextButton(
-                        width: 150,
-                        title: 'Update',
-                        background: orange,
-                        textColor: white,
-                        fontSize: 18,
-                        onTap: () {
-                          int start = int.tryParse(startKmController.text) ?? 0;
-                          int end = int.tryParse(endKmController.text) ?? 0;
-                          int fuel = int.tryParse(literController.text) ?? 0;
-                          final distance = end - start;
-                          final milage = distance / fuel;
-                          // Update Firestore document with new values
-                          FirebaseFirestore.instance
-                              .collection('tauruszrefuel')
-                              .doc(widget.docId)
-                              .update({
-                            'vehiclenumber': _dropController.text,
-                            'date': dateController.text,
-                            'Start KM': startKmController.text,
-                            'Price': priceController.text,
-                            'Liter': literController.text,
-                            'Place': placeController.text,
-                            'End Km': endKmController.text,
-                             'Mileage': milage.toString(),
-                             'delDate': Timestamp.now(),
-                          }).then((_) {
-                            Navigator.pop(context); // Go back after updating
-                          });
-                        },
-                      ),
-                    ],
+                        // Other fields with similar padding and input
+                        const SizedBox(height: 20),
+                        CustomTextButton(
+                          width: 150,
+                          title: 'Update',
+                          background: orange,
+                          textColor: white,
+                          fontSize: 18,
+                          onTap: () {
+                            if (_formKey.currentState!.validate()) {
+                              int start =
+                                  int.tryParse(startKmController.text) ?? 0;
+                              int end = int.tryParse(endKmController.text) ?? 0;
+                              int fuel =
+                                  int.tryParse(literController.text) ?? 0;
+                              final distance = end - start;
+                              final milage = distance / fuel;
+                              // Update Firestore document with new values
+                              FirebaseFirestore.instance
+                                  .collection('tauruszrefuel')
+                                  .doc(widget.docId)
+                                  .update({
+                                'vehiclenumber': _dropController.text,
+                                'date': dateController.text,
+                                'Start KM': startKmController.text,
+                                'Price': priceController.text,
+                                'Liter': literController.text,
+                                'Place': placeController.text,
+                                'End Km': endKmController.text,
+                                'Mileage': milage.toString(),
+                                'delDate': Timestamp.now(),
+                              }).then((_) {
+                                Navigator.pop(
+                                    context); // Go back after updating
+                              });
+                            } else {
+                              return;
+                            }
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

@@ -19,6 +19,8 @@ class UpdateFormDispatch extends StatefulWidget {
 }
 
 class _UpdateFormState extends State<UpdateFormDispatch> {
+  final _formKey = GlobalKey<FormState>();
+
   // Define the controllers at the class level
   late TextEditingController dateController;
   late TextEditingController _startpointcontroller;
@@ -46,9 +48,27 @@ class _UpdateFormState extends State<UpdateFormDispatch> {
 
   List<String> _items = []; // List to hold Firestore data
   String? _selectedItemvehicle;
+void showDropdownMenu() {
+    FocusScope.of(context).requestFocus(FocusNode());
+    showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(100, 100, 100, 100),
+      items: _items.map((String item) {
+        return PopupMenuItem<String>(
+          value: item,
+          child: Text(item),
+        );
+      }).toList(),
+    ).then((newValue) {
+      if (newValue != null) {
+        setState(() {
+          _selectedItemvehicle = newValue;
+          _dropController.text = newValue;
+        });
+      }
+    });
+  }
 
-  // Variable to hold the selected item
-  @override
   @override
   void initState() {
     _fetchItems();
@@ -140,15 +160,15 @@ class _UpdateFormState extends State<UpdateFormDispatch> {
   }
 
   Future<void> _storeOrUpdateData(String date, String number) async {
-    if (_dropController.text.isEmpty ||
-        dateController.text.isEmpty ||
-        _startpointcontroller.text.isEmpty ||
-        _loadpointcontroller.text.isEmpty ||
-        _droppointcontroller.text.isEmpty ||
-        _nooftonscontroller.text.isEmpty ||
-        _loadamountcontroller.text.isEmpty ||
-        _deliveryamountcontroller.text.isEmpty ||
-        _customernamecontroller.text.isEmpty ||
+    if (_dropController.text.isEmpty &&
+        dateController.text.isEmpty &&
+        _startpointcontroller.text.isEmpty &&
+        _loadpointcontroller.text.isEmpty &&
+        _droppointcontroller.text.isEmpty &&
+        _nooftonscontroller.text.isEmpty &&
+        _loadamountcontroller.text.isEmpty &&
+        _deliveryamountcontroller.text.isEmpty &&
+        _customernamecontroller.text.isEmpty &&
         _customernocontroller.text.isEmpty) {
       showDialog(
         context: context,
@@ -164,7 +184,7 @@ class _UpdateFormState extends State<UpdateFormDispatch> {
         ),
       );
       return;
-    } else {
+    } else if (_formKey.currentState!.validate()) {
       try {
         // Reference to the Firestore collection
         final collectionRef = FirebaseFirestore.instance
@@ -274,45 +294,59 @@ class _UpdateFormState extends State<UpdateFormDispatch> {
                             alignment: Alignment.centerLeft,
                             child: Text('Vehicle Number')),
                       ),
-                      Container(
+                      SizedBox(
                         width: 320,
-                        child: TextField(
-                          controller: _dropController,
-                          readOnly: true, // Make the text field read-only
-                          decoration: InputDecoration(
-                            labelText: 'Select Vehicle No',
-                            suffixIcon: DropdownButton<String>(
-                              value: _selectedItemvehicle,
-                              hint: const Text('Select'),
-                              icon: const Icon(Icons.arrow_drop_down),
-                              items: _items.map((String item) {
-                                return DropdownMenuItem<String>(
-                                  value: item,
-                                  child: Text(item),
-                                );
-                              }).toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  _selectedItemvehicle =
-                                      newValue; // Update the selected item
-                                  _dropController.text =
-                                      newValue ?? ''; // Update the text field
-                                });
+                        child: GestureDetector(
+                          onTap: () {
+                            FocusScope.of(context).requestFocus(FocusNode());
+                            showDropdownMenu();
+                          },
+                          child: AbsorbPointer(
+                            child: TextFormField(
+                              controller: _dropController,
+                              readOnly: true,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please select a Value';
+                                }
+                                return null;
                               },
+                              decoration: InputDecoration(
+                                labelText: 'Select Vehicle No',
+                                suffixIcon: DropdownButton<String>(
+                                  value: _selectedItemvehicle,
+                                  hint: const Text('Select'),
+                                  icon: const Icon(Icons.arrow_drop_down),
+                                  items: _items.map((String item) {
+                                    return DropdownMenuItem<String>(
+                                      value: item,
+                                      child: Text(item),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      _selectedItemvehicle = newValue;
+                                      _dropController.text = newValue ?? '';
+                                    });
+                                  },
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(color: orange),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(color: black),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                border: const OutlineInputBorder(
+                                    borderSide: BorderSide(color: orange)),
+                              ),
                             ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: orange),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: black),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            border: const OutlineInputBorder(
-                                borderSide: BorderSide(color: orange)),
                           ),
                         ),
                       ),
+
+
                       Padding(
                         padding: EdgeInsets.only(
                             top: w * 0.03,
@@ -323,7 +357,7 @@ class _UpdateFormState extends State<UpdateFormDispatch> {
                             alignment: Alignment.centerLeft,
                             child: Text('Date')),
                       ),
-                      Container(
+                    Container(
                         width: 320,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(4),
@@ -333,28 +367,39 @@ class _UpdateFormState extends State<UpdateFormDispatch> {
                               blurRadius: 18,
                               spreadRadius: 0,
                               color: Color(0x17000000),
-                            )
+                            ),
                           ],
                         ),
-                        child: TextFormField(
-                          controller: dateController,
-                          readOnly: true,
-                          decoration: InputDecoration(
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: orange),
-                                borderRadius: BorderRadius.circular(4),
+                        child: GestureDetector(
+                          onTap: _selectDate,
+                          child: AbsorbPointer(
+                            child: TextFormField(
+                              controller: dateController,
+                              readOnly: true,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please select a Date';
+                                }
+                                return null;
+                              },
+                              decoration: InputDecoration(
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(color: orange),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderSide:
+                                      const BorderSide(color: Colors.red),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                hintText: 'Choose Date',
+                                prefixIcon: const Icon(Icons.calendar_month),
                               ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Colors.red),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              hintText: 'Choose Date',
-                              prefixIcon: GestureDetector(
-                                  onTap: _selectDate,
-                                  child: const Icon(Icons.calendar_month))),
+                            ),
+                          ),
                         ),
                       ),
                       Padding(
@@ -388,7 +433,7 @@ class _UpdateFormState extends State<UpdateFormDispatch> {
                       CustomTextFormFieldIcon(
                         width: 320,
                         controller: _loadpointcontroller,
-                        hintText: 'Type',
+                        hintText: '',
                         labeltext: '',
                         keyboardType: TextInputType.name,
                         prefixicon: const Icon(Icons.share_location_sharp),
@@ -406,8 +451,8 @@ class _UpdateFormState extends State<UpdateFormDispatch> {
                       CustomTextFormFieldIcon(
                         width: 320,
                         controller: _droppointcontroller,
-                        hintText: 'Type',
-                        labeltext: 'Type',
+                        hintText: '',
+                        labeltext: '',
                         keyboardType: TextInputType.name,
                         prefixicon: const Icon(Icons.share_location_sharp),
                       ),
@@ -470,7 +515,7 @@ class _UpdateFormState extends State<UpdateFormDispatch> {
                       CustomTextFormField(
                         width: 320,
                         controller: _loadamountcontroller,
-                        hintText: 'Type',
+                        hintText: '',
                         labeltext: '',
                         keyboardType: TextInputType.number,
                       ),
@@ -487,7 +532,7 @@ class _UpdateFormState extends State<UpdateFormDispatch> {
                       CustomTextFormField(
                         width: 320,
                         controller: _deliveryamountcontroller,
-                        hintText: 'Type',
+                        hintText: '',
                         labeltext: '',
                         keyboardType: TextInputType.number,
                       ),
@@ -552,7 +597,7 @@ class _UpdateFormState extends State<UpdateFormDispatch> {
                       CustomTextFormField(
                         width: 320,
                         controller: _customernamecontroller,
-                        hintText: 'Type',
+                        hintText: '',
                         labeltext: '',
                         keyboardType: TextInputType.name,
                       ),
@@ -571,7 +616,7 @@ class _UpdateFormState extends State<UpdateFormDispatch> {
                         child: CustomTextFormField(
                           width: 320,
                           controller: _customernocontroller,
-                          hintText: 'Type',
+                          hintText: '',
                           labeltext: '',
                           keyboardType: TextInputType.number,
                         ),
@@ -589,7 +634,7 @@ class _UpdateFormState extends State<UpdateFormDispatch> {
                       CustomTextFormField(
                         width: 320,
                         controller: _drivercontroller,
-                        hintText: 'Type',
+                        hintText: '',
                         labeltext: '',
                         keyboardType: TextInputType.number,
                       ),
@@ -608,7 +653,7 @@ class _UpdateFormState extends State<UpdateFormDispatch> {
                         child: CustomTextFormField(
                           width: 320,
                           controller: _dieselcontroller,
-                          hintText: 'Type',
+                          hintText: '',
                           labeltext: '',
                           keyboardType: TextInputType.number,
                         ),
@@ -628,44 +673,48 @@ class _UpdateFormState extends State<UpdateFormDispatch> {
               textColor: white,
               fontSize: 18,
               onTap: () async {
-                if (date.isNotEmpty && amount.isNotEmpty) {
-                  // Correctly call the function
-                  await _storeOrUpdateData(
-                      dateController.text, _deliveryamountcontroller.text);
+                if (_formKey.currentState!.validate()) {
+                  if (date.isNotEmpty && amount.isNotEmpty) {
+                    // Correctly call the function
+                    await _storeOrUpdateData(
+                        dateController.text, _deliveryamountcontroller.text);
+                  } else {
+                    print('Error: Date or Amount is missing or not a string.');
+                    // Handle the missing or incorrect type data
+                  }
+                  if (date.isNotEmpty && amount.isNotEmpty) {
+                    // Correctly call the function
+                    await updateOrDeleteByDate(date, amount);
+                  } else {
+                    print('Error: Date or Amount is missing or not a string.');
+                    // Handle the missing or incorrect type data
+                  }
+                  // Update Firestore document with new values
+                  FirebaseFirestore.instance
+                      .collection('taurusdispatch')
+                      .doc(widget.docId)
+                      .update({
+                    'driver': _drivercontroller.text,
+                    'diesel': _dieselcontroller.text,
+                    'paymenttype': _paytypecontroller.text,
+                    'vehiclenumber': _dropController.text,
+                    'date': dateController.text,
+                    'Start Point': _startpointcontroller.text,
+                    'Load Point': _loadpointcontroller.text,
+                    'Drop Point': _droppointcontroller.text,
+                    'No Of Tons Units':
+                        '${_nooftonscontroller.text} $selectedOption',
+                    'Load Amount': _loadamountcontroller.text,
+                    'Delivery Amount': _deliveryamountcontroller.text,
+                    'Customer Name': _customernamecontroller.text,
+                    'Customer Number': _customernocontroller.text,
+                    'delDate': Timestamp.now(),
+                  }).then((_) {
+                    Navigator.pop(context); // Go back after updating
+                  });
                 } else {
-                  print('Error: Date or Amount is missing or not a string.');
-                  // Handle the missing or incorrect type data
+                  return;
                 }
-                if (date.isNotEmpty && amount.isNotEmpty) {
-                  // Correctly call the function
-                  await updateOrDeleteByDate(date, amount);
-                } else {
-                  print('Error: Date or Amount is missing or not a string.');
-                  // Handle the missing or incorrect type data
-                }
-                // Update Firestore document with new values
-                FirebaseFirestore.instance
-                    .collection('taurusdispatch')
-                    .doc(widget.docId)
-                    .update({
-                  'driver': _drivercontroller.text,
-                  'diesel': _dieselcontroller.text,
-                  'paymenttype': _paytypecontroller.text,
-                  'vehiclenumber': _dropController.text,
-                  'date': dateController.text,
-                  'Start Point': _startpointcontroller.text,
-                  'Load Point': _loadpointcontroller.text,
-                  'Drop Point': _droppointcontroller.text,
-                  'No Of Tons Units':
-                      '${_nooftonscontroller.text} $selectedOption',
-                  'Load Amount': _loadamountcontroller.text,
-                  'Delivery Amount': _deliveryamountcontroller.text,
-                  'Customer Name': _customernamecontroller.text,
-                  'Customer Number': _customernocontroller.text,
-                  'delDate': Timestamp.now(),
-                }).then((_) {
-                  Navigator.pop(context); // Go back after updating
-                });
               },
             ),
           ],

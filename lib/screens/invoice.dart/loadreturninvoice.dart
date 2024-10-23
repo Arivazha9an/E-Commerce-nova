@@ -296,21 +296,7 @@ class _InvoiceState extends State<Loadreturninvoice> {
     );
   }
 
-//   @override
-//   void initState() {
-//     super.initState();
-//    // Initialize controllers with data from Firestore
-//   vehicleNumber =  widget.data['vehiclenumber'] ?? '';
-//    date= widget.data['date'] ?? '';
-//    startPoint=  widget.data['Start Point'] ?? '';
-//    loadPoint= widget.data['Load Point'] ?? '';
-//     dropPoint= widget.data['Drop Point'] ?? '';
-//   noofTons = widget.data['No Of Tons / Units'] ?? '';
-//     loadAmount = widget.data['Load Amount'] ?? '';
-//    deliveryAmount= widget.data['Delivery Amount'] ?? '';
-//  customerName = widget.data['Customer Name'] ?? '';
-//   customerNo =  widget.data['Customer Number'] ?? '';
-//   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -457,33 +443,18 @@ class _InvoiceState extends State<Loadreturninvoice> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            // SizedBox(
-                            //   width: 100,
-                            //   height: 100,
-                            //   child: TextField(
-                            //     controller: _controllername,
-                            //     maxLines: null, // Allows unlimited lines
-                            //     decoration: InputDecoration(
-                            //       labelText: 'Enter your text',
-                            //       border: OutlineInputBorder(),
-                            //       hintText: 'Type here...',
-                            //     ),
-                            //     keyboardType: TextInputType.multiline,
-                            //   ),
-                            // ),
-
-                            GestureDetector(
+                           GestureDetector(
                               onTap: () => _showSignaturePad(context),
                               child: Container(
                                 height: 60,
                                 width: 120,
                                 decoration: BoxDecoration(
                                   color: Colors.grey[200],
-                                  // border: Border.all(color: Colors.black),
+                                 
                                 ),
                                 child: _signatureImage != null
                                     ? Image.memory(
-                                        _signatureImage!) // Display the signature
+                                        _signatureImage!) 
                                     : const Center(child: Text('Tap to Sign')),
                               ),
                             ),

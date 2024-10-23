@@ -18,6 +18,9 @@ class Loaddispatch extends StatefulWidget {
 }
 
 class _LoadDetailsState extends State<Loaddispatch> {
+final _formKey = GlobalKey<FormState>();
+
+
   final TextEditingController _datepickController = TextEditingController();
   DateTime? pickeddate;
   var _startpointcontroller = TextEditingController();
@@ -71,19 +74,7 @@ class _LoadDetailsState extends State<Loaddispatch> {
         _customernamecontroller.text.isEmpty ||
         _datepickController.text.isEmpty ||
         _customernocontroller.text.isEmpty) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Error'),
-          content: const Text('Please fill all fields.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
+   
       return;
     } else {
       try {
@@ -147,20 +138,41 @@ class _LoadDetailsState extends State<Loaddispatch> {
       print('Error fetching data from Firestore: $e'); // Handle errors
     }
   }
+  void showDropdownMenu() {
+    FocusScope.of(context).requestFocus(FocusNode());
+    showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(100, 100, 100, 100),
+      items: _items.map((String item) {
+        return PopupMenuItem<String>(
+          value: item,
+          child: Text(item),
+        );
+      }).toList(),
+    ).then((newValue) {
+      if (newValue != null) {
+        setState(() {
+          _selectedItemvehicle = newValue;
+          _dropController.text = newValue;
+        });
+      }
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
     void _saveData() async {
-      if (_dropController.text.isEmpty ||
-          _datepickController.text.isEmpty ||
-          _startpointcontroller.text.isEmpty ||
-          _loadpointcontroller.text.isEmpty ||
-          _droppointcontroller.text.isEmpty ||
-          _nooftonscontroller.text.isEmpty ||
-          _loadamountcontroller.text.isEmpty ||
-          _deliveryamountcontroller.text.isEmpty ||
-          _customernamecontroller.text.isEmpty ||
-          _datepickController.text.isEmpty ||
+      if (_dropController.text.isEmpty &&
+          _datepickController.text.isEmpty &&
+          _startpointcontroller.text.isEmpty &&
+          _loadpointcontroller.text.isEmpty &&
+          _droppointcontroller.text.isEmpty &&
+          _nooftonscontroller.text.isEmpty &&
+          _loadamountcontroller.text.isEmpty &&
+          _deliveryamountcontroller.text.isEmpty &&
+          _customernamecontroller.text.isEmpty &&
+          _datepickController.text.isEmpty &&
           _customernocontroller.text.isEmpty) {
         showDialog(
           context: context,
@@ -176,7 +188,7 @@ class _LoadDetailsState extends State<Loaddispatch> {
           ),
         );
         return;
-      } else {
+      } else if (_formKey.currentState!.validate()){
         try {
           await FirebaseFirestore.instance
               .collection('taurusdispatch')
@@ -246,6 +258,9 @@ class _LoadDetailsState extends State<Loaddispatch> {
           );
         }
       }
+      else{
+        return;
+      }
     }
 
     Future<void> _selectDate() async {
@@ -276,359 +291,387 @@ class _LoadDetailsState extends State<Loaddispatch> {
                     borderRadius: const BorderRadius.all(Radius.circular(10)),
                     border: Border.all(color: orange, width: w * 0.005)),
                 child:  Center(
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Vehicle Number')),
-                      ),
-                      Container(
-                        width: 320,
-                        child: TextField(
-                          controller: _dropController,
-                          readOnly: true, // Make the text field read-only
-                          decoration: InputDecoration(
-                            labelText: 'Select Vehicle No',
-                            suffixIcon: DropdownButton<String>(
-                              value: _selectedItemvehicle,
-                              hint: const Text('Select'),
-                              icon: const Icon(Icons.arrow_drop_down),
-                              items: _items.map((String item) {
-                                return DropdownMenuItem<String>(
-                                  value: item,
-                                  child: Text(item),
-                                );
-                              }).toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  _selectedItemvehicle =
-                                      newValue; // Update the selected item
-                                  _dropController.text =
-                                      newValue ?? ''; // Update the text field
-                                });
-                              },
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Vehicle Number')),
+                        ),
+                        SizedBox(
+                          width: 320,
+                          child: GestureDetector(
+                            onTap: () {
+                              FocusScope.of(context).requestFocus(FocusNode());
+                              showDropdownMenu();
+                            },
+                            child: AbsorbPointer(
+                              child: TextFormField(
+                                controller: _dropController,
+                                readOnly: true,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please select a Value';
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  labelText: 'Select Vehicle No',
+                                  suffixIcon: DropdownButton<String>(
+                                    value: _selectedItemvehicle,
+                                    hint: const Text('Select'),
+                                    icon: const Icon(Icons.arrow_drop_down),
+                                    items: _items.map((String item) {
+                                      return DropdownMenuItem<String>(
+                                        value: item,
+                                        child: Text(item),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        _selectedItemvehicle = newValue;
+                                        _dropController.text = newValue ?? '';
+                                      });
+                                    },
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(color: orange),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(color: black),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  border: const OutlineInputBorder(
+                                      borderSide: BorderSide(color: orange)),
+                                ),
+                              ),
                             ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: orange),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: black),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            border: const OutlineInputBorder(
-                                borderSide: BorderSide(color: orange)),
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Date')),
-                      ),
-                      Container(
-                        width: 320,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(4),
-                          boxShadow: const [
-                            BoxShadow(
-                              offset: Offset(-4, 4),
-                              blurRadius: 18,
-                              spreadRadius: 0,
-                              color: Color(0x17000000),
-                            )
-                          ],
+
+
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Date')),
                         ),
-                        child: TextFormField(
-                          controller: _datepickController,
-                          readOnly: true,
-                          decoration: InputDecoration(
+                        Container(
+                          width: 320,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(4),
+                            boxShadow: const [
+                              BoxShadow(
+                                offset: Offset(-4, 4),
+                                blurRadius: 18,
+                                spreadRadius: 0,
+                                color: Color(0x17000000),
+                              ),
+                            ],
+                          ),
+                          child: GestureDetector(
+                            onTap: _selectDate,
+                            child: AbsorbPointer(
+                              child: TextFormField(
+                                controller: _datepickController,
+                                readOnly: true,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please select a Date';
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(color: orange),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  errorBorder: OutlineInputBorder(
+                                    borderSide:
+                                        const BorderSide(color: Colors.red),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  hintText: 'Choose Date',
+                                  prefixIcon: const Icon(Icons.calendar_month),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Start Point')),
+                        ),
+                        CustomTextFormFieldIcon(
+                          width: 320,
+                          controller: _startpointcontroller,
+                          hintText: 'City/Location',
+                          labeltext: '',
+                          keyboardType: TextInputType.name,
+                          prefixicon: const Icon(Icons.share_location_sharp),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Load Point')),
+                        ),
+                        CustomTextFormFieldIcon(
+                          width: 320,
+                          controller: _loadpointcontroller,
+                          hintText: ' ',
+                          labeltext: '',
+                          keyboardType: TextInputType.name,
+                          prefixicon: const Icon(Icons.share_location_sharp),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Drop Point')),
+                        ),
+                        CustomTextFormFieldIcon(
+                          width: 320,
+                          controller: _droppointcontroller,
+                          hintText: ' ',
+                          labeltext: ' ',
+                          keyboardType: TextInputType.name,
+                          prefixicon: const Icon(Icons.share_location_sharp),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('No of Tons / Units')),
+                        ),
+                        Stack(children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: CustomTextFormField(
+                              width: 320,
+                              controller: _nooftonscontroller,
+                              hintText: "",
+                              labeltext: "Item's in $selectedOption",
+                              keyboardType: TextInputType.number,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                right: 30, top: 10, bottom: 6),
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: DropdownButton<String>(
+                                hint: const Text('Select'),
+                                value: selectedOption.isEmpty
+                                    ? null
+                                    : selectedOption,
+                                items: options.map((String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(value),
+                                  );
+                                }).toList(),
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    selectedOption = newValue!;
+                                  
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                        ]),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Load Amount')),
+                        ),
+                        CustomTextFormField(
+                          width: 320,
+                          controller: _loadamountcontroller,
+                          hintText: ' ',
+                          labeltext: '',
+                          keyboardType: TextInputType.number,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Delivery Amount')),
+                        ),
+                        CustomTextFormField(
+                          width: 320,
+                          controller: _deliveryamountcontroller,
+                          hintText: ' ',
+                          labeltext: '',
+                          keyboardType: TextInputType.number,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Payment Type')),
+                        ),
+                        Container(
+                          width: 320,
+                          child: TextField(
+                            controller: _paytypecontroller,
+                            readOnly: true, // Make the text field read-only
+                            decoration: InputDecoration(
+                              labelText: '',
+                              suffixIcon: DropdownButton<String>(
+                                hint: const Text('select'),
+                                value: selectedOption02.isEmpty
+                                    ? null
+                                    : selectedOption02,
+                                items: options02.map((String value02) {
+                                  return DropdownMenuItem<String>(
+                                    value: value02,
+                                    child: Text(value02),
+                                  );
+                                }).toList(),
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    selectedOption02 = newValue!;
+                                    _paytypecontroller.text = newValue;
+                                  });
+                                },
+                              ),
                               focusedBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(color: orange),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              errorBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Colors.red),
-                                borderRadius: BorderRadius.circular(4),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: black),
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                              hintText: 'Choose Date',
-                              prefixIcon: GestureDetector(
-                                  onTap: _selectDate,
-                                  child: const Icon(Icons.calendar_month))),
+                              border: const OutlineInputBorder(
+                                  borderSide: BorderSide(color: orange)),
+                            ),
+                          ),
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Start Point')),
-                      ),
-                      CustomTextFormFieldIcon(
-                        width: 320,
-                        controller: _startpointcontroller,
-                        hintText: 'City/Location',
-                        labeltext: '',
-                        keyboardType: TextInputType.name,
-                        prefixicon: const Icon(Icons.share_location_sharp),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Load Point')),
-                      ),
-                      CustomTextFormFieldIcon(
-                        width: 320,
-                        controller: _loadpointcontroller,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.name,
-                        prefixicon: const Icon(Icons.share_location_sharp),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Drop Point')),
-                      ),
-                      CustomTextFormFieldIcon(
-                        width: 320,
-                        controller: _droppointcontroller,
-                        hintText: 'Type',
-                        labeltext: 'Type',
-                        keyboardType: TextInputType.name,
-                        prefixicon: const Icon(Icons.share_location_sharp),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('No of Tons / Units')),
-                      ),
-                      Stack(children: [
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Customer Name')),
+                        ),
+                        CustomTextFormField(
+                          width: 320,
+                          controller: _customernamecontroller,
+                          hintText: ' ',
+                          labeltext: '',
+                          keyboardType: TextInputType.name,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Customer No')),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(bottom: w * 0.0044),
                           child: CustomTextFormField(
                             width: 320,
-                            controller: _nooftonscontroller,
-                            hintText: "",
-                            labeltext: "Item's in $selectedOption",
+                            controller: _customernocontroller,
+                            hintText: ' ',
+                            labeltext: '',
                             keyboardType: TextInputType.number,
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(
-                              right: 30, top: 10, bottom: 6),
-                          child: Align(
-                            alignment: Alignment.centerRight,
-                            child: DropdownButton<String>(
-                              hint: const Text('Select'),
-                              value: selectedOption.isEmpty
-                                  ? null
-                                  : selectedOption,
-                              items: options.map((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              }).toList(),
-                              onChanged: (newValue) {
-                                setState(() {
-                                  selectedOption = newValue!;
-                                
-                                });
-                              },
-                            ),
-                          ),
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Driver')),
                         ),
-                      ]),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Load Amount')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _loadamountcontroller,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.number,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Delivery Amount')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _deliveryamountcontroller,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.number,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Payment Type')),
-                      ),
-                      Container(
-                        width: 320,
-                        child: TextField(
-                          controller: _paytypecontroller,
-                          readOnly: true, // Make the text field read-only
-                          decoration: InputDecoration(
-                            labelText: '',
-                            suffixIcon: DropdownButton<String>(
-                              hint: const Text('select'),
-                              value: selectedOption02.isEmpty
-                                  ? null
-                                  : selectedOption02,
-                              items: options02.map((String value02) {
-                                return DropdownMenuItem<String>(
-                                  value: value02,
-                                  child: Text(value02),
-                                );
-                              }).toList(),
-                              onChanged: (newValue) {
-                                setState(() {
-                                  selectedOption02 = newValue!;
-                                  _paytypecontroller.text = newValue;
-                                });
-                              },
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: orange),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: black),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            border: const OutlineInputBorder(
-                                borderSide: BorderSide(color: orange)),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Customer Name')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _customernamecontroller,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.name,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Customer No')),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(bottom: w * 0.0044),
-                        child: CustomTextFormField(
+                        CustomTextFormField(
                           width: 320,
-                          controller: _customernocontroller,
-                          hintText: 'Type',
+                          controller: _drivercontroller,
+                          hintText: ' ',
                           labeltext: '',
                           keyboardType: TextInputType.number,
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Driver')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _drivercontroller,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.number,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Diesel')),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(bottom: w * 0.044),
-                        child: CustomTextFormField(
-                          width: 320,
-                          controller: _dieselcontroller,
-                          hintText: 'Type',
-                          labeltext: '',
-                          keyboardType: TextInputType.number,
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Diesel')),
                         ),
-                      ),
-                    ],
+                        Padding(
+                          padding: EdgeInsets.only(bottom: w * 0.044),
+                          child: CustomTextFormField(
+                            width: 320,
+                            controller: _dieselcontroller,
+                            hintText: ' ',
+                            labeltext: '',
+                            keyboardType: TextInputType.number,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

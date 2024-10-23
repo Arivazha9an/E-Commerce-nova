@@ -39,7 +39,7 @@ class _InvoiceState extends State<Loaddispatchinvoice> {
     super.initState();
     date = widget.data['date'] ?? '';
     deliveryAmount = widget.data['Delivery Amount'] ?? '';
-    // Initialize controllers with data from Firestore
+    
     vehicleNumber = widget.data['vehiclenumber'];
 
     startPoint = widget.data['Start Point'] ?? '';
@@ -52,7 +52,7 @@ class _InvoiceState extends State<Loaddispatchinvoice> {
     customerNo = widget.data['Customer Number'] ?? '';
   }
 
-  // Variable to hold the captured signature
+  
   Uint8List? _signatureImage;
 
   Future<void> _showSignaturePad(BuildContext context) async {
@@ -75,7 +75,7 @@ class _InvoiceState extends State<Loaddispatchinvoice> {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    _controller.clear(); // Clear the signature pad
+                    _controller.clear();  
                   },
                   child: const Text('Clear'),
                 ),
@@ -85,10 +85,10 @@ class _InvoiceState extends State<Loaddispatchinvoice> {
                       final signature = await _controller.toPngBytes();
                       if (signature != null) {
                         setState(() {
-                          _signatureImage = signature; // Save the signature
+                          _signatureImage = signature;  
                         });
                       }
-                      Navigator.of(context).pop(); // Close the dialog
+                      Navigator.of(context).pop();  
                     }
                   },
                   child: const Text('Save'),
@@ -103,7 +103,7 @@ class _InvoiceState extends State<Loaddispatchinvoice> {
 
   Future<Uint8List> _createPdf() async {
     final pdf = pw.Document();
-    // Load the image
+    
     pw.MemoryImage? image;
     try {
       final imageData = await rootBundle.load('assets/icons/AppIconRounded.png');
@@ -115,18 +115,18 @@ class _InvoiceState extends State<Loaddispatchinvoice> {
     pdf.addPage(
       pw.Page(
         build: (pw.Context context) => pw.Padding(
-          padding: const pw.EdgeInsets.all(20), // Add padding to the page
+          padding: const pw.EdgeInsets.all(20),  
           child: pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
               pw.SizedBox(height: 10),
-              // Header Section
+               
               pw.Row(
                 mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                 children: [
                   image != null
                       ? pw.Image(image,
-                          width: 50, height: 50) // Add the image to the PDF
+                          width: 50, height: 50)  
                       : pw.Text('Logo',
                           style: const pw.TextStyle(fontSize: 16)),
                   pw.Text(
@@ -138,7 +138,7 @@ class _InvoiceState extends State<Loaddispatchinvoice> {
               ),
               pw.SizedBox(height: 40),
 
-              // Billing Information
+               
               pw.Row(
                 mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                 children: [
@@ -161,10 +161,10 @@ class _InvoiceState extends State<Loaddispatchinvoice> {
               ),
               pw.SizedBox(height: 30),
 
-              // Divider
+            
               pw.Divider(thickness: 1.5),
 
-              // Table Header
+               
               pw.Row(
                 children: [
                   pw.Expanded(
@@ -183,7 +183,7 @@ class _InvoiceState extends State<Loaddispatchinvoice> {
               ),
               pw.Divider(thickness: 1),
 
-              // Table Content
+             
               pw.Row(
                 children: [
                   pw.Expanded(
@@ -248,7 +248,7 @@ class _InvoiceState extends State<Loaddispatchinvoice> {
               ),
               pw.Divider(),
 
-              // Total Amount
+              
               pw.SizedBox(height: 20),
               pw.Align(
                 alignment: pw.Alignment.centerRight,
@@ -257,7 +257,7 @@ class _InvoiceState extends State<Loaddispatchinvoice> {
                         fontSize: 16, fontWeight: pw.FontWeight.bold)),
               ),
 
-              // Signature
+              
               if (_signatureImage != null) ...[
                 pw.SizedBox(height: 40),
                 pw.Align(
@@ -277,7 +277,7 @@ class _InvoiceState extends State<Loaddispatchinvoice> {
 
               pw.SizedBox(height: 20),
 
-              // Footer
+          
               pw.Text('Thank You !!!', style: const pw.TextStyle(fontSize: 18)),
               pw.SizedBox(height: 40),
               pw.Row(
@@ -305,11 +305,11 @@ class _InvoiceState extends State<Loaddispatchinvoice> {
     return pdf.save();
   }
 
-  // Function to share the generated PDF
+ 
   Future<void> _sharePdf() async {
     final pdfBytes = await _createPdf();
 
-    // Share the PDF using share_plus
+ 
     await Share.shareXFiles(
       [
         XFile.fromData(pdfBytes,
@@ -319,22 +319,7 @@ class _InvoiceState extends State<Loaddispatchinvoice> {
     );
   }
 
-//   @override
-//   void initState() {
-//     super.initState();
-//    // Initialize controllers with data from Firestore
-//   vehicleNumber =  widget.data['vehiclenumber'] ?? '';
-//    date= widget.data['date'] ?? '';
-//    startPoint=  widget.data['Start Point'] ?? '';
-//    loadPoint= widget.data['Load Point'] ?? '';
-//     dropPoint= widget.data['Drop Point'] ?? '';
-//   noofTons = widget.data['No Of Tons / Units'] ?? '';
-//     loadAmount = widget.data['Load Amount'] ?? '';
-//    deliveryAmount= widget.data['Delivery Amount'] ?? '';
-//  customerName = widget.data['Customer Name'] ?? '';
-//   customerNo =  widget.data['Customer Number'] ?? '';
-//   }
-
+ 
   @override
   Widget build(BuildContext context) {
     var w = MediaQuery.of(context).size.width;
@@ -480,21 +465,7 @@ class _InvoiceState extends State<Loaddispatchinvoice> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            // SizedBox(
-                            //   width: 100,
-                            //   height: 100,
-                            //   child: TextField(
-                            //     controller: _controllername,
-                            //     maxLines: null, // Allows unlimited lines
-                            //     decoration: InputDecoration(
-                            //       labelText: 'Enter your text',
-                            //       border: OutlineInputBorder(),
-                            //       hintText: 'Type here...',
-                            //     ),
-                            //     keyboardType: TextInputType.multiline,
-                            //   ),
-                            // ),
-
+                       
                             GestureDetector(
                               onTap: () => _showSignaturePad(context),
                               child: Container(
@@ -502,11 +473,12 @@ class _InvoiceState extends State<Loaddispatchinvoice> {
                                 width: 120,
                                 decoration: BoxDecoration(
                                   color: Colors.grey[200],
-                                  // border: Border.all(color: Colors.black),
+                                 
                                 ),
                                 child: _signatureImage != null
                                     ? Image.memory(
-                                        _signatureImage!) // Display the signature
+                                        _signatureImage!)  
+                                        
                                     : const Center(child: Text('Tap to Sign')),
                               ),
                             ),

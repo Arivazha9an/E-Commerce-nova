@@ -18,6 +18,8 @@ class UpdateFormPermitT extends StatefulWidget {
 }
 
 class _UpdateFormState extends State<UpdateFormPermitT> {
+final _formKey = GlobalKey<FormState>();
+
   // Define the controllers at the class level
   late TextEditingController dateController;
   late TextEditingController _dropController;
@@ -26,12 +28,32 @@ class _UpdateFormState extends State<UpdateFormPermitT> {
   late TextEditingController _expirycontroller;
   late TextEditingController _issuecontroller;
   late TextEditingController _permitcardcontroller;
- 
+ void showDropdownMenu() {
+    FocusScope.of(context).requestFocus(FocusNode());
+    showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(100, 100, 100, 100),
+      items: _items.map((String item) {
+        return PopupMenuItem<String>(
+          value: item,
+          child: Text(item),
+        );
+      }).toList(),
+    ).then((newValue) {
+      if (newValue != null) {
+        setState(() {
+          _selectedItemvehicle = newValue;
+          _dropController.text = newValue;
+        });
+      }
+    });
+  }
+
 
   List<String> _items = []; // List to hold Firestore data
   String? _selectedItemvehicle; // Variable to hold the selected item
   @override
-  @override
+  
   void initState() {
     _fetchItems();
     super.initState();
@@ -124,190 +146,218 @@ class _UpdateFormState extends State<UpdateFormPermitT> {
                   border: Border.all(color: orange, width: w * 0.005),
                 ),
                 child: Center(
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Vehicle Number')),
-                      ),
-                      Container(
-                        width: 320,
-                        child: TextField(
-                          controller: _dropController,
-                          readOnly: true, // Make the text field read-only
-                          decoration: InputDecoration(
-                            labelText: 'Select Vehicle No',
-                            suffixIcon: DropdownButton<String>(
-                              value: _selectedItemvehicle,
-                              hint: const Text('Select'),
-                              icon: const Icon(Icons.arrow_drop_down),
-                              items: _items.map((String item) {
-                                return DropdownMenuItem<String>(
-                                  value: item,
-                                  child: Text(item),
-                                );
-                              }).toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  _selectedItemvehicle =
-                                      newValue; // Update the selected item
-                                  _dropController.text =
-                                      newValue ?? ''; // Update the text field
-                                });
-                              },
+                  child:Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Vehicle Number')),
+                        ),
+                        SizedBox(
+                          width: 320,
+                          child: GestureDetector(
+                            onTap: () {
+                              FocusScope.of(context).requestFocus(FocusNode());
+                              showDropdownMenu();
+                            },
+                            child: AbsorbPointer(
+                              child: TextFormField(
+                                controller: _dropController,
+                                readOnly: true,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please select a Value';
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  labelText: 'Select Vehicle No',
+                                  suffixIcon: DropdownButton<String>(
+                                    value: _selectedItemvehicle,
+                                    hint: const Text('Select'),
+                                    icon: const Icon(Icons.arrow_drop_down),
+                                    items: _items.map((String item) {
+                                      return DropdownMenuItem<String>(
+                                        value: item,
+                                        child: Text(item),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        _selectedItemvehicle = newValue;
+                                        _dropController.text = newValue ?? '';
+                                      });
+                                    },
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(color: orange),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(color: black),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  border: const OutlineInputBorder(
+                                      borderSide: BorderSide(color: orange)),
+                                ),
+                              ),
                             ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: orange),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: black),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            border: const OutlineInputBorder(
-                                borderSide: BorderSide(color: orange)),
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Date')),
-                      ),
-                      Container(
-                        width: 320,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(4),
-                          boxShadow: const [
-                            BoxShadow(
-                              offset: Offset(-4, 4),
-                              blurRadius: 18,
-                              spreadRadius: 0,
-                              color: Color(0x17000000),
-                            )
-                          ],
+
+
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Date')),
                         ),
-                        child: TextFormField(
-                          controller: dateController,
-                          readOnly: true,
-                          decoration: InputDecoration(
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: orange),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Colors.red),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              hintText: 'Choose Date',
-                              prefixIcon: GestureDetector(
-                                  onTap: _selectDate,
-                                  child: const Icon(Icons.calendar_month))),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Permit Type')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _permittypecontroller,
-                        hintText: 'type',
-                        labeltext: '',
-                        keyboardType: TextInputType.name,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Permit No')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _permitnocontroller,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.number,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Expiry')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _expirycontroller,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.number,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Issue')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _issuecontroller,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.name,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Permit Card')),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(bottom: w * 0.044),
-                        child: CustomTextFormField(
+                       Container(
                           width: 320,
-                          controller: _permitcardcontroller,
-                          hintText: 'Type',
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(4),
+                            boxShadow: const [
+                              BoxShadow(
+                                offset: Offset(-4, 4),
+                                blurRadius: 18,
+                                spreadRadius: 0,
+                                color: Color(0x17000000),
+                              ),
+                            ],
+                          ),
+                          child: GestureDetector(
+                            onTap: _selectDate,
+                            child: AbsorbPointer(
+                              child: TextFormField(
+                                controller: dateController,
+                                readOnly: true,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please select a Date';
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(color: orange),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  errorBorder: OutlineInputBorder(
+                                    borderSide:
+                                        const BorderSide(color: Colors.red),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  hintText: 'Choose Date',
+                                  prefixIcon: const Icon(Icons.calendar_month),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Permit Type')),
+                        ),
+                        CustomTextFormField(
+                          width: 320,
+                          controller: _permittypecontroller,
+                          hintText: '',
                           labeltext: '',
                           keyboardType: TextInputType.name,
                         ),
-                      ),
-                    ],
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Permit No')),
+                        ),
+                        CustomTextFormField(
+                          width: 320,
+                          controller: _permitnocontroller,
+                          hintText: '',
+                          labeltext: '',
+                          keyboardType: TextInputType.number,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Expiry')),
+                        ),
+                        CustomTextFormField(
+                          width: 320,
+                          controller: _expirycontroller,
+                          hintText: '',
+                          labeltext: '',
+                          keyboardType: TextInputType.number,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Issue')),
+                        ),
+                        CustomTextFormField(
+                          width: 320,
+                          controller: _issuecontroller,
+                          hintText: '',
+                          labeltext: '',
+                          keyboardType: TextInputType.name,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Permit Card')),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(bottom: w * 0.044),
+                          child: CustomTextFormField(
+                            width: 320,
+                            controller: _permitcardcontroller,
+                            hintText: '',
+                            labeltext: '',
+                            keyboardType: TextInputType.name,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -323,22 +373,28 @@ class _UpdateFormState extends State<UpdateFormPermitT> {
               fontSize: 18,
               onTap: () {
                 // Update Firestore document with new values
-                FirebaseFirestore.instance
-                    .collection('tauruspermit')
-                    .doc(widget.docId)
-                    .update({
-                  'vehiclenumber': _dropController.text,
-                  'date': dateController.text,
-                  'Permit Type': _permittypecontroller.text,
-                  'Permit Number': _permitnocontroller.text,
-                  'Expiry': _expirycontroller.text,
-                  'Issue': _issuecontroller.text,
-                  'Permit Card': _permitcardcontroller.text,
-                  'delDate': Timestamp.now(),
 
-                }).then((_) {
-                  Navigator.pop(context); // Go back after updating
-                });
+                if(_formKey.currentState!.validate()){
+                  FirebaseFirestore.instance
+                      .collection('tauruspermit')
+                      .doc(widget.docId)
+                      .update({
+                    'vehiclenumber': _dropController.text,
+                    'date': dateController.text,
+                    'Permit Type': _permittypecontroller.text,
+                    'Permit Number': _permitnocontroller.text,
+                    'Expiry': _expirycontroller.text,
+                    'Issue': _issuecontroller.text,
+                    'Permit Card': _permitcardcontroller.text,
+                    'delDate': Timestamp.now(),
+                  }).then((_) {
+                    Navigator.pop(context); // Go back after updating
+                  });
+                }
+                else{
+                  return;
+                }
+               
               },
             ),
           ],

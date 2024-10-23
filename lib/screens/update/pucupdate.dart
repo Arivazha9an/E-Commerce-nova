@@ -17,6 +17,8 @@ class UpdateFormPUCT extends StatefulWidget {
 }
 
 class _UpdateFormState extends State<UpdateFormPUCT> {
+  final _formKey = GlobalKey<FormState>();
+
   // Define the controllers at the class level
   late TextEditingController dateController;
   late TextEditingController _pucnocontroller;
@@ -26,7 +28,8 @@ class _UpdateFormState extends State<UpdateFormPUCT> {
   late TextEditingController _dropController;
   List<String> _items = []; // List to hold Firestore data
   String? _selectedItemvehicle; // Variable to hold the selected item
-  @override
+
+
   @override
   void initState() {
     _fetchItems();
@@ -40,6 +43,26 @@ class _UpdateFormState extends State<UpdateFormPUCT> {
     _expirycontroller = TextEditingController(text: widget.data['Issue'] ?? '');
     _amountcontroller =
         TextEditingController(text: widget.data['Amount'] ?? '');
+  }
+    void showDropdownMenu() {
+    FocusScope.of(context).requestFocus(FocusNode());
+    showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(100, 100, 100, 100),
+      items: _items.map((String item) {
+        return PopupMenuItem<String>(
+          value: item,
+          child: Text(item),
+        );
+      }).toList(),
+    ).then((newValue) {
+      if (newValue != null) {
+        setState(() {
+          _selectedItemvehicle = newValue;
+          _dropController.text = newValue;
+        });
+      }
+    });
   }
 
   @override
@@ -126,45 +149,59 @@ class _UpdateFormState extends State<UpdateFormPUCT> {
                             alignment: Alignment.centerLeft,
                             child: Text('Vehicle Number')),
                       ),
-                      Container(
+                      SizedBox(
                         width: 320,
-                        child: TextField(
-                          controller: _dropController,
-                          readOnly: true, // Make the text field read-only
-                          decoration: InputDecoration(
-                            labelText: 'Select Vehicle No',
-                            suffixIcon: DropdownButton<String>(
-                              value: _selectedItemvehicle,
-                              hint: const Text('Select'),
-                              icon: const Icon(Icons.arrow_drop_down),
-                              items: _items.map((String item) {
-                                return DropdownMenuItem<String>(
-                                  value: item,
-                                  child: Text(item),
-                                );
-                              }).toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  _selectedItemvehicle =
-                                      newValue; // Update the selected item
-                                  _dropController.text =
-                                      newValue ?? ''; // Update the text field
-                                });
+                        child: GestureDetector(
+                          onTap: () {
+                            FocusScope.of(context).requestFocus(FocusNode());
+                            showDropdownMenu();
+                          },
+                          child: AbsorbPointer(
+                            child: TextFormField(
+                              controller: _dropController,
+                              readOnly: true,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please select a Value';
+                                }
+                                return null;
                               },
+                              decoration: InputDecoration(
+                                labelText: 'Select Vehicle No',
+                                suffixIcon: DropdownButton<String>(
+                                  value: _selectedItemvehicle,
+                                  hint: const Text('Select'),
+                                  icon: const Icon(Icons.arrow_drop_down),
+                                  items: _items.map((String item) {
+                                    return DropdownMenuItem<String>(
+                                      value: item,
+                                      child: Text(item),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      _selectedItemvehicle = newValue;
+                                      _dropController.text = newValue ?? '';
+                                    });
+                                  },
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(color: orange),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(color: black),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                border: const OutlineInputBorder(
+                                    borderSide: BorderSide(color: orange)),
+                              ),
                             ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: orange),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: black),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            border: const OutlineInputBorder(
-                                borderSide: BorderSide(color: orange)),
                           ),
                         ),
                       ),
+
+
                       Padding(
                         padding: EdgeInsets.only(
                             top: w * 0.03,
@@ -175,7 +212,7 @@ class _UpdateFormState extends State<UpdateFormPUCT> {
                             alignment: Alignment.centerLeft,
                             child: Text('Date')),
                       ),
-                      Container(
+                     Container(
                         width: 320,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(4),
@@ -185,28 +222,39 @@ class _UpdateFormState extends State<UpdateFormPUCT> {
                               blurRadius: 18,
                               spreadRadius: 0,
                               color: Color(0x17000000),
-                            )
+                            ),
                           ],
                         ),
-                        child: TextFormField(
-                          controller: dateController,
-                          readOnly: true,
-                          decoration: InputDecoration(
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: orange),
-                                borderRadius: BorderRadius.circular(4),
+                        child: GestureDetector(
+                          onTap: _selectDate,
+                          child: AbsorbPointer(
+                            child: TextFormField(
+                              controller: dateController,
+                              readOnly: true,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please select a Date';
+                                }
+                                return null;
+                              },
+                              decoration: InputDecoration(
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(color: orange),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderSide:
+                                      const BorderSide(color: Colors.red),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                hintText: 'Choose Date',
+                                prefixIcon: const Icon(Icons.calendar_month),
                               ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Colors.red),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              hintText: 'Choose Date',
-                              prefixIcon: GestureDetector(
-                                  onTap: _selectDate,
-                                  child: const Icon(Icons.calendar_month))),
+                            ),
+                          ),
                         ),
                       ),
                       Padding(
@@ -222,7 +270,7 @@ class _UpdateFormState extends State<UpdateFormPUCT> {
                       CustomTextFormField(
                         width: 320,
                         controller: _pucnocontroller,
-                        hintText: 'type',
+                        hintText: '',
                         labeltext: '',
                         keyboardType: TextInputType.number,
                       ),
@@ -239,7 +287,7 @@ class _UpdateFormState extends State<UpdateFormPUCT> {
                       CustomTextFormField(
                         width: 320,
                         controller: _issuecontroller,
-                        hintText: 'Type',
+                        hintText: '',
                         labeltext: '',
                         keyboardType: TextInputType.name,
                       ),
@@ -256,7 +304,7 @@ class _UpdateFormState extends State<UpdateFormPUCT> {
                       CustomTextFormField(
                         width: 320,
                         controller: _expirycontroller,
-                        hintText: 'Type',
+                        hintText: '',
                         labeltext: '',
                         keyboardType: TextInputType.number,
                       ),
@@ -275,7 +323,7 @@ class _UpdateFormState extends State<UpdateFormPUCT> {
                         child: CustomTextFormField(
                           width: 320,
                           controller: _amountcontroller,
-                          hintText: 'Type',
+                          hintText: '',
                           labeltext: '',
                           keyboardType: TextInputType.number,
                         ),
@@ -294,23 +342,26 @@ class _UpdateFormState extends State<UpdateFormPUCT> {
               textColor: white,
               fontSize: 18,
               onTap: () {
-                // Update Firestore document with new values
-                FirebaseFirestore.instance
-                    .collection('tauruspuc')
-                    .doc(widget.docId)
-                    .update({
-                  'vehiclenumber': _dropController.text,
-                  'date': dateController.text,
-                  'PUC Number': _pucnocontroller.text,
-                  'Expiry': _expirycontroller.text,
-                  'Issue': _issuecontroller.text,
-                  'Amount': _amountcontroller.text,
-                  'delDate': Timestamp.now(),
+                if (_formKey.currentState!.validate()) {
+                  FirebaseFirestore.instance
+                      .collection('tauruspuc')
+                      .doc(widget.docId)
+                      .update({
+                    'vehiclenumber': _dropController.text,
+                    'date': dateController.text,
+                    'PUC Number': _pucnocontroller.text,
+                    'Expiry': _expirycontroller.text,
+                    'Issue': _issuecontroller.text,
+                    'Amount': _amountcontroller.text,
+                    'delDate': Timestamp.now(),
+                  }).then((_) {
+                    Navigator.pop(context); // Go back after updating
+                  });
+                } else {
+                  return;
+                }
 
-                  
-                }).then((_) {
-                  Navigator.pop(context); // Go back after updating
-                });
+                // Update Firestore document with new values
               },
             ),
           ],

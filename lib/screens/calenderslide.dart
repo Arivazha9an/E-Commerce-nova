@@ -339,15 +339,15 @@ class _CalenderslideState extends State<Calenderslide> {
           style: TextStyle(
             
             background: _currentPage == page 
-          ? (Paint()..color = orange)  // Yellow background if condition is true
-          : (Paint()..color =white), 
+          ? (Paint()..color = orange) 
+          : (Paint()..color = Colors.transparent), 
             fontSize: 20,
             color: _currentPage == page ? Colors.blue : Colors.black,
             decoration: _currentPage == page
                 ? TextDecoration.underline
                 : TextDecoration.none,
           ),
-          duration: Duration(milliseconds: 300),
+          duration: Duration(milliseconds: 100),
           child: Text(
             text,
             style: TextStyle(fontSize: 22, color: 

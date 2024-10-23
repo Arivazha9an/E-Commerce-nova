@@ -16,6 +16,9 @@ class VehicleDetails extends StatefulWidget {
 }
 
 class _VehicleDetailsState extends State<VehicleDetails> {
+
+final _formKey = GlobalKey<FormState>();
+
   var _vehiclecondition = TextEditingController();
   var _regnocontroller = TextEditingController();
   var _brandcontroller = TextEditingController();
@@ -63,11 +66,11 @@ class _VehicleDetailsState extends State<VehicleDetails> {
   @override
   Widget build(BuildContext context) {
     void _saveData() async {
-      if (_vehiclecondition.text.isEmpty ||
-          _regnocontroller.text.isEmpty ||
-          _brandcontroller.text.isEmpty ||
-          _lorrycontroller.text.isEmpty ||
-          _modelcontroller.text.isEmpty ||
+      if (_vehiclecondition.text.isEmpty &&
+          _regnocontroller.text.isEmpty &&
+          _brandcontroller.text.isEmpty &&
+          _lorrycontroller.text.isEmpty &&
+          _modelcontroller.text.isEmpty &&
           _buildyearcontroller.text.isEmpty) {
         // Show error dialog if fields are empty
         showDialog(
@@ -109,7 +112,7 @@ class _VehicleDetailsState extends State<VehicleDetails> {
             ),
           );
           return;
-        } else {
+        } else if(_formKey.currentState!.validate()){
           // Save data to Firestore
           await FirebaseFirestore.instance
               .collection('taurusvehicledetail')
@@ -191,114 +194,117 @@ class _VehicleDetailsState extends State<VehicleDetails> {
                     borderRadius: const BorderRadius.all(Radius.circular(10)),
                     border: Border.all(color: orange, width: w * 0.005)),
                 child: Center(
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Vehicle Condition')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _vehiclecondition,
-                        hintText: '',
-                        labeltext: '',
-                        keyboardType: TextInputType.name,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Registration No')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _regnocontroller,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.name,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Brand')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _brandcontroller,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.name,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('lorry')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _lorrycontroller,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.name,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Model')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _modelcontroller,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.name,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Build Year')),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(bottom: w * 0.044),
-                        child: CustomTextFormField(
-                          width: 320,
-                          controller: _buildyearcontroller,
-                          hintText: 'Type',
-                          labeltext: '',
-                          keyboardType: TextInputType.number,
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Vehicle Condition')),
                         ),
-                      ),
-                    ],
+                        CustomTextFormField(
+                          width: 320,
+                          controller: _vehiclecondition,
+                          hintText: '',
+                          labeltext: '',
+                          keyboardType: TextInputType.name,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Registration No')),
+                        ),
+                        CustomTextFormField(
+                          width: 320,
+                          controller: _regnocontroller,
+                          hintText: '',
+                          labeltext: '',
+                          keyboardType: TextInputType.name,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Brand')),
+                        ),
+                        CustomTextFormField(
+                          width: 320,
+                          controller: _brandcontroller,
+                          hintText: '',
+                          labeltext: '',
+                          keyboardType: TextInputType.name,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('lorry')),
+                        ),
+                        CustomTextFormField(
+                          width: 320,
+                          controller: _lorrycontroller,
+                          hintText: '',
+                          labeltext: '',
+                          keyboardType: TextInputType.name,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Model')),
+                        ),
+                        CustomTextFormField(
+                          width: 320,
+                          controller: _modelcontroller,
+                          hintText: '',
+                          labeltext: '',
+                          keyboardType: TextInputType.name,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Build Year')),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(bottom: w * 0.044),
+                          child: CustomTextFormField(
+                            width: 320,
+                            controller: _buildyearcontroller,
+                            hintText: '',
+                            labeltext: '',
+                            keyboardType: TextInputType.number,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

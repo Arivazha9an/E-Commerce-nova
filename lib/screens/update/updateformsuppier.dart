@@ -17,6 +17,8 @@ class UpdateFormSupplier extends StatefulWidget {
 }
 
 class _updateFormCustomerState extends State<UpdateFormSupplier> {
+  final _formKey = GlobalKey<FormState>();
+
   // Define the controllers at the class level
   late TextEditingController _namecontroller;
   late TextEditingController _placecontroller;
@@ -68,116 +70,119 @@ class _updateFormCustomerState extends State<UpdateFormSupplier> {
                     borderRadius: const BorderRadius.all(Radius.circular(10)),
                     border: Border.all(color: orange, width: w * 0.005)),
                 child: Center(
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Name')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _namecontroller,
-                        hintText: '',
-                        labeltext: '',
-                        keyboardType: TextInputType.name,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('place')),
-                      ),
-                      CustomTextFormFieldIcon(
-                        width: 320,
-                        controller: _placecontroller,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.name,
-                        prefixicon: const Icon(Icons.share_location_sharp),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Material')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _materialcontroller,
-                        hintText: 'Type',
-                        labeltext: 'Type',
-                        keyboardType: TextInputType.name,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Payment')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _paymentcontroller,
-                        hintText: 'Type',
-                        labeltext: 'Type',
-                        keyboardType: TextInputType.number,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Paid')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _paidcontroller,
-                        hintText: 'Type',
-                        labeltext: 'Type',
-                        keyboardType: TextInputType.name,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Not Paid')),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(bottom: w * 0.044),
-                        child: CustomTextFormFieldIcon(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Name')),
+                        ),
+                        CustomTextFormField(
                           width: 320,
-                          controller: _notpaidcontroller,
-                          hintText: 'Type',
+                          controller: _namecontroller,
+                          hintText: '',
+                          labeltext: '',
+                          keyboardType: TextInputType.name,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('place')),
+                        ),
+                        CustomTextFormFieldIcon(
+                          width: 320,
+                          controller: _placecontroller,
+                          hintText: '',
                           labeltext: '',
                           keyboardType: TextInputType.name,
                           prefixicon: const Icon(Icons.share_location_sharp),
                         ),
-                      ),
-                    ],
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Material')),
+                        ),
+                        CustomTextFormField(
+                          width: 320,
+                          controller: _materialcontroller,
+                          hintText: '',
+                          labeltext: '',
+                          keyboardType: TextInputType.name,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Payment')),
+                        ),
+                        CustomTextFormField(
+                          width: 320,
+                          controller: _paymentcontroller,
+                          hintText: '',
+                          labeltext: '',
+                          keyboardType: TextInputType.number,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Paid')),
+                        ),
+                        CustomTextFormField(
+                          width: 320,
+                          controller: _paidcontroller,
+                          hintText: '',
+                          labeltext: '',
+                          keyboardType: TextInputType.name,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Not Paid')),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(bottom: w * 0.044),
+                          child: CustomTextFormFieldIcon(
+                            width: 320,
+                            controller: _notpaidcontroller,
+                            hintText: '',
+                            labeltext: '',
+                            keyboardType: TextInputType.name,
+                            prefixicon: const Icon(Icons.share_location_sharp),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -191,20 +196,25 @@ class _updateFormCustomerState extends State<UpdateFormSupplier> {
               fontSize: 18,
               onTap: () {
                 // Update Firestore document with new values
-                FirebaseFirestore.instance
-                    .collection('supplierdetails')
-                    .doc(widget.docId)
-                    .update({
-                  'Name': _namecontroller.text,
-                  'Place': _placecontroller.text,
-                  'Material': _materialcontroller.text,
-                  'Payment': _paymentcontroller.text,
-                  'Paid': _paidcontroller.text,
-                  'Not_Paid': _notpaidcontroller.text,
-                  'delDate': Timestamp.now(),
-                }).then((_) {
-                  Navigator.pop(context); // Go back after updating
-                });
+
+                if (_formKey.currentState!.validate()) {
+                  FirebaseFirestore.instance
+                      .collection('supplierdetails')
+                      .doc(widget.docId)
+                      .update({
+                    'Name': _namecontroller.text,
+                    'Place': _placecontroller.text,
+                    'Material': _materialcontroller.text,
+                    'Payment': _paymentcontroller.text,
+                    'Paid': _paidcontroller.text,
+                    'Not_Paid': _notpaidcontroller.text,
+                    'delDate': Timestamp.now(),
+                  }).then((_) {
+                    Navigator.pop(context); // Go back after updating
+                  });
+                } else {
+                  return;
+                }
               },
             ),
           ],

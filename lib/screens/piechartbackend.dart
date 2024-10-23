@@ -601,7 +601,7 @@ class _MyPieChartState extends State<MyPieChart> {
                   children: const [
                     SizedBox(width: 25),
                     Text(
-                      'Category wise Summary',
+                      'Category wise Expense',
                       style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w500,

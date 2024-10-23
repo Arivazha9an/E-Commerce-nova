@@ -17,6 +17,10 @@ class Insurancedetail extends StatefulWidget {
 }
 
 class _InsurancedetailState extends State<Insurancedetail> {
+
+final _formKey = GlobalKey<FormState>();
+
+
    final TextEditingController _datepickController = TextEditingController();
   var _companycontroller = TextEditingController();
   var _policytypecontroller = TextEditingController();
@@ -64,16 +68,38 @@ class _InsurancedetailState extends State<Insurancedetail> {
     }
   }
 
+  void showDropdownMenu() {
+    FocusScope.of(context).requestFocus(FocusNode());
+    showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(100, 100, 100, 100),
+      items: _items.map((String item) {
+        return PopupMenuItem<String>(
+          value: item,
+          child: Text(item),
+        );
+      }).toList(),
+    ).then((newValue) {
+      if (newValue != null) {
+        setState(() {
+          _selectedItemvehicle = newValue;
+          _dropController.text = newValue;
+        });
+      }
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     void _saveData() async {
-      if (_dropController.text.isEmpty ||
-          _datepickController.text.isEmpty ||
-          _companycontroller.text.isEmpty ||
-          _policytypecontroller.text.isEmpty ||
-          _policynocontroller.text.isEmpty ||
-          _issuecontroller.text.isEmpty ||
-          _expirecontroller.text.isEmpty ||
+      if (_dropController.text.isEmpty &&
+          _datepickController.text.isEmpty &&
+          _companycontroller.text.isEmpty &&
+          _policytypecontroller.text.isEmpty &&
+          _policynocontroller.text.isEmpty &&
+          _issuecontroller.text.isEmpty &&
+          _expirecontroller.text.isEmpty &&
           _insuranceamountcontroller.text.isEmpty) {
         showDialog(
           context: context,
@@ -89,7 +115,7 @@ class _InsurancedetailState extends State<Insurancedetail> {
           ),
         );
         return;
-      } else {
+      } else if (_formKey.currentState!.validate()){
         try {
           await FirebaseFirestore.instance
               .collection('taurusinsurance')
@@ -154,6 +180,9 @@ class _InsurancedetailState extends State<Insurancedetail> {
           );
         }
       }
+      else{
+        return;
+      }
     }
 
     Future<void> _selectDate() async {
@@ -184,207 +213,235 @@ class _InsurancedetailState extends State<Insurancedetail> {
                     borderRadius: const BorderRadius.all(Radius.circular(10)),
                     border: Border.all(color: orange, width: w * 0.005)),
                 child: Center(
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Vehicle Number')),
-                      ),
-                      Container(
-                        width: 320,
-                        child: TextField(
-                          controller: _dropController,
-                          readOnly: true, // Make the text field read-only
-                          decoration: InputDecoration(
-                            labelText: 'Select Vehicle No',
-                            suffixIcon: DropdownButton<String>(
-                              value: _selectedItemvehicle,
-                              hint: const Text('Select'),
-                              icon: const Icon(Icons.arrow_drop_down),
-                              items: _items.map((String item) {
-                                return DropdownMenuItem<String>(
-                                  value: item,
-                                  child: Text(item),
-                                );
-                              }).toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  _selectedItemvehicle =
-                                      newValue; // Update the selected item
-                                  _dropController.text =
-                                      newValue ?? ''; // Update the text field
-                                });
-                              },
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Vehicle Number')),
+                        ),
+                        SizedBox(
+                          width: 320,
+                          child: GestureDetector(
+                            onTap: () {
+                              FocusScope.of(context).requestFocus(FocusNode());
+                              showDropdownMenu();
+                            },
+                            child: AbsorbPointer(
+                              child: TextFormField(
+                                controller: _dropController,
+                                readOnly: true,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please select a Value';
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  labelText: 'Select Vehicle No',
+                                  suffixIcon: DropdownButton<String>(
+                                    value: _selectedItemvehicle,
+                                    hint: const Text('Select'),
+                                    icon: const Icon(Icons.arrow_drop_down),
+                                    items: _items.map((String item) {
+                                      return DropdownMenuItem<String>(
+                                        value: item,
+                                        child: Text(item),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        _selectedItemvehicle = newValue;
+                                        _dropController.text = newValue ?? '';
+                                      });
+                                    },
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(color: orange),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(color: black),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  border: const OutlineInputBorder(
+                                      borderSide: BorderSide(color: orange)),
+                                ),
+                              ),
                             ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: orange),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: black),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            border: const OutlineInputBorder(
-                                borderSide: BorderSide(color: orange)),
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Date')),
-                      ),
-                      Container(
-                        width: 320,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(4),
-                          boxShadow: const [
-                            BoxShadow(
-                              offset: Offset(-4, 4),
-                              blurRadius: 18,
-                              spreadRadius: 0,
-                              color: Color(0x17000000),
-                            )
-                          ],
+
+
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Date')),
                         ),
-                        child: TextFormField(
-                          controller: _datepickController,
-                          readOnly: true,
-                          decoration: InputDecoration(
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: orange),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Colors.red),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              hintText: 'Choose Date',
-                              prefixIcon: GestureDetector(
-                                  onTap: _selectDate,
-                                  child: const Icon(Icons.calendar_month))),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Company')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _companycontroller,
-                        hintText: 'type',
-                        labeltext: '',
-                        keyboardType: TextInputType.name,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Policy Type')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _policytypecontroller,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.name,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Policy no')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _policynocontroller,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.number,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Issue')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _issuecontroller,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.name,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Expires')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _expirecontroller,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.number,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Insurance Amount')),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(bottom: w * 0.044),
-                        child: CustomTextFormField(
+                       Container(
                           width: 320,
-                          controller: _insuranceamountcontroller,
-                          hintText: 'Type',
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(4),
+                            boxShadow: const [
+                              BoxShadow(
+                                offset: Offset(-4, 4),
+                                blurRadius: 18,
+                                spreadRadius: 0,
+                                color: Color(0x17000000),
+                              ),
+                            ],
+                          ),
+                          child: GestureDetector(
+                            onTap: _selectDate,
+                            child: AbsorbPointer(
+                              child: TextFormField(
+                                controller: _datepickController,
+                                readOnly: true,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please select a Date';
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(color: orange),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  errorBorder: OutlineInputBorder(
+                                    borderSide:
+                                        const BorderSide(color: Colors.red),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  hintText: 'Choose Date',
+                                  prefixIcon: const Icon(Icons.calendar_month),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Company')),
+                        ),
+                        CustomTextFormField(
+                          width: 320,
+                          controller: _companycontroller,
+                          hintText: ' ',
+                          labeltext: '',
+                          keyboardType: TextInputType.name,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Policy Type')),
+                        ),
+                        CustomTextFormField(
+                          width: 320,
+                          controller: _policytypecontroller,
+                          hintText: ' ',
+                          labeltext: '',
+                          keyboardType: TextInputType.name,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Policy no')),
+                        ),
+                        CustomTextFormField(
+                          width: 320,
+                          controller: _policynocontroller,
+                          hintText: ' ',
                           labeltext: '',
                           keyboardType: TextInputType.number,
                         ),
-                      ),
-                    ],
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Issue')),
+                        ),
+                        CustomTextFormField(
+                          width: 320,
+                          controller: _issuecontroller,
+                          hintText: ' ',
+                          labeltext: '',
+                          keyboardType: TextInputType.name,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Expires')),
+                        ),
+                        CustomTextFormField(
+                          width: 320,
+                          controller: _expirecontroller,
+                          hintText: ' ',
+                          labeltext: '',
+                          keyboardType: TextInputType.number,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Insurance Amount')),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(bottom: w * 0.044),
+                          child: CustomTextFormField(
+                            width: 320,
+                            controller: _insuranceamountcontroller,
+                            hintText: ' ',
+                            labeltext: '',
+                            keyboardType: TextInputType.number,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

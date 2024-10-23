@@ -1,4 +1,4 @@
-import 'package:e_commerce/BharathBenz/Vehicle%201/Gride%20View/GrideView.dart';
+import 'package:e_commerce/BharathBenz/Gride%20View/GrideView.dart';
 
 import '../Gride View/GrideView.dart';
 import 'package:e_commerce/constants/colors.dart';

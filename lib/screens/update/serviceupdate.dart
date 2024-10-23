@@ -19,6 +19,7 @@ class UpdateFormServiceT extends StatefulWidget {
 }
 
 class _UpdateFormState extends State<UpdateFormServiceT> {
+  final _formKey = GlobalKey<FormState>();
   // Define the controllers at the class level
   late TextEditingController _datepickController;
   late TextEditingController _servicecontroller;
@@ -69,6 +70,26 @@ class _UpdateFormState extends State<UpdateFormServiceT> {
     } catch (e) {
       return null;
     }
+  }
+    void showDropdownMenu() {
+    FocusScope.of(context).requestFocus(FocusNode());
+    showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(100, 100, 100, 100),
+      items: _items.map((String item) {
+        return PopupMenuItem<String>(
+          value: item,
+          child: Text(item),
+        );
+      }).toList(),
+    ).then((newValue) {
+      if (newValue != null) {
+        setState(() {
+          _selectedItemvehicle = newValue;
+          _dropController.text = newValue;
+        });
+      }
+    });
   }
 
   Future<void> _fetchItems() async {
@@ -122,219 +143,252 @@ class _UpdateFormState extends State<UpdateFormServiceT> {
                   border: Border.all(color: orange, width: w * 0.005),
                 ),
                 child: Center(
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Vehicle Number')),
-                      ),
-                      Container(
-                        width: 320,
-                        child: TextField(
-                          controller: _dropController,
-                          readOnly: true, // Make the text field read-only
-                          decoration: InputDecoration(
-                            labelText: 'Select Vehicle No',
-                            suffixIcon: DropdownButton<String>(
-                              value: _selectedItemvehicle,
-                              hint: const Text('Select'),
-                              icon: const Icon(Icons.arrow_drop_down),
-                              items: _items.map((String item) {
-                                return DropdownMenuItem<String>(
-                                  value: item,
-                                  child: Text(item),
-                                );
-                              }).toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  _selectedItemvehicle =
-                                      newValue; // Update the selected item
-                                  _dropController.text =
-                                      newValue ?? ''; // Update the text field
-                                });
-                              },
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Vehicle Number')),
+                        ),
+                        SizedBox(
+                          width: 320,
+                          child: GestureDetector(
+                            onTap: () {
+                              FocusScope.of(context).requestFocus(FocusNode());
+                              showDropdownMenu();
+                            },
+                            child: AbsorbPointer(
+                              child: TextFormField(
+                                controller: _dropController,
+                                readOnly: true,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please select a Value';
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  labelText: 'Select Vehicle No',
+                                  suffixIcon: DropdownButton<String>(
+                                    value: _selectedItemvehicle,
+                                    hint: const Text('Select'),
+                                    icon: const Icon(Icons.arrow_drop_down),
+                                    items: _items.map((String item) {
+                                      return DropdownMenuItem<String>(
+                                        value: item,
+                                        child: Text(item),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        _selectedItemvehicle = newValue;
+                                        _dropController.text = newValue ?? '';
+                                      });
+                                    },
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(color: orange),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(color: black),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  border: const OutlineInputBorder(
+                                      borderSide: BorderSide(color: orange)),
+                                ),
+                              ),
                             ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: orange),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: black),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            border: const OutlineInputBorder(
-                                borderSide: BorderSide(color: orange)),
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Date')),
-                      ),
+
+
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Date')),
+                        ),
                       Container(
-                        width: 320,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(4),
-                          boxShadow: const [
-                            BoxShadow(
-                              offset: Offset(-4, 4),
-                              blurRadius: 18,
-                              spreadRadius: 0,
-                              color: Color(0x17000000),
-                            )
-                          ],
-                        ),
-                        child: TextFormField(
-                          controller: _datepickController,
-                          readOnly: true,
-                          decoration: InputDecoration(
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: orange),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Colors.red),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              hintText: 'Choose Date',
-                              prefixIcon: GestureDetector(
-                                  onTap: _selectDate,
-                                  child: Icon(Icons.calendar_month))),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Service Type')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _servicecontroller,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.name,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Service Place')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _serviceplacetroller,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.name,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Contact No')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _contactcontroller,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.number,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Amount')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _amountcontroller,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.number,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Km Riding')),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(bottom: w * 0.044),
-                        child: CustomTextFormFieldIcon(
                           width: 320,
-                          controller: _KMridingcontroller,
-                          hintText: 'Type',
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(4),
+                            boxShadow: const [
+                              BoxShadow(
+                                offset: Offset(-4, 4),
+                                blurRadius: 18,
+                                spreadRadius: 0,
+                                color: Color(0x17000000),
+                              ),
+                            ],
+                          ),
+                          child: GestureDetector(
+                            onTap: _selectDate,
+                            child: AbsorbPointer(
+                              child: TextFormField(
+                                controller: _datepickController,
+                                readOnly: true,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please select a Date';
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(color: orange),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  errorBorder: OutlineInputBorder(
+                                    borderSide:
+                                        const BorderSide(color: Colors.red),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  hintText: 'Choose Date',
+                                  prefixIcon: const Icon(Icons.calendar_month),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Service Type')),
+                        ),
+                        CustomTextFormField(
+                          width: 320,
+                          controller: _servicecontroller,
+                          hintText: '',
+                          labeltext: '',
+                          keyboardType: TextInputType.name,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Service Place')),
+                        ),
+                        CustomTextFormField(
+                          width: 320,
+                          controller: _serviceplacetroller,
+                          hintText: '',
+                          labeltext: '',
+                          keyboardType: TextInputType.name,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Contact No')),
+                        ),
+                        CustomTextFormField(
+                          width: 320,
+                          controller: _contactcontroller,
+                          hintText: '',
                           labeltext: '',
                           keyboardType: TextInputType.number,
-                          prefixicon: Icon(Icons.map),
                         ),
-                      ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Amount')),
+                        ),
+                        CustomTextFormField(
+                          width: 320,
+                          controller: _amountcontroller,
+                          hintText: '',
+                          labeltext: '',
+                          keyboardType: TextInputType.number,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Km Riding')),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(bottom: w * 0.044),
+                          child: CustomTextFormFieldIcon(
+                            width: 320,
+                            controller: _KMridingcontroller,
+                            hintText: '',
+                            labeltext: '',
+                            keyboardType: TextInputType.number,
+                            prefixicon: Icon(Icons.map),
+                          ),
+                        ),
 
-                      // Other fields with similar padding and input
-                      const SizedBox(height: 20),
-                      CustomTextButton(
-                        width: 150,
-                        title: 'Update',
-                        background: orange,
-                        textColor: white,
-                        fontSize: 18,
-                        onTap: () {
-                          // Update Firestore document with new values
-                          FirebaseFirestore.instance
-                              .collection('taurusservices')
-                              .doc(widget.docId)
-                              .update({
-                            'vehiclenumber': _dropController.text,
-                            'date': _datepickController.text,
-                            'Service': _servicecontroller.text,
-                            'Service Place': _serviceplacetroller.text,
-                            'Contact': _contactcontroller.text,
-                            'Amount': _amountcontroller.text,
-                            'KM Riding': _KMridingcontroller.text,
-                            'delDate': Timestamp.now(),
-                          }).then((_) {
-                            Navigator.pop(context); // Go back after updating
-                          });
-                        },
-                      ),
-                    ],
+                        // Other fields with similar padding and input
+                        const SizedBox(height: 20),
+                        CustomTextButton(
+                          width: 150,
+                          title: 'Update',
+                          background: orange,
+                          textColor: white,
+                          fontSize: 18,
+                          onTap: () {
+                               // Update Firestore document with new values
+                            if (_formKey.currentState!.validate()) {
+                              FirebaseFirestore.instance
+                                  .collection('taurusservices')
+                                  .doc(widget.docId)
+                                  .update({
+                                'vehiclenumber': _dropController.text,
+                                'date': _datepickController.text,
+                                'Service': _servicecontroller.text,
+                                'Service Place': _serviceplacetroller.text,
+                                'Contact': _contactcontroller.text, 
+                                'Amount': _amountcontroller.text,
+                                'KM Riding': _KMridingcontroller.text,
+                                'delDate': Timestamp.now(),
+                              }).then((_) {
+                                Navigator.pop(
+                                    context); // Go back after updating
+                              });
+                            } else {
+                              return;
+                            }
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

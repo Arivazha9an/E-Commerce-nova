@@ -16,6 +16,9 @@ class Expensedetail extends StatefulWidget {
 }
 
 class _ExpensedetailState extends State<Expensedetail> {
+
+
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController _datepickController = TextEditingController();
   DateTime? pickeddate;
 
@@ -43,6 +46,26 @@ class _ExpensedetailState extends State<Expensedetail> {
     _otherscontroller.clear();
     _dropController.clear();
     _loadmancontroller.clear();
+  }
+void showDropdownMenu() {
+    FocusScope.of(context).requestFocus(FocusNode());
+    showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(100, 100, 100, 100),
+      items: _items.map((String item) {
+        return PopupMenuItem<String>(
+          value: item,
+          child: Text(item),
+        );
+      }).toList(),
+    ).then((newValue) {
+      if (newValue != null) {
+        setState(() {
+          _selectedItemvehicle = newValue;
+          _dropController.text = newValue;
+        });
+      }
+    });
   }
 
   Future<void> _fetchItems() async {
@@ -96,10 +119,10 @@ class _ExpensedetailState extends State<Expensedetail> {
   }
 
   void _saveData() {
-    if (_dropController.text.isEmpty ||
-        _datepickController.text.isEmpty ||
-        _expensecontroller.text.isEmpty ||
-        _loadmancontroller.text.isEmpty ||
+    if (_dropController.text.isEmpty &&
+        _datepickController.text.isEmpty &&
+        _expensecontroller.text.isEmpty &&
+        _loadmancontroller.text.isEmpty &&
         _otherscontroller.text.isEmpty) {
       showDialog(
         context: context,
@@ -115,7 +138,7 @@ class _ExpensedetailState extends State<Expensedetail> {
         ),
       );
       return;
-    } else {
+    } else if (_formKey.currentState!.validate()){
       try {
         FirebaseFirestore.instance.collection('taurusexpensedetail').add({
           'vehiclenumber': _dropController.text,
@@ -173,6 +196,9 @@ class _ExpensedetailState extends State<Expensedetail> {
         );
       }
     }
+    else{
+      return;
+    }
   }
 
   void _storeOrUpdateData(String date, String number) async {
@@ -181,19 +207,7 @@ class _ExpensedetailState extends State<Expensedetail> {
         _expensecontroller.text.isEmpty ||
         _loadmancontroller.text.isEmpty ||
         _otherscontroller.text.isEmpty) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Error'),
-          content: const Text('Please fill all fields.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
+    
       return;
     } else {
       try {
@@ -255,188 +269,216 @@ class _ExpensedetailState extends State<Expensedetail> {
                     borderRadius: const BorderRadius.all(Radius.circular(10)),
                     border: Border.all(color: orange, width: w * 0.005)),
                 child: Center(
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Vehicle Number')),
-                      ),
-                      Container(
-                        width: 320,
-                        child: TextField(
-                          controller: _dropController,
-                          readOnly: true, // Make the text field read-only
-                          decoration: InputDecoration(
-                            labelText: 'Select Vehicle No',
-                            suffixIcon: DropdownButton<String>(
-                              value: _selectedItemvehicle,
-                              hint: const Text('Select'),
-                              icon: const Icon(Icons.arrow_drop_down),
-                              items: _items.map((String item) {
-                                return DropdownMenuItem<String>(
-                                  value: item,
-                                  child: Text(item),
-                                );
-                              }).toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  _selectedItemvehicle =
-                                      newValue; // Update the selected item
-                                  _dropController.text =
-                                      newValue ?? ''; // Update the text field
-                                });
-                              },
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Vehicle Number')),
+                        ),
+                        SizedBox(
+                          width: 320,
+                          child: GestureDetector(
+                            onTap: () {
+                              FocusScope.of(context).requestFocus(FocusNode());
+                              showDropdownMenu();
+                            },
+                            child: AbsorbPointer(
+                              child: TextFormField(
+                                controller: _dropController,
+                                readOnly: true,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please select a Value';
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  labelText: 'Select Vehicle No',
+                                  suffixIcon: DropdownButton<String>(
+                                    value: _selectedItemvehicle,
+                                    hint: const Text('Select'),
+                                    icon: const Icon(Icons.arrow_drop_down),
+                                    items: _items.map((String item) {
+                                      return DropdownMenuItem<String>(
+                                        value: item,
+                                        child: Text(item),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        _selectedItemvehicle = newValue;
+                                        _dropController.text = newValue ?? '';
+                                      });
+                                    },
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(color: orange),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(color: black),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  border: const OutlineInputBorder(
+                                      borderSide: BorderSide(color: orange)),
+                                ),
+                              ),
                             ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: orange),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: black),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            border: const OutlineInputBorder(
-                                borderSide: BorderSide(color: orange)),
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Date')),
-                      ),
-                      Container(
-                        width: 320,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(4),
-                          boxShadow: const [
-                            BoxShadow(
-                              offset: Offset(-4, 4),
-                              blurRadius: 18,
-                              spreadRadius: 0,
-                              color: Color(0x17000000),
-                            )
-                          ],
+
+
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Date')),
                         ),
-                        child: TextFormField(
-                          controller: _datepickController,
-                          readOnly: true,
-                          decoration: InputDecoration(
+                     Container(
+                          width: 320,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(4),
+                            boxShadow: const [
+                              BoxShadow(
+                                offset: Offset(-4, 4),
+                                blurRadius: 18,
+                                spreadRadius: 0,
+                                color: Color(0x17000000),
+                              ),
+                            ],
+                          ),
+                          child: GestureDetector(
+                            onTap: _selectDate,
+                            child: AbsorbPointer(
+                              child: TextFormField(
+                                controller: _datepickController,
+                                readOnly: true,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please select a Date';
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(color: orange),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  errorBorder: OutlineInputBorder(
+                                    borderSide:
+                                        const BorderSide(color: Colors.red),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  hintText: 'Choose Date',
+                                  prefixIcon: const Icon(Icons.calendar_month),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Expense Type')),
+                        ),
+                          Container(
+                          width: 320,
+                          child: TextField(
+                            controller: _expensecontroller,
+                            readOnly: true, // Make the text field read-only
+                            decoration: InputDecoration(
+                              labelText: 'Expense Type',
+                              suffixIcon: DropdownButton<String>(
+                                value: _selectedexpense,
+                                hint: const Text('Select'),
+                                icon: const Icon(Icons.arrow_drop_down),
+                                items: _expenseitems.map((String _expenseitems) {
+                                  return DropdownMenuItem<String>(
+                                    value: _expenseitems,
+                                    child: Text(_expenseitems),
+                                  );
+                                }).toList(),
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    _selectedexpense =
+                                        newValue; // Update the selected item
+                                   _expensecontroller.text =
+                                        newValue ?? ''; // Update the text field
+                                  });
+                                },
+                              ),
                               focusedBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(color: orange),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              errorBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Colors.red),
-                                borderRadius: BorderRadius.circular(4),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: black),
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                              hintText: 'Choose Date',
-                              prefixIcon: GestureDetector(
-                                  onTap: _selectDate,
-                                  child: const Icon(Icons.calendar_month))),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Expense Type')),
-                      ),
-                        Container(
-                        width: 320,
-                        child: TextField(
-                          controller: _expensecontroller,
-                          readOnly: true, // Make the text field read-only
-                          decoration: InputDecoration(
-                            labelText: 'Expense Type',
-                            suffixIcon: DropdownButton<String>(
-                              value: _selectedexpense,
-                              hint: const Text('Select'),
-                              icon: const Icon(Icons.arrow_drop_down),
-                              items: _expenseitems.map((String _expenseitems) {
-                                return DropdownMenuItem<String>(
-                                  value: _expenseitems,
-                                  child: Text(_expenseitems),
-                                );
-                              }).toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  _selectedexpense =
-                                      newValue; // Update the selected item
-                                 _expensecontroller.text =
-                                      newValue ?? ''; // Update the text field
-                                });
-                              },
+                              border: const OutlineInputBorder(
+                                  borderSide: BorderSide(color: orange)),
                             ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: orange),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: black),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            border: const OutlineInputBorder(
-                                borderSide: BorderSide(color: orange)),
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Amount')),
-                      ),
-                      CustomTextFormField(
-                        width: 320,
-                        controller: _loadmancontroller,
-                        hintText: 'Type',
-                        labeltext: '',
-                        keyboardType: TextInputType.number,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: w * 0.03,
-                            right: w * 0.03,
-                            left: w * 0.025,
-                            bottom: w * 0.02),
-                        child: const Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Km Reading')),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(bottom: w * 0.04),
-                        child: CustomTextFormField(
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Amount')),
+                        ),
+                        CustomTextFormField(
                           width: 320,
-                          controller: _otherscontroller,
-                          hintText: 'Type',
+                          controller: _loadmancontroller,
+                          hintText: ' ',
                           labeltext: '',
                           keyboardType: TextInputType.number,
                         ),
-                      ),
-                    ],
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: w * 0.03,
+                              right: w * 0.03,
+                              left: w * 0.025,
+                              bottom: w * 0.02),
+                          child: const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('Km Reading')),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(bottom: w * 0.04),
+                          child: CustomTextFormField(
+                            width: 320,
+                            controller: _otherscontroller,
+                            hintText: ' ',
+                            labeltext: '',
+                            keyboardType: TextInputType.number,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
