@@ -26,7 +26,7 @@ final _formKey = GlobalKey<FormState>();
   late TextEditingController _materialcontroller;
   late TextEditingController _paymentcontroller;
   late TextEditingController _paidcontroller;
-  late TextEditingController _notpaidcontroller;
+  var _notpaidcontroller= TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -38,9 +38,27 @@ final _formKey = GlobalKey<FormState>();
     _paymentcontroller =
         TextEditingController(text: widget.data['Payment'] ?? '');
     _paidcontroller = TextEditingController(text: widget.data['Paid'] ?? '');
-    _notpaidcontroller =
-        TextEditingController(text: widget.data['Not_Paid'] ?? '');
+    // _notpaidcontroller =
+    //     TextEditingController(text: widget.data['Not_Paid'] ?? '');
+        _paymentcontroller.addListener(_updateDueAmount);
+    _paidcontroller.addListener(_updateDueAmount);
   }
+  Color _dueBorderColor = Colors.red;
+
+  void _updateDueAmount() {
+    int amount = int.tryParse(_paymentcontroller.text) ?? 0;
+    int paid = int.tryParse(_paidcontroller.text) ?? 0;
+
+    int due = amount - paid;
+
+    // Update the due field and border color
+    _notpaidcontroller.text =
+        due.toStringAsFixed(0); // Display due amount with 2 decimal places
+    setState(() {
+      _dueBorderColor = due == 0 ? Colors.green : Colors.red;
+    });
+  }
+
 
   @override
   void dispose() {
@@ -135,7 +153,7 @@ final _formKey = GlobalKey<FormState>();
                               bottom: w * 0.02),
                           child: const Align(
                               alignment: Alignment.centerLeft,
-                              child: Text('Payment')),
+                              child: Text('Amount')),
                         ),
                         CustomTextFormField(
                           width: 320,
@@ -159,7 +177,7 @@ final _formKey = GlobalKey<FormState>();
                           controller: _paidcontroller,
                           hintText: '',
                           labeltext: '',
-                          keyboardType: TextInputType.name,
+                          keyboardType: TextInputType.number,
                         ),
                         Padding(
                           padding: EdgeInsets.only(
@@ -169,17 +187,25 @@ final _formKey = GlobalKey<FormState>();
                               bottom: w * 0.02),
                           child: const Align(
                               alignment: Alignment.centerLeft,
-                              child: Text('Not Paid')),
+                              child: Text('Due')),
                         ),
                         Padding(
                           padding: EdgeInsets.only(bottom: w * 0.044),
-                          child: CustomTextFormFieldIcon(
+                          child: CustomTextFormField(
                             width: 320,
                             controller: _notpaidcontroller,
-                            hintText: ' ',
+                            hintText: '',
                             labeltext: '',
-                            keyboardType: TextInputType.name,
-                            prefixicon: const Icon(Icons.share_location_sharp),
+                            keyboardType: TextInputType.number,
+                            readOnly:
+                                true, // Make this field read-only since it's auto-calculated
+                            // decoration: InputDecoration(
+                            //   border: OutlineInputBorder(
+                            //     borderSide: BorderSide(
+                            //         color:
+                            //             _dueBorderColor), // Change border color based on due amount
+                            //   ),
+                            // ),
                           ),
                         ),
                       ],

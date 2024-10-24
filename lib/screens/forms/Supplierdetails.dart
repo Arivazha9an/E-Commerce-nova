@@ -25,6 +25,33 @@ final _formKey = GlobalKey<FormState>();
   final _paymentcontroller = TextEditingController();
   final _paidcontroller = TextEditingController();
   final _notpaidcontroller = TextEditingController();
+  Color _dueBorderColor = Colors.red; 
+
+
+      @override
+  void initState() {
+    super.initState();
+
+   
+    _paymentcontroller.addListener(_updateDueAmount);
+    _paidcontroller.addListener(_updateDueAmount);
+  }
+
+
+      void _updateDueAmount() {
+    int amount = int.tryParse(_paymentcontroller.text) ?? 0;
+    int paid = int.tryParse(_paidcontroller.text) ?? 0;
+
+    int due = amount - paid;
+
+  
+    _notpaidcontroller.text =
+        due.toStringAsFixed(0);
+    setState(() {
+      _dueBorderColor = due == 0 ? Colors.green : Colors.red;
+    });
+  }
+
   clear(){
     _namecontroller.clear();
     _placecontroller.clear();
@@ -158,7 +185,7 @@ final _formKey = GlobalKey<FormState>();
                           width: 320,
                           controller: _materialcontroller,
                           hintText: ' ',
-                          labeltext: ' ',
+                          labeltext: '',
                           keyboardType: TextInputType.name,
                         ),
                         Padding(
@@ -169,13 +196,13 @@ final _formKey = GlobalKey<FormState>();
                               bottom: w * 0.02),
                           child: const Align(
                               alignment: Alignment.centerLeft,
-                              child: Text('Payment')),
+                              child: Text('Amount')),
                         ),
                         CustomTextFormField(
                           width: 320,
                           controller: _paymentcontroller,
                           hintText: ' ',
-                          labeltext: ' ',
+                          labeltext: '',
                           keyboardType: TextInputType.number,
                         ),
                         Padding(
@@ -192,7 +219,7 @@ final _formKey = GlobalKey<FormState>();
                           width: 320,
                           controller: _paidcontroller,
                           hintText: ' ',
-                          labeltext: ' ',
+                          labeltext: '',
                           keyboardType: TextInputType.number,
                         ),
                         Padding(
@@ -203,17 +230,25 @@ final _formKey = GlobalKey<FormState>();
                               bottom: w * 0.02),
                           child: const Align(
                               alignment: Alignment.centerLeft,
-                              child: Text('Not Paid')),
+                              child: Text('Due')),
                         ),
-                        Padding(
+                          Padding(
                           padding: EdgeInsets.only(bottom: w * 0.044),
-                          child: CustomTextFormFieldIcon(
+                          child: CustomTextFormField(
                             width: 320,
                             controller: _notpaidcontroller,
-                            hintText: ' ',
+                            hintText: '',
                             labeltext: '',
                             keyboardType: TextInputType.number,
-                            prefixicon: const Icon(Icons.share_location_sharp),
+                            readOnly:
+                                true, 
+                            // decoration: InputDecoration(
+                            //   border: OutlineInputBorder(
+                            //     borderSide: BorderSide(
+                            //         color:
+                            //             _dueBorderColor),
+                            //   ),
+                            // ),
                           ),
                         ),
                       ],
@@ -242,7 +277,7 @@ final _formKey = GlobalKey<FormState>();
                 Padding(
                   padding: EdgeInsets.only(left: w * 0.15),
                   child: CustomTextButtonOut(
-                    title: 'clear',
+                    title: 'Clear',
                     width: w * 0.3,
                     background: Colors.transparent,
                     textColor: black,

@@ -558,44 +558,45 @@ final _formKey = GlobalKey<FormState>();
                               alignment: Alignment.centerLeft,
                               child: Text('Payment Type')),
                         ),
-                        Container(
-                          width: 320,
-                          child: TextField(
-                            controller: _paytypecontroller,
-                            readOnly: true, // Make the text field read-only
-                            decoration: InputDecoration(
-                              labelText: '',
-                              suffixIcon: DropdownButton<String>(
-                                hint: const Text('select'),
-                                value: selectedOption02.isEmpty
-                                    ? null
-                                    : selectedOption02,
-                                items: options02.map((String value02) {
-                                  return DropdownMenuItem<String>(
-                                    value: value02,
-                                    child: Text(value02),
-                                  );
-                                }).toList(),
-                                onChanged: (newValue) {
-                                  setState(() {
-                                    selectedOption02 = newValue!;
-                                    _paytypecontroller.text = newValue;
-                                  });
-                                },
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: orange),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: black),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              border: const OutlineInputBorder(
-                                  borderSide: BorderSide(color: orange)),
-                            ),
-                          ),
-                        ),
+                   Container(
+      width: 320,
+      child: DropdownButtonFormField<String>(
+        value: selectedOption02.isEmpty ? null : selectedOption02, // Set the value
+        decoration: InputDecoration(
+          labelText: '', 
+          hintText: 'Select Payment Type',
+          focusedBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: Colors.orange),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: Colors.black),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          border: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.orange),
+          ),
+        ),
+        items: options02.map((String value02) {
+          return DropdownMenuItem<String>(
+            value: value02,
+            child: Text(value02),
+          );
+        }).toList(),
+        onChanged: (newValue) {
+          setState(() {
+            selectedOption02 = newValue!;
+            _paytypecontroller.text = newValue;
+          });
+        },
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Please select a value';
+          }
+          return null;
+        },
+      ),
+    ),
                         Padding(
                           padding: EdgeInsets.only(
                               top: w * 0.03,

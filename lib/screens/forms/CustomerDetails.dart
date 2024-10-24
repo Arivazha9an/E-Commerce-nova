@@ -25,6 +25,17 @@ class _CustomerDetailsState extends State<CustomerDetails> {
   final _paidcontroller = TextEditingController();
   final _notpaidcontroller = TextEditingController();
 
+  Color _dueBorderColor = Colors.red; 
+
+    @override
+  void initState() {
+    super.initState();
+
+    // Add listeners to payment and paid fields
+    _paymentcontroller.addListener(_updateDueAmount);
+    _paidcontroller.addListener(_updateDueAmount);
+  }
+
   clear() {
     _namecontroller.clear();
     _placecontroller.clear();
@@ -33,7 +44,19 @@ class _CustomerDetailsState extends State<CustomerDetails> {
     _paidcontroller.clear();
     _notpaidcontroller.clear();
   }
-  
+    void _updateDueAmount() {
+    int amount = int.tryParse(_paymentcontroller.text) ?? 0;
+   int paid = int.tryParse(_paidcontroller.text) ?? 0;
+
+    int due = amount - paid;
+
+    // Update the due field and border color
+    _notpaidcontroller.text =
+        due.toStringAsFixed(0); // Display due amount with 2 decimal places
+    setState(() {
+      _dueBorderColor = due == 0 ? Colors.green : Colors.red;
+    });
+  }
 
   void _saveData() {
     if (_namecontroller.text.isEmpty &&
@@ -159,7 +182,7 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                           width: 320,
                           controller: _materialcontroller,
                           hintText: ' ',
-                          labeltext: ' ',
+                          labeltext: '',
                           keyboardType: TextInputType.name,
                         ),
                         Padding(
@@ -170,13 +193,13 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                               bottom: w * 0.02),
                           child: const Align(
                               alignment: Alignment.centerLeft,
-                              child: Text('Payment')),
+                              child: Text('Amount')),
                         ),
                         CustomTextFormField(
                           width: 320,
                           controller: _paymentcontroller,
                           hintText: ' ',
-                          labeltext: ' ',
+                          labeltext: '',
                           keyboardType: TextInputType.number,
                         ),
                         Padding(
@@ -192,8 +215,8 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                         CustomTextFormField(
                           width: 320,
                           controller: _paidcontroller,
-                          hintText: ' ',
-                          labeltext: ' ',
+                          hintText: '',
+                          labeltext: '',
                           keyboardType: TextInputType.number,
                         ),
                         Padding(
@@ -204,17 +227,25 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                               bottom: w * 0.02),
                           child: const Align(
                               alignment: Alignment.centerLeft,
-                              child: Text('Not Paid')),
+                              child: Text('Due')),
                         ),
                         Padding(
                           padding: EdgeInsets.only(bottom: w * 0.044),
-                          child: CustomTextFormFieldIcon(
+                          child: CustomTextFormField(
                             width: 320,
                             controller: _notpaidcontroller,
-                            hintText: ' ',
+                            hintText: '',
                             labeltext: '',
                             keyboardType: TextInputType.number,
-                            prefixicon: const Icon(Icons.share_location_sharp),
+                            readOnly:
+                                true, // Make this field read-only since it's auto-calculated
+                            // decoration: InputDecoration(
+                            //   border: OutlineInputBorder(
+                            //     borderSide: BorderSide(
+                            //         color:
+                            //             _dueBorderColor), // Change border color based on due amount
+                            //   ),
+                            // ),
                           ),
                         ),
                       ],

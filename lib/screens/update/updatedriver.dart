@@ -316,7 +316,7 @@ class _UpdateFormState extends State<UpdateFormDriverT> {
                                   alignment: Alignment.centerLeft,
                                   child: Text('Photo')),
                             ),
-                            Container(
+                         Container(
                               width: 320,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(4),
@@ -329,29 +329,45 @@ class _UpdateFormState extends State<UpdateFormDriverT> {
                                   )
                                 ],
                               ),
-                              child: TextFormField(
-                                controller: _imgnamecontroller,
-                                readOnly: true,
-                                decoration: InputDecoration(
-                                  labelText: 'No Image Selected',
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: const BorderSide(color: orange),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: const BorderSide(color: black),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  border: const OutlineInputBorder(
-                                      borderSide: BorderSide(color: orange)),
-                                  suffixIcon: IconButton(
-                                    icon: const Icon(Icons.image),
-                                    onPressed:
-                                        pickImage, // Call pickImage function
+                              child: GestureDetector(
+                                onTap: () {
+                                  pickImage(); // Trigger pick image function
+                                },
+                                child: AbsorbPointer(
+                                  // Prevents text input and focuses on triggering the image picker
+                                  child: TextFormField(
+                                    controller: _imgnamecontroller,
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please Add Image';
+                                      }
+                                      return null;
+                                    },
+                                    readOnly:
+                                        true, // Ensures text cannot be directly edited
+                                    decoration: InputDecoration(
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide:
+                                            const BorderSide(color: orange),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      errorBorder: OutlineInputBorder(
+                                        borderSide:
+                                            const BorderSide(color: Colors.red),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      hintText: 'Pick An Image',
+                                      suffixIcon: const Icon(
+                                          Icons.image), // Display image icon
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
+
                             Padding(
                               padding: EdgeInsets.only(
                                   top: w * 0.03,

@@ -18,6 +18,7 @@ class UpdateFormSupplier extends StatefulWidget {
 
 class _updateFormCustomerState extends State<UpdateFormSupplier> {
   final _formKey = GlobalKey<FormState>();
+  
 
   // Define the controllers at the class level
   late TextEditingController _namecontroller;
@@ -25,7 +26,8 @@ class _updateFormCustomerState extends State<UpdateFormSupplier> {
   late TextEditingController _materialcontroller;
   late TextEditingController _paymentcontroller;
   late TextEditingController _paidcontroller;
-  late TextEditingController _notpaidcontroller;
+  var  _notpaidcontroller= TextEditingController();
+  Color _dueBorderColor = Colors.red; 
   @override
   void initState() {
     super.initState();
@@ -37,10 +39,26 @@ class _updateFormCustomerState extends State<UpdateFormSupplier> {
     _paymentcontroller =
         TextEditingController(text: widget.data['Payment'] ?? '');
     _paidcontroller = TextEditingController(text: widget.data['Paid'] ?? '');
-    _notpaidcontroller =
-        TextEditingController(text: widget.data['Not_Paid'] ?? '');
+    // _notpaidcontroller =
+    //     TextEditingController(text: widget.data['Not_Paid'] ?? '');
+
+         _paymentcontroller.addListener(_updateDueAmount);
+    _paidcontroller.addListener(_updateDueAmount);
   }
 
+  void _updateDueAmount() {
+    int amount = int.tryParse(_paymentcontroller.text) ?? 0;
+    int paid = int.tryParse(_paidcontroller.text) ?? 0;
+
+    int due = amount - paid;
+
+  
+    _notpaidcontroller.text =
+        due.toStringAsFixed(0); 
+    setState(() {
+      _dueBorderColor = due == 0 ? Colors.green : Colors.red;
+    });
+  }
   @override
   void dispose() {
     // Dispose controllers to avoid memory leaks
@@ -134,7 +152,7 @@ class _updateFormCustomerState extends State<UpdateFormSupplier> {
                               bottom: w * 0.02),
                           child: const Align(
                               alignment: Alignment.centerLeft,
-                              child: Text('Payment')),
+                              child: Text('Amount')),
                         ),
                         CustomTextFormField(
                           width: 320,
@@ -158,7 +176,7 @@ class _updateFormCustomerState extends State<UpdateFormSupplier> {
                           controller: _paidcontroller,
                           hintText: '',
                           labeltext: '',
-                          keyboardType: TextInputType.name,
+                          keyboardType: TextInputType.number,
                         ),
                         Padding(
                           padding: EdgeInsets.only(
@@ -168,17 +186,25 @@ class _updateFormCustomerState extends State<UpdateFormSupplier> {
                               bottom: w * 0.02),
                           child: const Align(
                               alignment: Alignment.centerLeft,
-                              child: Text('Not Paid')),
+                              child: Text('Due')),
                         ),
                         Padding(
                           padding: EdgeInsets.only(bottom: w * 0.044),
-                          child: CustomTextFormFieldIcon(
+                          child: CustomTextFormField(
                             width: 320,
                             controller: _notpaidcontroller,
                             hintText: '',
                             labeltext: '',
-                            keyboardType: TextInputType.name,
-                            prefixicon: const Icon(Icons.share_location_sharp),
+                            keyboardType: TextInputType.number,
+                            readOnly:
+                                true,
+                            // decoration: InputDecoration(
+                            //   border: OutlineInputBorder(
+                            //     borderSide: BorderSide(
+                            //         color:
+                            //             _dueBorderColor), 
+                            //   ),
+                            // ),
                           ),
                         ),
                       ],

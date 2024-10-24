@@ -16,28 +16,26 @@ class Expensedetail extends StatefulWidget {
 }
 
 class _ExpensedetailState extends State<Expensedetail> {
-
-
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _datepickController = TextEditingController();
   DateTime? pickeddate;
 
   var _loadmancontroller = TextEditingController();
   var _otherscontroller = TextEditingController();
-  
+
   String? selectedItem;
   final TextEditingController _dropController = TextEditingController();
   final TextEditingController _expensecontroller = TextEditingController();
   List<String> _items = [];
   List<String> _expenseitems = []; // List to hold Firestore data
-  String? _selectedItemvehicle; 
-  String? _selectedexpense;// Variable to hold the selected item
+  String? _selectedItemvehicle;
+  String? _selectedexpense; // Variable to hold the selected item
   @override
   void initState() {
     super.initState();
     _fetchItems();
-  _fetchexpenseItems();
-     // Fetch items when the widget is initialized
+    _fetchexpenseItems();
+    // Fetch items when the widget is initialized
   }
 
   void clear() {
@@ -47,7 +45,38 @@ class _ExpensedetailState extends State<Expensedetail> {
     _dropController.clear();
     _loadmancontroller.clear();
   }
-void showDropdownMenu() {
+
+  void _showDropdownMenu() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Select Expense Type'),
+          content: SizedBox(
+            width: double.maxFinite, // Set width to maximum
+            child: ListView.builder(
+              itemCount: _expenseitems.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(_expenseitems[index]),
+                  onTap: () {
+                    setState(() {
+                      _selectedexpense = _expenseitems[index];
+                      _expensecontroller.text =
+                          _selectedexpense!; // Update the text field
+                    });
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void showDropdownMenu() {
     FocusScope.of(context).requestFocus(FocusNode());
     showMenu(
       context: context,
@@ -87,22 +116,20 @@ void showDropdownMenu() {
     }
   }
 
-   Future<void> _fetchexpenseItems() async {
-        try {    
-      QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('expense')
-          .get();    
+  Future<void> _fetchexpenseItems() async {
+    try {
+      QuerySnapshot snapshot =
+          await FirebaseFirestore.instance.collection('expense').get();
       List<String> items =
           snapshot.docs.map((doc) => doc['expense'].toString()).toList();
 
       setState(() {
-        _expenseitems = items; 
+        _expenseitems = items;
       });
     } catch (e) {
-      print('Error fetching data from Firestore: $e'); 
+      print('Error fetching data from Firestore: $e');
     }
   }
-
 
   Future<void> _selectDate() async {
     DateTime? picked = await showDatePicker(
@@ -138,7 +165,7 @@ void showDropdownMenu() {
         ),
       );
       return;
-    } else if (_formKey.currentState!.validate()){
+    } else if (_formKey.currentState!.validate()) {
       try {
         FirebaseFirestore.instance.collection('taurusexpensedetail').add({
           'vehiclenumber': _dropController.text,
@@ -195,8 +222,7 @@ void showDropdownMenu() {
           ),
         );
       }
-    }
-    else{
+    } else {
       return;
     }
   }
@@ -207,7 +233,6 @@ void showDropdownMenu() {
         _expensecontroller.text.isEmpty ||
         _loadmancontroller.text.isEmpty ||
         _otherscontroller.text.isEmpty) {
-    
       return;
     } else {
       try {
@@ -334,8 +359,6 @@ void showDropdownMenu() {
                             ),
                           ),
                         ),
-
-
                         Padding(
                           padding: EdgeInsets.only(
                               top: w * 0.03,
@@ -346,7 +369,7 @@ void showDropdownMenu() {
                               alignment: Alignment.centerLeft,
                               child: Text('Date')),
                         ),
-                     Container(
+                        Container(
                           width: 320,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(4),
@@ -401,42 +424,41 @@ void showDropdownMenu() {
                               alignment: Alignment.centerLeft,
                               child: Text('Expense Type')),
                         ),
-                          Container(
+                        Container(
                           width: 320,
-                          child: TextField(
-                            controller: _expensecontroller,
-                            readOnly: true, // Make the text field read-only
-                            decoration: InputDecoration(
-                              labelText: 'Expense Type',
-                              suffixIcon: DropdownButton<String>(
-                                value: _selectedexpense,
-                                hint: const Text('Select'),
-                                icon: const Icon(Icons.arrow_drop_down),
-                                items: _expenseitems.map((String _expenseitems) {
-                                  return DropdownMenuItem<String>(
-                                    value: _expenseitems,
-                                    child: Text(_expenseitems),
-                                  );
-                                }).toList(),
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    _selectedexpense =
-                                        newValue; // Update the selected item
-                                   _expensecontroller.text =
-                                        newValue ?? ''; // Update the text field
-                                  });
+                          child: GestureDetector(
+                            onTap:
+                                _showDropdownMenu, // Show dropdown when tapped
+                            child: AbsorbPointer(
+                              // Prevent direct typing in the text field
+                              child: TextFormField(
+                                controller: _expensecontroller,
+                                readOnly: true, // Make the text field read-only
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please choose a value for Drop';
+                                  }
+                                  return null;
                                 },
+                                decoration: InputDecoration(
+                                  labelText: 'Expense Type',
+                                  suffixIcon: Icon(Icons.arrow_drop_down),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide:
+                                        const BorderSide(color: Colors.orange),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide:
+                                        const BorderSide(color: Colors.black),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  border: const OutlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.orange),
+                                  ),
+                                ),
                               ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: orange),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: black),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              border: const OutlineInputBorder(
-                                  borderSide: BorderSide(color: orange)),
                             ),
                           ),
                         ),

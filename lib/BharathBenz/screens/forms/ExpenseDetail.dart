@@ -77,6 +77,36 @@ void clear(){
       print('Error fetching data from Firestore: $e');
     }
   }
+ 
+  void _showDropdownMenu() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Select Expense Type'),
+          content: SizedBox(
+            width: double.maxFinite, // Set width to maximum
+            child: ListView.builder(
+              itemCount: _expenseitems.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(_expenseitems[index]),
+                  onTap: () {
+                    setState(() {
+                      _selectedexpense = _expenseitems[index];
+                      _expensecontroller.text =
+                          _selectedexpense!; // Update the text field
+                    });
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   Future<void> _selectDate() async {
     DateTime? picked = await showDatePicker(
@@ -398,50 +428,39 @@ void showDropdownMenu() {
                               alignment: Alignment.centerLeft,
                               child: Text('Expense Type')),
                         ),
-                      Container(
-                          width: 320,
-                          child: TextFormField(
-                            controller: _expensecontroller,
-                            readOnly: true, // Make the text field read-only
-                             validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please choose a value for Drop';
-                              }
-                              return null;
-                            },
-                            decoration: InputDecoration(
-                              labelText: 'Expense Type',
-                              suffixIcon: DropdownButton<String>(
-                                value: _selectedexpense,
-                                hint: const Text('Select'),
-                                icon: const Icon(Icons.arrow_drop_down),
-                                items: _expenseitems.map((String _expenseitems) {
-                                  return DropdownMenuItem<String>(
-                                    value: _expenseitems,
-                                    child: Text(_expenseitems),
-                                  );
-                                }).toList(),
-                                onChanged: (String? newValue) {
-                                  setState(() {                        
-                                    _expensecontroller.text =
-                                        newValue ?? ''; 
-                                        _selectedexpense =newValue?? '';// Update the text field
-                                  });
-                                },
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: orange),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: black),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              border: const OutlineInputBorder(
-                                  borderSide: BorderSide(color: orange)),
-                            ),
-                          ),
-                        ),
+                     Container(
+      width: 320,
+      child: GestureDetector(
+        onTap: _showDropdownMenu, // Show dropdown when tapped
+        child: AbsorbPointer( // Prevent direct typing in the text field
+          child: TextFormField(
+            controller: _expensecontroller,
+            readOnly: true, // Make the text field read-only
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please choose a value for Drop';
+              }
+              return null;
+            },
+            decoration: InputDecoration(
+              labelText: 'Expense Type',
+              suffixIcon: Icon(Icons.arrow_drop_down),
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.orange),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              border: const OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.orange),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
                         Padding(
                           padding: EdgeInsets.only(
                               top: w * 0.03,
